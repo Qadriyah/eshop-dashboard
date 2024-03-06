@@ -31,3 +31,118 @@ body {
     text-wrap: balance;
   }
 }
+.btn-background:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.line-broken {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#sidenav a.active {
+  color: #fff;
+  font-weight: bold;
+}
+
+@media only screen and (min-width: 1800px) {
+  .container-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.link-bg {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+.small-device-nav {
+  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.05);
+}
+
+@media only screen and (max-width: 600px) {
+  .large-device-container {
+    display: none;
+  }
+  .page-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+@media only screen and (min-width: 600px) {
+  .small-device-container {
+    display: none;
+  }
+}
+.card-content {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
+}
+.gray-border {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+@media only screen and (min-width: 975px) {
+  .status-add-product {
+    display: flex;
+    flex-direction: row;
+  }
+}
+@media only screen and (max-width: 975px) {
+  .status-add-product {
+    display: flex;
+    flex-direction: column;
+  }
+  .add-pdt {
+    transform: translateX(-10px);
+    margin-top: 10px;
+  }
+}
+@media only screen and (max-width: 464px) {
+  .products {
+    display: flex;
+    flex-direction: column;
+  }
+  input[name="product"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .status-add-product {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+  .add-pdt {
+    transform: translateX(0px);
+  }
+}
+@media only screen and (min-width: 600px) and (max-width: 780px) {
+  .products {
+    display: flex;
+    flex-direction: column;
+  }
+  input[name="product"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .status-add-product {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+  .add-pdt {
+    transform: translateX(0px);
+  }
+}
+.label-shadow {
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.2);
+}
+
+.set-boreder {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.active-links-details {
+  border-bottom: 3px solid dodgerblue;
+}
