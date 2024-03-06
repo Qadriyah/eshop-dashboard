@@ -7,40 +7,42 @@ import ConfirmationModel from "../../modals/ConfimationModel";
 import ShouldRender from "../../components/ShouldRender";
 import { Table } from "antd";
 import type { TableProps } from "antd";
-import { useDispatchHook } from "../../redux/hooks/hooks";
-import { deleteProduct } from "../../redux/slices/products";
 import { useRouter } from "next/navigation";
 
 type TableProductProps = {
   products: any[];
+  onDeleteProduct: () => void;
+  getProductId?: (productId: string) => void;
+  openModal: boolean;
+  closeModalFn: () => void;
+  openModalFn: () => void;
 };
 
 const ProductsTable: React.FC<TableProductProps> = ({
   products,
+  onDeleteProduct,
+  getProductId,
+  openModal,
+  closeModalFn,
+  openModalFn,
 }): JSX.Element => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const [productId, setProductId] = React.useState<string>("");
   const navigate = useRouter();
   const open = Boolean(anchorEl);
-  const dispatch = useDispatchHook();
 
   const handleClick = (
     event: React.MouseEvent<HTMLImageElement>,
-    product_id: string
+    productId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setProductId(product_id);
+    getProductId?.(productId);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+    openModalFn();
   };
 
-  const onDeleteProduct = () => {
-    dispatch(deleteProduct(productId));
-    setOpenModal(false);
-  };
   // ant design
   interface DataProps {
     key?: string;
@@ -141,7 +143,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
                 onClick={() =>
-                  navigate.push(`/dashboard/products/${productId}`)
+                  navigate.push(`/dashboard/products/${item.productId}`)
                 }
               >
                 Edit
@@ -149,7 +151,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
                 onClick={() => {
-                  setOpenModal(true);
+                  openModalFn();
                   handleClose();
                 }}
               >
@@ -179,9 +181,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
           message="Are you sure you want to delete this product?"
           open={openModal}
           onConfirm={onDeleteProduct}
-          handleClose={() => {
-            setOpenModal(false);
-          }}
+          handleClose={closeModalFn}
         />
       </ShouldRender>
     </>

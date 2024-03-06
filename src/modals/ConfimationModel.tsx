@@ -25,7 +25,7 @@ const ConfirmationModel: React.FC<ConfirmationModelProps> = ({
       onConfirm={onConfirm}
     >
       <div className="p-5 flex flex-col justify-center items-center md:w-[500px]">
-        <PiWarningCircleThin fill="orange" className="w-[70px] h-[70px]" />
+        <PiWarningCircleThin fill="orange" size={80} />
         <p className="mt-5 mb-6 text-black opacity-80">{message}</p>
       </div>
     </ModalComponent>

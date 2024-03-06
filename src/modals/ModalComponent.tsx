@@ -32,13 +32,13 @@ const ModalComponent: React.FC<ModalProps> = ({
       <DialogActions>
         <Button
           onClick={handleClose}
-          className="font-bold p-2 sm:p-3 w-24 rounded-lg bg-transparent hover:bg-[#eafdfd] hover:opacity-80 hover:text-[#3875d7] text-black m-2 opacity-90"
+          className="font-bold p-2 sm:p-3 w-[100px] rounded-lg bg-transparent hover:bg-[#d3d3d3] hover:opacity-80 hover:text-[#3875d7] text-black m-2 opacity-90"
         >
           Cancel
         </Button>
         <Button
           onClick={onConfirm}
-          className="font-bold p-2 sm:p-3 w-24 rounded-lg text-white hover:opacity-80 bg-[#4081e9]"
+          className="font-bold p-2 sm:p-3 w-[100px] rounded-lg text-white hover:opacity-80 bg-[#4081e9]"
         >
           Ok
         </Button>

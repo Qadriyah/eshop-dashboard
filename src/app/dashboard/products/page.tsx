@@ -4,42 +4,58 @@ import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useSelectorHook } from "@/redux/hooks/hooks";
-import { RootState } from "@/redux/store/store";
+import { useDispatchHook, useSelectorHook } from "@/redux/hooks/hooks";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import Button from "@/components/Button";
 import ProductsTable from "@/pages/products/ProductsTable";
 import { useRouter } from "next/navigation";
+import { deleteProduct } from "@/redux/slices/products";
 
 const Products: React.FC<{}> = (): JSX.Element => {
-  const [product, setProduct] = React.useState<any>("");
+  const [product_, setProduct] = React.useState<any>("");
   const [status, setStatus] = React.useState<string>("all");
   const navigate = useRouter();
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const dispatch = useDispatchHook();
+  const [productId, setProductId] = React.useState<string>("");
 
   // get the products
-  const products = useSelectorHook((state: RootState) => state.products);
+  const products = useSelectorHook((state) => state.products);
   const [renderProducts, setRenderProducst] = React.useState<any[]>(products);
 
-  //   const productsByName = products.map((product) =>
-  //     product.productName.includes(product as any)
-  //   );
-  // console.log(productsByName, "????");
+  const productsByName = products.filter((product) =>
+    product.productName
+      .toLocaleLowerCase()
+      .includes(product_.toLocaleLowerCase())
+  );
 
   const filterByStatus = products.filter(
     (product) => product.status === status
   );
 
   React.useEffect(() => {
-    if (status === "all" || status === "") {
-      setRenderProducst(products);
-    } else {
-      setRenderProducst(filterByStatus);
+    if (product_ === "") {
+      if (status === "all" || status === "") {
+        setRenderProducst(products);
+      } else {
+        setRenderProducst(filterByStatus);
+      }
     }
-  }, [product, status]);
+    if (product_ !== "") {
+      setRenderProducst(productsByName);
+    }
+  }, [product_, status]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
+  };
+
+  const getProductId = (id: string) => setProductId(id);
+
+  const onDeleteProduct = () => {
+    dispatch(deleteProduct(productId));
+    setOpenModal(false);
   };
 
   return (
@@ -60,7 +76,7 @@ const Products: React.FC<{}> = (): JSX.Element => {
                 <input
                   type="text"
                   name="product"
-                  value={product}
+                  value={product_}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                     setProduct(event.target.value)
                   }
@@ -89,7 +105,14 @@ const Products: React.FC<{}> = (): JSX.Element => {
                 </Button>
               </div>
             </div>
-            <ProductsTable products={renderProducts} />
+            <ProductsTable
+              products={renderProducts}
+              openModal={openModal}
+              closeModalFn={() => setOpenModal(false)}
+              onDeleteProduct={onDeleteProduct}
+              openModalFn={() => setOpenModal(true)}
+              getProductId={getProductId}
+            />
           </div>
         </Card>
       </div>
@@ -97,5 +120,4 @@ const Products: React.FC<{}> = (): JSX.Element => {
   );
 };
 
-// [#3875d7]
 export default Products;

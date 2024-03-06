@@ -10,7 +10,7 @@ import SelectComponent from "@/components/SelectComponent";
 import OrdersTable from "@/pages/orders/OrdersTable";
 
 const Orders: React.FC<{}> = (): JSX.Element => {
-  const [order, setOrder] = React.useState<string>("");
+  const [order_, setOrder] = React.useState<string>("");
   const [status, setStatus] = React.useState("all");
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -21,16 +21,24 @@ const Orders: React.FC<{}> = (): JSX.Element => {
   const [renderOrders, setRenderOrders] = React.useState<any[]>(orders);
 
   const ordersByName = orders.filter((order) =>
-    order.customer.customerName.includes(order)
+    order.customer.customerName
+      .toLocaleLowerCase()
+      .includes(order_.toLocaleLowerCase())
   );
   const filterByStatus = orders.filter((order) => order.status === status);
 
   React.useEffect(() => {
-    setRenderOrders(filterByStatus);
-    if (status === "all") {
-      setRenderOrders(orders);
+    if (order_ === "") {
+      if (status === "all" || status === "") {
+        setRenderOrders(orders);
+      } else {
+        setRenderOrders(filterByStatus);
+      }
     }
-  }, [order, status]);
+    if (order_ !== "") {
+      setRenderOrders(ordersByName);
+    }
+  }, [order_, status]);
 
   return (
     <div>
@@ -50,7 +58,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                 <input
                   type="text"
                   name="order"
-                  value={order}
+                  value={order_}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                     setOrder(event.target.value)
                   }
