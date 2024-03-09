@@ -31,6 +31,15 @@ type Product = {
   price: number | string;
   discount?: string | number;
   description?: any;
+  quantity?: number;
+  stock?: number;
+  allowBackorders?: boolean;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  image?: string;
+  images?: string[];
 };
 
 const AddProduct: React.FC<{}> = (): JSX.Element => {
@@ -43,6 +52,15 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
     discountType: "None",
     percentDiscount: 10,
     fixedDiscount: "",
+    quantity: +"",
+    stock: +"",
+    allowBackorders: false,
+    weight: +"",
+    length: +"",
+    width: +"",
+    height: +"",
+    image: "",
+    images: [],
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,6 +152,90 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
               Set the product status.
             </p>
           </ProductCard>
+          <ProductCard title="Product details">
+            <Formik
+              validateOnBlur={false}
+              validateOnMount={false}
+              initialValues={{
+                productName: "",
+              }}
+              onSubmit={() => {}}
+            >
+              <form>
+                <Input
+                  type="number"
+                  name="quantity"
+                  value={product.quantity}
+                  placeholder="Quantity"
+                  label="Quantity"
+                  required
+                  onChange={handleChange}
+                />
+                <Input
+                  type="number"
+                  name="stock"
+                  value={product.stock}
+                  placeholder="Stock"
+                  label="Stock"
+                  required
+                  onChange={handleChange}
+                />
+                <Input
+                  type="number"
+                  name="weight"
+                  value={product.weight}
+                  placeholder="Weight"
+                  label="Weight"
+                  required
+                  onChange={handleChange}
+                />
+                <Input
+                  type="number"
+                  name="length"
+                  value={product.length}
+                  placeholder="Length"
+                  label="Length"
+                  required
+                  onChange={handleChange}
+                />
+                <Input
+                  type="number"
+                  name="width"
+                  value={product.width}
+                  placeholder="Width"
+                  label="Width"
+                  required
+                  onChange={handleChange}
+                />
+                <Input
+                  type="number"
+                  name="height"
+                  value={product.height}
+                  placeholder="Height"
+                  label="Height"
+                  required
+                  onChange={handleChange}
+                />
+                <RadioComponent
+                  formLabel="Allow back order"
+                  defaultValue={`${false}`}
+                >
+                  <RadioInput
+                    value={false}
+                    label="No"
+                    handleClick={() => onChange("allowBackorders", false)}
+                    control={<Radio />}
+                  />
+                  <RadioInput
+                    value={true}
+                    label="Yes"
+                    handleClick={() => onChange("allowBackorders", true)}
+                    control={<Radio />}
+                  />
+                </RadioComponent>
+              </form>
+            </Formik>
+          </ProductCard>
         </div>
         <div className="md:w-3/5 md:ml-5">
           <Formik
@@ -207,6 +309,7 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
                   label="Base Price"
                   required
                   onChange={handleChange}
+                  min={0}
                 />
                 <p className="opacity-40 text-xs mt-1 font-semibold">
                   Set product price
