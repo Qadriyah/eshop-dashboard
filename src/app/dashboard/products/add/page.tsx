@@ -2,7 +2,7 @@
 
 import React from "react";
 import ReactQuill from "react-quill";
-// import { PiImagesSquareDuotone } from "react-icons/pi";
+import { PiImagesSquareDuotone } from "react-icons/pi";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { MenuItem } from "@mui/material";
 import { Formik, Form } from "formik";
@@ -97,7 +97,7 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
       </h2>
       <div className="w-full md:flex">
         <div className="mb-5 md:w-2/5">
-          {/* <ProductCard title="Thumbnail">
+          <ProductCard title="Thumbnail">
             <div className="label-shadow w-[150px] rounded-lg p-5 mx-auto">
               <label htmlFor="thumbnail" className="cursor-pointer">
                 <input type="file" id="thumbnail" className="hidden" />
@@ -113,7 +113,7 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
                 image files are accepted
               </p>
             </div>
-          </ProductCard> */}
+          </ProductCard>
           <ProductCard title="Status" showStatus={true}>
             <SelectComponent
               boxWidth="100%"

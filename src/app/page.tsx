@@ -3,11 +3,13 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Form, Formik, FormikValues, FormikHelpers, FormikProps } from "formik";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import { loginValidationSchema } from "@/validation/loginSchema";
 import Input from "@/components/Input";
 import QuickLink from "@/components/QuickLink";
+import { useMutation } from "@tanstack/react-query";
+import { postApi } from "@/api";
 
 interface LoginInfo {
   email: string;
@@ -17,14 +19,34 @@ interface LoginInfo {
 const Login = (): JSX.Element => {
   const ref = React.useRef<HTMLParagraphElement>(null);
   const router = useRouter();
+  const [errors, setErrors_] = React.useState<any>();
+  const [error, setError] = React.useState<any>();
+
+  const mutation = useMutation({
+    mutationFn: (data: any) =>
+      postApi({ url: "/auth/login", customHeaders: {}, data }),
+  });
 
   const handleSubmit = (
     values: FormikValues,
     { setErrors }: FormikHelpers<LoginInfo>
   ): void => {
     // We shall use setErrors to set errors that are coming from the backend
-    router.push("/dashboard/products");
+    mutation.mutate(values);
+    if (mutation.data || mutation.data !== undefined) {
+      router.push("/dashboard/products");
+    }
   };
+
+  React.useEffect(() => {
+    if (mutation.error) {
+      setErrors_(mutation.error);
+      setError(errors?.response.data.errors[0].message);
+    }
+    if (!mutation.error) {
+      setError("");
+    }
+  }, [mutation]);
 
   return (
     <div className="flex flex-col lg:flex-row max-w-[1700px]">
@@ -35,9 +57,9 @@ const Login = (): JSX.Element => {
           className="w-[110px] h-[65px] mx-auto"
         />
       </div>
-      <div className="flex justify-center items-center lg:w-1/2 lg:pt-16">
-        <div className="sm:p-10 p-5 pt-10 w-full sm:w-3/4 md:w-1/2 lg:w-3/4">
-          <div className="mb-11 text-center">
+      <div className="flex justify-center items-center lg:w-1/2 lg:pt-16 lg:-mt-40">
+        <div className="sm:p-10 p-5 pt-5 w-full sm:w-3/4 md:w-1/2 lg:w-3/4">
+          <div className="mb-5 text-center">
             <h2 className="text-black font-bold mb-3 text-2xl sm:text-3xl">
               Sign In
             </h2>
@@ -52,7 +74,7 @@ const Login = (): JSX.Element => {
           >
             <Button
               type="button"
-              className="w-full border border-[rgba(0 ,0, 0, .2)] rounded-md p-3 flex justify-center items-center btn-background focus:border-gray-400"
+              className="w-full border border-[#d3d3d3] rounded-md p-3 flex justify-center items-center btn-background focus:border-gray-400"
             >
               <FcGoogle className="h-[25px] w-[25px]" />
               <p
@@ -89,10 +111,13 @@ const Login = (): JSX.Element => {
                 <div className="text-sm text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer">
                   Forgot Password?
                 </div>
+                <p className="text-xs -mt-2 mb-1 text-red-500 font-semibold">
+                  {error}
+                </p>
                 <Button
                   type="submit"
-                  loading={isSubmitting}
-                  className="w-full outline-none text-md p-3 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9]"
+                  loading={mutation.isPending && isSubmitting}
+                  className="w-full outline-none text-md p-3 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9] mb-4"
                 >
                   Sigin In
                 </Button>
@@ -100,12 +125,12 @@ const Login = (): JSX.Element => {
             )}
           </Formik>
 
-          <div className="text-gray-500 mt-8 mb-6 text-center font-semibold text-[16px] sm:text-[18px] opacity-70">
+          {/* <div className="text-gray-500 mt-8 mb-6 text-center font-semibold text-[16px] sm:text-[18px] opacity-70">
             Not a member yet?{" "}
             <span className="text-[#4081e9] opacity-100 cursor-pointer">
               Sign up
             </span>
-          </div>
+          </div> */}
           <div className="text-center">
             <QuickLink
               label="Terms"
