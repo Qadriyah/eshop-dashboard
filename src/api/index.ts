@@ -4,7 +4,7 @@ import client from "./client/client";
 type EndpoitProps = {
   url: string;
   data?: any;
-  customHeaders: any;
+  customHeaders?: any;
 };
 
 const headers = {
@@ -22,12 +22,35 @@ export const postApi = async ({
   data,
   customHeaders,
 }: EndpoitProps): Promise<AxiosResponse> => {
-  const response: AxiosResponse = await client.post(url, data, {
-    headers: { ...headers, ...customHeaders },
-  });
-  if (!response.data) {
-    throw new Error("Unexpected error has occured");
-  }
+  try {
+    const response: AxiosResponse = await client.post(url, data, {
+      headers: { ...headers, ...customHeaders },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    if (error?.response.data) {
+      return error?.response.data;
+    }
+
+    return error.data;
+  }
+};
+
+export const getApi = async ({
+  url,
+  customHeaders,
+}: EndpoitProps): Promise<AxiosResponse> => {
+  try {
+    const response = await client.get(url, {
+      headers: { ...headers, ...customHeaders },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error?.response.data) {
+      return error.response.data;
+    }
+
+    return error?.data;
+  }
 };

@@ -46,14 +46,25 @@ const ProductsTable: React.FC<TableProductProps> = ({
   // ant design
   interface DataProps {
     key?: string;
-    productName: string;
-    productId: string;
+    discountType: string;
+    percentDiscount: number | number[];
+    fixedDiscount: string | number;
+    name: string;
     price: number | string;
-    status: string;
     discount?: string | number;
     description?: any;
-    image?: string;
+    quantity?: number;
+    stock?: number;
+    allowBackorders?: boolean;
+    weight?: number;
+    length?: number;
+    width?: number;
+    height?: number;
+    icon?: string;
     images?: string[];
+    sku?: string | number;
+    status: string;
+    _id: string;
   }
   const columns: TableProps<DataProps>["columns"] = [
     {
@@ -63,12 +74,12 @@ const ProductsTable: React.FC<TableProductProps> = ({
       render: (_, item) => (
         <div className="flex">
           <img
-            src={item.image}
+            src={item.icon}
             alt=""
             className="w-[40px] h-[40px] rounded-md mr-2"
           />
           <div className="font-semibold text-sm opacity-90 mb-0 translate-y-2">
-            {item.productName}
+            {item.name}
           </div>
         </div>
       ),
@@ -79,7 +90,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
       dataIndex: "sku",
       render: (_, item) => (
         <h2 className="font-semibold text-black opacity-60 hover:text-[#3875d7]">
-          {item.productId}
+          {item.sku}
         </h2>
       ),
     },
@@ -132,9 +143,9 @@ const ProductsTable: React.FC<TableProductProps> = ({
       render: (_, item) => (
         <Dropdown
           anchorEl={anchorEl}
-          handleClick={(event) => handleClick(event, item.productId)}
+          handleClick={(event) => handleClick(event, item._id)}
           handleClose={handleClose}
-          id={`image-${item.productId}`}
+          id={`image-${item._id}`}
           open={open}
           title="Actions"
         >
@@ -142,9 +153,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
             <ul>
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() =>
-                  navigate.push(`/dashboard/products/${item.productId}`)
-                }
+                onClick={() => navigate.push(`/dashboard/products/${item._id}`)}
               >
                 Edit
               </li>

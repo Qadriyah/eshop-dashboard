@@ -10,6 +10,7 @@ import Input from "@/components/Input";
 import QuickLink from "@/components/QuickLink";
 import { useMutation } from "@tanstack/react-query";
 import { postApi } from "@/api";
+import Cookies from "js-cookie";
 
 interface LoginInfo {
   email: string;
@@ -20,7 +21,9 @@ const Login = (): JSX.Element => {
   const ref = React.useRef<HTMLParagraphElement>(null);
   const router = useRouter();
   const [errors, setErrors_] = React.useState<any>();
-  const [error, setError] = React.useState<any>();
+  const [error, setError] = React.useState<any>(" ");
+  const [data, setData] = React.useState<any>("");
+  const cookie = Cookies.get("islogin");
 
   const mutation = useMutation({
     mutationFn: (data: any) =>
@@ -33,12 +36,12 @@ const Login = (): JSX.Element => {
   ): void => {
     // We shall use setErrors to set errors that are coming from the backend
     mutation.mutate(values);
-    if (mutation.data || mutation.data !== undefined) {
-      router.push("/dashboard/products");
-    }
   };
 
   React.useEffect(() => {
+    if (mutation.data) {
+      setData(mutation.data);
+    }
     if (mutation.error) {
       setErrors_(mutation.error);
       setError(errors?.response.data.errors[0].message);
@@ -46,7 +49,13 @@ const Login = (): JSX.Element => {
     if (!mutation.error) {
       setError("");
     }
-  }, [mutation]);
+    if (data?.errors) {
+      setError(data?.errors[0].message);
+    }
+    if (cookie) {
+      router.push("/dashboard/products");
+    }
+  }, [mutation, data, cookie]);
 
   return (
     <div className="flex flex-col lg:flex-row max-w-[1700px]">

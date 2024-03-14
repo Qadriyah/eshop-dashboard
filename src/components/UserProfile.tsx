@@ -3,10 +3,16 @@
 import React from "react";
 import Dropdown from "./Dropdown";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { postApi } from "@/api";
 
 const UserProfile: React.FC<{}> = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useRouter();
+  const mutation = useMutation({
+    mutationFn: () =>
+      postApi({ url: "/auth/logout", data: {}, customHeaders: {} }),
+  });
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLImageElement>) => {
@@ -44,7 +50,12 @@ const UserProfile: React.FC<{}> = (): JSX.Element => {
           <p
             className="w-full cursor-pointer rounded-lg p-2 text-black opacity-80 font-semibold hover:font-bold hover:text-[#3875d7] hover:bg-[#ededed]"
             onClick={() => {
-              navigate.push("/");
+              mutation.mutate();
+              console.log(mutation?.data, ":::::::");
+              if (mutation?.data) {
+                navigate.push("/");
+              }
+
               handleClose();
             }}
           >

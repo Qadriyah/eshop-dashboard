@@ -4,13 +4,37 @@ import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useDispatchHook, useSelectorHook } from "@/redux/hooks/hooks";
+import { useDispatchHook } from "@/redux/hooks/hooks";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import Button from "@/components/Button";
 import ProductsTable from "@/pages/products/ProductsTable";
 import { useRouter } from "next/navigation";
 import { deleteProduct } from "@/redux/slices/products";
+import { useQuery } from "@tanstack/react-query";
+import { getApi } from "@/api";
+
+type ProductProps = {
+  discountType: string;
+  percentDiscount: number | number[];
+  fixedDiscount: string | number;
+  name: string;
+  price: number | string;
+  discount?: string | number;
+  description?: any;
+  quantity?: number;
+  stock?: number;
+  allowBackorders?: boolean;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  icon?: string;
+  images?: string[];
+  sku?: string | number;
+  status: string;
+  _id?: string;
+};
 
 const Products: React.FC<{}> = (): JSX.Element => {
   const [product_, setProduct] = React.useState<any>("");
@@ -21,13 +45,16 @@ const Products: React.FC<{}> = (): JSX.Element => {
   const [productId, setProductId] = React.useState<string>("");
 
   // get the products
-  const products = useSelectorHook((state) => state.products);
+  const myProducts: any = useQuery({
+    queryKey: ["products"],
+    queryFn: () => getApi({ url: "products" }),
+  });
+
+  const products: ProductProps[] = myProducts.data?.products;
   const [renderProducts, setRenderProducst] = React.useState<any[]>(products);
 
   const productsByName = products.filter((product) =>
-    product.productName
-      .toLocaleLowerCase()
-      .includes(product_.toLocaleLowerCase())
+    product.name.toLocaleLowerCase().includes(product_.toLocaleLowerCase())
   );
 
   const filterByStatus = products.filter(
@@ -92,10 +119,8 @@ const Products: React.FC<{}> = (): JSX.Element => {
                   defaultValue="all"
                 >
                   <MenuItem value={"all"}>All</MenuItem>
-                  <MenuItem value={"Published"}>Published</MenuItem>
-                  <MenuItem value={"Scheduled"}>Scheduled</MenuItem>
+                  <MenuItem value={"Active"}>Active</MenuItem>
                   <MenuItem value={"Inactive"}>Inactive</MenuItem>
-                  <MenuItem value={"Draft"}>Draft</MenuItem>
                 </SelectComponent>
                 <Button
                   className="p-2 add-pdt hover:opacity-70 text-white ml-3 font-semibold text-center bg-[#3875d7] rounded-md w-[150px]"
