@@ -4,67 +4,75 @@ import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useDispatchHook } from "@/redux/hooks/hooks";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import Button from "@/components/Button";
 import ProductsTable from "@/pages/products/ProductsTable";
 import { useRouter } from "next/navigation";
-import { deleteProduct } from "@/redux/slices/products";
-import { useQuery } from "@tanstack/react-query";
-import { getApi } from "@/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteApi, getApi } from "@/api";
 
-type ProductProps = {
-  discountType: string;
-  percentDiscount: number | number[];
-  fixedDiscount: string | number;
-  name: string;
-  price: number | string;
-  discount?: string | number;
-  description?: any;
-  quantity?: number;
-  stock?: number;
-  allowBackorders?: boolean;
-  weight?: number;
-  length?: number;
-  width?: number;
-  height?: number;
-  icon?: string;
-  images?: string[];
-  sku?: string | number;
-  status: string;
-  _id?: string;
-};
+// type ProductProps = {
+//   discountType: string;
+//   percentDiscount: number | number[];
+//   fixedDiscount: string | number;
+//   name: string;
+//   price: number | string;
+//   discount?: string | number;
+//   description?: any;
+//   quantity?: number;
+//   stock?: number;
+//   allowBackorders?: boolean;
+//   weight?: number;
+//   length?: number;
+//   width?: number;
+//   height?: number;
+//   icon?: string;
+//   images?: string[];
+//   sku?: string | number;
+//   status: string;
+//   id?: string;
+//   key?: string;
+// };
 
 const Products: React.FC<{}> = (): JSX.Element => {
   const [product_, setProduct] = React.useState<any>("");
   const [status, setStatus] = React.useState<string>("all");
   const navigate = useRouter();
   const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const dispatch = useDispatchHook();
   const [productId, setProductId] = React.useState<string>("");
 
   // get the products
-  const myProducts: any = useQuery({
+  const { data, isLoading, isError, error }: any = useQuery({
     queryKey: ["products"],
-    queryFn: () => getApi({ url: "products" }),
+    queryFn: () => getApi({ url: "/products" }),
   });
+  // console.log(data?.products, ">>>>>");
 
-  const products: ProductProps[] = myProducts.data?.products;
-  const [renderProducts, setRenderProducst] = React.useState<any[]>(products);
+  const [renderProducts, setRenderProducst] = React.useState<any[]>(
+    data?.products
+  );
 
-  const productsByName = products.filter((product) =>
+  const productsByName = renderProducts?.filter((product) =>
     product.name.toLocaleLowerCase().includes(product_.toLocaleLowerCase())
   );
 
-  const filterByStatus = products.filter(
+  const filterByStatus = renderProducts?.filter(
     (product) => product.status === status
   );
 
   React.useEffect(() => {
+    setRenderProducst((prevState) => ({
+      ...prevState,
+      key: `${Math.round(Math.random() * 10000)}`,
+    }));
+  }, []);
+
+  React.useEffect(() => {
+    // setRenderProducst(myProducts.data?.products);
     if (product_ === "") {
       if (status === "all" || status === "") {
-        setRenderProducst(products);
+        setRenderProducst(renderProducts);
       } else {
         setRenderProducst(filterByStatus);
       }
@@ -74,14 +82,24 @@ const Products: React.FC<{}> = (): JSX.Element => {
     }
   }, [product_, status]);
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: SelectChangeEvent): void => {
     setStatus(event.target.value as string);
   };
 
-  const getProductId = (id: string) => setProductId(id);
+  const getProductId = (id: string): void => setProductId(id);
 
-  const onDeleteProduct = () => {
-    dispatch(deleteProduct(productId));
+  const mutation = useMutation({
+    mutationKey: ["productd", productId],
+    mutationFn: () => deleteApi({ url: `/products/${productId}` }),
+  });
+
+  const onDeleteProduct = (): void => {
+    if (mutation.isError) {
+      console.log(mutation.error);
+    }
+    mutation.mutate();
+    console.log(mutation.data, ">>>>>>>>>");
+
     setOpenModal(false);
   };
 
@@ -130,14 +148,21 @@ const Products: React.FC<{}> = (): JSX.Element => {
                 </Button>
               </div>
             </div>
-            <ProductsTable
-              products={renderProducts}
-              openModal={openModal}
-              closeModalFn={() => setOpenModal(false)}
-              onDeleteProduct={onDeleteProduct}
-              openModalFn={() => setOpenModal(true)}
-              getProductId={getProductId}
-            />
+            {isLoading ? (
+              <h2 className="text-center font-semibold">Loading...</h2>
+            ) : isError ? (
+              <h2>{error.message}</h2>
+            ) : (
+              <ProductsTable
+                products={renderProducts}
+                openModal={openModal}
+                closeModalFn={() => setOpenModal(false)}
+                onDeleteProduct={onDeleteProduct}
+                openModalFn={() => setOpenModal(true)}
+                getProductId={getProductId}
+                productID={productId}
+              />
+            )}
           </div>
         </Card>
       </div>

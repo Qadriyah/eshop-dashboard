@@ -54,3 +54,42 @@ export const getApi = async ({
     return error?.data;
   }
 };
+
+export const updateApi = async ({
+  url,
+  data,
+  customHeaders,
+}: EndpoitProps): Promise<AxiosResponse> => {
+  try {
+    const response = await client.patch(url, data, {
+      headers: { ...headers, ...customHeaders },
+    });
+
+    return response?.data;
+  } catch (error: any) {
+    if (error?.response.data) {
+      return error?.response.data;
+    }
+
+    return error?.data;
+  }
+};
+
+export const deleteApi = async ({
+  url,
+  customHeaders,
+}: EndpoitProps): Promise<AxiosResponse> => {
+  try {
+    const response = await client.delete(url, {
+      headers: { ...headers, ...customHeaders },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    if (error?.response.data) {
+      return error.response.data;
+    }
+
+    return error?.data;
+  }
+};

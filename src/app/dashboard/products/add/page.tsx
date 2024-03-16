@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { useDispatchHook } from "@/redux/hooks/hooks";
 import isValid from "@/validation/validateRequest";
 import { createProductValidationSchema } from "@/validation/createProductSchema";
-import { createProduct } from "@/redux/slices/products";
 import ProductCard from "@/components/ProductCard";
 import SelectComponent from "@/components/SelectComponent";
 import Input from "@/components/Input";
@@ -22,7 +21,7 @@ import RadioComponent from "@/components/Radio";
 import RadioInput from "@/components/RadioInput";
 import ShouldRender from "@/components/ShouldRender";
 import Button from "@/components/Button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@/api";
 
 type Product = {
@@ -65,6 +64,7 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
     images: [],
   });
 
+  const queryclient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data: any) =>
       postApi({ url: "/products", data, customHeaders: {} }),
@@ -101,7 +101,6 @@ const AddProduct: React.FC<{}> = (): JSX.Element => {
         status,
         sku: `${Math.round(Math.random() * 100000)}`,
       });
-      console.log(mutation.data, ">>>>>");
     }
 
     errors && console.log(errors);

@@ -16,12 +16,14 @@ type TableProductProps = {
   openModal: boolean;
   closeModalFn: () => void;
   openModalFn: () => void;
+  productID?: string;
 };
 
 const ProductsTable: React.FC<TableProductProps> = ({
   products,
   onDeleteProduct,
   getProductId,
+  productID,
   openModal,
   closeModalFn,
   openModalFn,
@@ -64,7 +66,7 @@ const ProductsTable: React.FC<TableProductProps> = ({
     images?: string[];
     sku?: string | number;
     status: string;
-    _id: string;
+    id: string;
   }
   const columns: TableProps<DataProps>["columns"] = [
     {
@@ -143,9 +145,9 @@ const ProductsTable: React.FC<TableProductProps> = ({
       render: (_, item) => (
         <Dropdown
           anchorEl={anchorEl}
-          handleClick={(event) => handleClick(event, item._id)}
+          handleClick={(event) => handleClick(event, item.id)}
           handleClose={handleClose}
-          id={`image-${item._id}`}
+          id={`image-${item.id}`}
           open={open}
           title="Actions"
         >
@@ -153,7 +155,10 @@ const ProductsTable: React.FC<TableProductProps> = ({
             <ul>
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() => navigate.push(`/dashboard/products/${item._id}`)}
+                onClick={() => {
+                  navigate.push(`/dashboard/products/${productID}`);
+                  handleClose();
+                }}
               >
                 Edit
               </li>
