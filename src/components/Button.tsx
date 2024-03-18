@@ -14,8 +14,8 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }): JSX.Element => {
   return (
-    <button {...props} disabled={loading} className={className}>
-      <div className="flex justify-center items-center flex-1">
+    <button {...props} disabled={loading} className={`${className}`}>
+      <div className="flex justify-center items-center flex-1 px-2">
         {loading && <Loader />}
         <div className="flex">{children}</div>
       </div>
