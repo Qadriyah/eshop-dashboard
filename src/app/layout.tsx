@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MyProvider from "@/redux/MyProvider";
-import QueryProviderComponent from "@/api/QueryProviderComponent";
+import "react-quill/dist/quill.snow.css";
+import QueryProvider from "./QueryProvider";
+import StoreProvider from "./StoreProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MyProvider>
-          <QueryProviderComponent>{children}</QueryProviderComponent>
-        </MyProvider>
+        <StoreProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </StoreProvider>
       </body>
     </html>
   );

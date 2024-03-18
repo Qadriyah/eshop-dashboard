@@ -1,181 +1,184 @@
 "use client";
 
 import React from "react";
+import { Divider, Space } from "antd";
+import { useFormik } from "formik";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { Form, Formik, FormikValues, FormikHelpers, FormikProps } from "formik";
-import { redirect, useRouter } from "next/navigation";
-import Button from "@/components/Button";
-import { loginValidationSchema } from "@/validation/loginSchema";
-import Input from "@/components/Input";
-import QuickLink from "@/components/QuickLink";
-import { useMutation } from "@tanstack/react-query";
-import { postApi } from "@/api";
 import Cookies from "js-cookie";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatErrors } from "@/utils/helpers";
+import { loginValidationSchema } from "@/validation/loginSchema";
+import { loginWithCredentials, loginWithGoogle } from "@/api/actions/auth";
+import { LoginCredentials } from "@/types/requests";
 
-interface LoginInfo {
-  email: string;
-  password: string;
-}
-
-const Login = (): JSX.Element => {
+const SignIn = () => {
   const ref = React.useRef<HTMLParagraphElement>(null);
+  const isAuth = Cookies.get("islogin");
   const router = useRouter();
-  const [errors, setErrors_] = React.useState<any>();
-  const [error, setError] = React.useState<any>(" ");
-  const [data, setData] = React.useState<any>("");
-  const cookie = Cookies.get("islogin");
-
-  const mutation = useMutation({
-    mutationFn: (data: any) =>
-      postApi({ url: "/auth/login", customHeaders: {}, data }),
+  const queryClient = useQueryClient();
+  const loginMutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: (data: LoginCredentials) => loginWithCredentials(data),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["login"],
+      }),
   });
 
-  const handleSubmit = (
-    values: FormikValues,
-    { setErrors }: FormikHelpers<LoginInfo>
-  ): void => {
-    // We shall use setErrors to set errors that are coming from the backend
-    mutation.mutate(values);
+  const googleLoginMutation = useMutation({
+    mutationKey: ["glogin"],
+    mutationFn: () => loginWithGoogle(),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["glogin"],
+      }),
+  });
+
+  const handleSubmit = async (values: LoginCredentials) => {
+    const { errors } = await loginMutation.mutateAsync(values);
+    if (errors) {
+      formik.setErrors(formatErrors(errors));
+      return;
+    }
+    router.replace("/home");
   };
 
-  React.useEffect(() => {
-    if (mutation.data) {
-      setData(mutation.data);
+  const onLogin = async () => {
+    const { authUrl, errors } = await googleLoginMutation.mutateAsync();
+    if (errors) {
+      formik.setErrors(formatErrors(errors));
+      return;
     }
-    if (mutation.error) {
-      setErrors_(mutation.error);
-      setError(errors?.response.data.errors[0].message);
-    }
-    if (!mutation.error) {
-      setError("");
-    }
-    if (data?.errors) {
-      setError(data?.errors[0].message);
-    }
-    if (cookie) {
-      router.push("/dashboard/products");
-    }
-  }, [mutation, data, cookie]);
+    window.location.href = authUrl!;
+  };
+
+  const formik = useFormik({
+    initialValues: { email: "", password: "" },
+    validateOnBlur: true,
+    validationSchema: loginValidationSchema,
+    onSubmit: handleSubmit,
+  });
+
+  if (isAuth === "true") {
+    return router.replace("/home");
+  }
 
   return (
-    <div className="flex flex-col lg:flex-row max-w-[1700px]">
-      <div className="bg-[#3875d7] p-6 lg:hidden">
-        <img
-          src="/assets/images/custom-1.png"
-          alt=""
-          className="w-[110px] h-[65px] mx-auto"
-        />
-      </div>
-      <div className="flex justify-center items-center lg:w-1/2 lg:pt-16 lg:-mt-40">
-        <div className="sm:p-10 p-5 pt-5 w-full sm:w-3/4 md:w-1/2 lg:w-3/4">
-          <div className="mb-5 text-center">
-            <h2 className="text-black font-bold mb-3 text-2xl sm:text-3xl">
-              Sign In
-            </h2>
-            <p className="text-gray-500 font-semibold text-[16px] sm:text-[18px] opacity-70">
-              Your Social Campaigns
-            </p>
-          </div>
-          <form
+    <div className="flex flex-col md:flex-row max-w-[1700px]">
+      <div className="flex-1 justify-center items-center p-10 sm:p-20 md:p-10 lg:p-20 bg-white">
+        <div
+          className="md:hidden cursor-pointer"
+          onClick={() => router.replace("/")}
+        >
+          <Image
+            src="/images/dlogo.png"
+            width={70}
+            height={70}
+            alt="logo"
+            className="mx-auto"
+          />
+        </div>
+        <div className="text-center my-10">
+          <h2 className="text-black font-bold mb-3 text-2xl sm:text-3xl">
+            Sign In
+          </h2>
+        </div>
+        <div>
+          <Button
             onMouseOver={() => (ref.current!.style.color = "#3875d7")}
             onMouseLeave={() => (ref.current!.style.color = "rgb(55, 65, 81)")}
-            className="mb-9"
+            className="w-full border border-[rgba(0 ,0, 0, .2)] rounded-md p-3 flex justify-center items-center btn-background hover:border-gray-400"
+            onClick={onLogin}
           >
-            <Button
-              type="button"
-              className="w-full border border-[#d3d3d3] rounded-md p-3 flex justify-center items-center btn-background focus:border-gray-400"
+            <FcGoogle className="h-[25px] w-[25px]" />
+            <div
+              className=" opacity-90 font-semibold ml-2 text-gray-700"
+              ref={ref}
             >
-              <FcGoogle className="h-[25px] w-[25px]" />
-              <p
-                className="text-gray-700 opacity-90 font-semibold ml-2"
-                ref={ref}
+              Sign in with Google
+            </div>
+          </Button>
+        </div>
+        <Divider
+          style={{ marginTop: 40, marginBottom: 40 }}
+          className="text-2xl"
+        >
+          <div className="text-xl opacity-40">Or with email</div>
+        </Divider>
+        <div>
+          <form onSubmit={formik.handleSubmit}>
+            <Space direction="vertical" className="w-full">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched && formik.errors.email
+                    ? formik.errors.email
+                    : ""
+                }
+              />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched && formik.errors.password
+                    ? formik.errors.password
+                    : ""
+                }
+              />
+              <div className="text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer hover:underline">
+                Forgot Password?
+              </div>
+              <Button
+                type="submit"
+                loading={loginMutation.isPending}
+                disabled={loginMutation.isPending}
+                className="w-full outline-none text-md p-2 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9]"
               >
-                Sign in with Google
-              </p>
-            </Button>
+                Sigin In
+              </Button>
+            </Space>
           </form>
-          <div className="flex justify-center items-center mb-14">
-            <span className="w-[30%] line-broken"></span>
-            <span className="text-sm text-gray-500 font-semibold opacity-70 ml-2 mr-2">
-              Or with email
-            </span>
-            <span className="w-[30%] line-broken"></span>
-          </div>
-          <Formik
-            initialValues={{
-              email: "",
-              password: "",
-            }}
-            validateOnBlur={false}
-            validateOnMount={false}
-            validationSchema={loginValidationSchema}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting }: FormikProps<LoginInfo>) => (
-              <Form>
-                <div className="mb-8">
-                  <Input name="email" type="email" placeholder="Email" />
-                </div>
-                <Input name="password" type="password" placeholder="Password" />
-                <div className="text-sm text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer">
-                  Forgot Password?
-                </div>
-                <p className="text-xs -mt-2 mb-1 text-red-500 font-semibold">
-                  {error}
-                </p>
-                <Button
-                  type="submit"
-                  loading={mutation.isPending && isSubmitting}
-                  className="w-full outline-none text-md p-3 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9] mb-4"
-                >
-                  Sigin In
-                </Button>
-              </Form>
-            )}
-          </Formik>
-
-          {/* <div className="text-gray-500 mt-8 mb-6 text-center font-semibold text-[16px] sm:text-[18px] opacity-70">
-            Not a member yet?{" "}
-            <span className="text-[#4081e9] opacity-100 cursor-pointer">
-              Sign up
-            </span>
-          </div> */}
-          <div className="text-center">
-            <QuickLink
-              label="Terms"
-              route="#"
-              // classname="text-[#3875d7] m-2 text-sm opacity-80 font-semibold"
-            />
-            <QuickLink
-              label="Plans"
-              route="#"
-              // classname="text-[#3875d7] m-2 text-sm opacity-80 font-semibold"
-            />
-            <QuickLink
-              label="Contact Us"
-              route="#"
-              // classname="text-[#3875d7] m-2 text-sm opacity-80 font-semibold"
-            />
-          </div>
         </div>
       </div>
-      <div className="hidden lg:block w-1/2 bg-[#4081e9] min-h-screen p-12 pl-16 pr-16">
-        <img
-          src="/assets/images/custom-1.png"
-          alt=""
-          className="w-[130px] h-[80px] mx-auto"
-        />
-        <img
+      <div className="flex-1 hidden md:block bg-[#4081e9] min-h-screen p-10 lg:p-20">
+        <div className="cursor-pointer" onClick={() => router.replace("/")}>
+          <Image
+            src="/assets/images/dlogo.png"
+            width={70}
+            height={40}
+            alt="logo"
+            className="mx-auto"
+          />
+          <div className="text-white text-center mt-5 text-3xl font-bold">
+            Delightful Beauty
+          </div>
+        </div>
+        <Image
           src="/assets/images/auth-screens.png"
+          width={450}
+          height={450}
           alt=""
-          className="w-full h-[450px] mt-10"
+          className="mx-auto my-20"
         />
         <p className="text-4xl text-white font-bold mt-8 text-center">
-          Fast, Efficient and Productive
+          Fast, Efficient and Reliable
         </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default SignIn;

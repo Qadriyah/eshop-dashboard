@@ -1,10 +1,14 @@
-import { AxiosResponse } from "axios";
-import client from "./client/client";
+import { HttpRequestHeader } from "antd/es/upload/interface";
+import axios from "axios";
+
+const baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
+axios.defaults.withCredentials = true; // adds cookies to the request
+axios.defaults.baseURL = baseURL;
 
 type EndpoitProps = {
   url: string;
   data?: any;
-  customHeaders?: any;
+  customHeaders?: HttpRequestHeader;
 };
 
 const headers = {
@@ -12,84 +16,118 @@ const headers = {
   "Content-Type": "application/json;charset=UTF-8",
 };
 
-export type LoginResponse = {
-  statusCode: number;
-  message: string;
-};
-
-export const postApi = async ({
+export const postApi = async <T>({
   url,
   data,
-  customHeaders,
-}: EndpoitProps): Promise<AxiosResponse> => {
+  customHeaders = {},
+}: EndpoitProps): Promise<T> => {
   try {
-    const response: AxiosResponse = await client.post(url, data, {
+    const response = await axios.request<T>({
+      method: "POST",
+      url,
       headers: { ...headers, ...customHeaders },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    if (error?.response.data) {
-      return error?.response.data;
-    }
-
-    return error.data;
-  }
-};
-
-export const getApi = async ({
-  url,
-  customHeaders,
-}: EndpoitProps): Promise<AxiosResponse> => {
-  try {
-    const response = await client.get(url, {
-      headers: { ...headers, ...customHeaders },
+      data,
     });
     return response.data;
   } catch (error: any) {
-    if (error?.response.data) {
+    if (error?.response?.data) {
       return error.response.data;
     }
-
-    return error?.data;
+    if (error?.data) {
+      return error.data;
+    }
+    return error;
   }
 };
 
-export const updateApi = async ({
+export const getApi = async <T>({
+  url,
+  customHeaders = {},
+}: EndpoitProps): Promise<T> => {
+  try {
+    const response = await axios.request<T>({
+      method: "GET",
+      url,
+      headers: { ...headers, ...customHeaders },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error?.response?.data) {
+      return error.response.data;
+    }
+    if (error?.data) {
+      return error.data;
+    }
+    return error;
+  }
+};
+
+export const putApi = async <T>({
   url,
   data,
-  customHeaders,
-}: EndpoitProps): Promise<AxiosResponse> => {
+  customHeaders = {},
+}: EndpoitProps): Promise<T> => {
   try {
-    const response = await client.patch(url, data, {
+    const response = await axios.request<T>({
+      method: "PUT",
+      url,
       headers: { ...headers, ...customHeaders },
+      data,
     });
-
-    return response?.data;
+    return response.data;
   } catch (error: any) {
-    if (error?.response.data) {
-      return error?.response.data;
+    if (error?.response?.data) {
+      return error.response.data;
     }
-
-    return error?.data;
+    if (error?.data) {
+      return error.data;
+    }
+    return error;
   }
 };
 
-export const deleteApi = async ({
+export const patchApi = async <T>({
   url,
-  customHeaders,
-}: EndpoitProps): Promise<AxiosResponse> => {
+  data,
+  customHeaders = {},
+}: EndpoitProps): Promise<T> => {
   try {
-    const response = await client.delete(url, {
+    const response = await axios.request<T>({
+      method: "PATCH",
+      url,
       headers: { ...headers, ...customHeaders },
+      data,
     });
-
     return response.data;
   } catch (error: any) {
-    if (error?.response.data) {
+    if (error?.response?.data) {
       return error.response.data;
     }
+    if (error?.data) {
+      return error.data;
+    }
+    return error;
+  }
+};
 
-    return error?.data;
+export const deleteApi = async <T>({
+  url,
+  customHeaders = {},
+}: EndpoitProps): Promise<T> => {
+  try {
+    const response = await axios.request<T>({
+      method: "DELETE",
+      url,
+      headers: { ...headers, ...customHeaders },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error?.response?.data) {
+      return error.response.data;
+    }
+    if (error?.data) {
+      return error.data;
+    }
+    return error;
   }
 };
