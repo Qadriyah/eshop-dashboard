@@ -185,7 +185,6 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 value={formik.values.stock}
                 placeholder="Stock"
                 label="Stock"
-                required
                 onChange={formik.handleChange}
                 error={formik.errors.stock}
               />
@@ -196,7 +195,6 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 value={formik.values.weight}
                 placeholder="Weight"
                 label="Weight"
-                required
                 onChange={formik.handleChange}
                 error={formik.errors.weight}
               />
@@ -207,7 +205,6 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 value={formik.values.length}
                 placeholder="Length"
                 label="Length"
-                required
                 onChange={formik.handleChange}
                 error={formik.errors.length}
               />
@@ -218,7 +215,6 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 value={formik.values.width}
                 placeholder="Width"
                 label="Width"
-                required
                 onChange={formik.handleChange}
                 error={formik.errors.width}
               />
@@ -229,7 +225,6 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 value={formik.values.height}
                 placeholder="Height"
                 label="Height"
-                required
                 onChange={formik.handleChange}
                 error={formik.errors.height}
               />
@@ -272,7 +267,7 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
               A product name is required and recommended to be unique.
             </p>
             <div className="mt-5 h-[250px]">
-              <label className="text-gray-500 font-semibold">Description</label>
+              <label className="text-gray-500">Description</label>
               <ReactQuill
                 theme="snow"
                 id="description"
@@ -281,7 +276,7 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 className="rounded-lg h-[140px]"
                 placeholder="Set a description to the product for better visibility."
               />
-              <p className="opacity-40 text-xs md:mt-16 lg:mt-8 font-semibold mt-3 h-[40px]"></p>
+              {/* <p className="opacity-40 text-xs md:mt-16 lg:mt-8mt-3 h-[40px]"></p> */}
               <p className="text-sm text-red-500">
                 {fieldErrors?.decriptionError}
               </p>
@@ -370,14 +365,14 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
           <div className="flex justify-end items-end">
             <Button
               type="button"
-              className="w-[100px] mr-3 text-black opacity-60 font-semibold hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
+              className="w-[100px] mr-3 text-black opacity-60hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
               onClick={() => navigate.push("/dashboard/products")}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="w-[140px] bg-[#3875d7] mr-3 hover:opacity-80 text-white opacity-60 font-semibold rounded-lg p-2 sm:p-3"
+              className="w-[140px] bg-[#3875d7] mr-3 hover:opacity-80 text-white opacity-60 rounded-lg p-2 sm:p-3"
             >
               Create
             </Button>
