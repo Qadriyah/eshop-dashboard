@@ -153,7 +153,7 @@ const SideNavBar: React.FC<{}> = () => {
           Delighted Beauty
         </h1>
       </div>
-      <div className="px-[0.2rem] pb-12 overflow-y-scroll h-menu-height">
+      <div className="px-[0.2rem] pb-12 overflow-y-scroll h-menu-height hide-scroll-bar">
         {menuItems.map((menu, index) => (
           <React.Fragment key={index}>
             <Link

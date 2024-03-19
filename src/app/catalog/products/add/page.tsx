@@ -2,17 +2,12 @@
 
 import React from "react";
 import ReactQuill from "react-quill";
-import { PiImagesSquareDuotone } from "react-icons/pi";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { MenuItem } from "@mui/material";
-import { Formik, Form } from "formik";
 import Slider from "@mui/material/Slider";
-import { MdOutlineUploadFile } from "react-icons/md";
 import "react-quill/dist/quill.snow.css";
 import Radio from "@mui/material/Radio";
 import { useRouter } from "next/navigation";
-import { useDispatchHook } from "@/redux/hooks/hooks";
-import isValid from "@/validation/validateRequest";
 import { createProductValidationSchema } from "@/validation/createProductSchema";
 import ProductCard from "@/components/ProductCard";
 import SelectComponent from "@/components/SelectComponent";
@@ -22,8 +17,11 @@ import RadioInput from "@/components/RadioInput.1";
 import ShouldRender from "@/components/ShouldRender";
 import Button from "@/components/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postApi } from "@/api";
 import PageHeader from "@/components/PageHeader";
+import { ProductType } from "@/types/entities";
+import { useFormik } from "formik";
+import { addProduct } from "@/api/actions/product";
+import { FieldError, formatErrors } from "@/utils/helpers";
 
 type PageParams = {
   params: {
@@ -31,58 +29,32 @@ type PageParams = {
   };
 };
 
-type Product = {
-  discountType: string;
-  percentDiscount: number | number[];
-  fixedDiscount: string | number;
-  name: string;
-  price: number | string;
-  discount?: string | number;
-  description?: any;
-  quantity?: number;
-  stock?: number;
-  allowBackorders?: boolean;
-  weight?: number;
-  length?: number;
-  width?: number;
-  height?: number;
-  icon?: string;
-  images?: string[];
+type ErrorProps = {
+  decriptionError?: string;
+  percentageError?: string;
 };
 
 const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
   const navigate = useRouter();
   const [status, setStatus] = React.useState<string>("Active");
-  const [product, setProduct] = React.useState<Product>({
+  const [product, setProduct] = React.useState<ProductType>({
     name: "",
     description: "",
-    price: "",
+    price: +"",
     discountType: "None",
     percentDiscount: 10,
     fixedDiscount: +"",
-    quantity: +"",
     stock: +"",
     allowBackorders: false,
     weight: +"",
     length: +"",
     width: +"",
     height: +"",
-    icon: `${window.location.origin}/assets/images/watch.webp`,
-    images: [],
   });
-
-  const queryclient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (data: any) =>
-      postApi({ url: "/products", data, customHeaders: {} }),
+  const [fieldErrors, setFieldErrors] = React.useState<ErrorProps>({
+    decriptionError: "",
+    percentageError: "",
   });
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setProduct((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
   const onChange = (field: string, value: any) => {
     setProduct((prevState) => ({
@@ -91,123 +63,177 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
     }));
   };
 
-  const handleSliderChange = (_event: Event, value: number | number[]) => {
-    setProduct((prevState) => ({
+  const handleSliderChange = (
+    _event: Event,
+    value: number | number[]
+  ): void => {
+    setProduct((prevState: any) => ({
       ...prevState,
       percentDiscount: value,
     }));
   };
 
-  const handleSubmit = async () => {
-    const parsedRequest = await isValid(createProductValidationSchema, product);
-    const { errors } = parsedRequest;
+  const queryCient = useQueryClient();
 
-    if (!errors || errors === "" || errors === undefined) {
-      mutation.mutate({
-        ...product,
-        status,
-        sku: `${Math.round(Math.random() * 100000)}`,
-      });
+  const addProductMutation = useMutation({
+    mutationKey: ["addProduct"],
+    mutationFn: (data: ProductType) => addProduct(data),
+    onSettled: () =>
+      queryCient.invalidateQueries({
+        queryKey: ["addProduct"],
+      }),
+  });
+
+  const handleSubmit = async (values: ProductType) => {
+    const myProduct: ProductType = {
+      ...values,
+      description: product.description,
+      allowBackorders: product.allowBackorders,
+      percentDiscount: product.percentDiscount,
+      discountType: product.discountType,
+    };
+
+    if (!fieldErrors.percentageError) {
+      const mutation = await addProductMutation.mutateAsync(myProduct);
+
+      if (mutation.errors) {
+        formik.setErrors(formatErrors(mutation.errors));
+        const descError = mutation.errors.map((error) =>
+          error.field === "description" ? error.message : ""
+        );
+        setFieldErrors((prevState) => ({
+          ...prevState,
+          decriptionError: descError[0],
+        }));
+      }
+      if (!mutation.errors && !fieldErrors.percentageError) {
+        setFieldErrors((prevState) => ({
+          ...prevState,
+          decriptionError: "",
+        }));
+        navigate.back();
+      }
+      console.log(mutation, "::::::");
     }
-
-    errors && console.log(errors);
+    // navigate.back();
   };
 
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      description: "",
+      price: +"",
+      discountType: "None",
+      percentDiscount: 10,
+      fixedDiscount: +"",
+      stock: +"",
+      allowBackorders: false,
+      weight: +"",
+      length: +"",
+      width: +"",
+      height: +"",
+      status,
+    },
+    validateOnBlur: true,
+    validationSchema: createProductValidationSchema,
+    onSubmit: handleSubmit,
+  });
+
+  React.useEffect(() => {
+    if (product.discountType === "Percentage") {
+      if (product.percentDiscount <= 0) {
+        setFieldErrors((prevState) => ({
+          ...prevState,
+          percentageError: "Percentage discount shouldn'nt be 0",
+        }));
+      } else {
+        setFieldErrors((prevState) => ({
+          ...prevState,
+          percentageError: "",
+        }));
+      }
+    }
+  }, [product.discountType, product.percentDiscount]);
+
   return (
-    <Formik initialValues={product} onSubmit={() => {}}>
-      <form>
-        <PageHeader title="New Product" params={params} />
-        <div className="w-full md:flex">
-          <div className="mb-5 md:w-2/5">
-            <ProductCard title="Thumbnail">
-              <div className="label-shadow w-[150px] rounded-lg p-5 mx-auto">
-                <label htmlFor="thumbnail" className="cursor-pointer">
-                  <input type="file" id="thumbnail" className="hidden" />
-                  <PiImagesSquareDuotone
-                    fill="gray"
-                    className="opacity-80 w-full h-[100px]"
-                  />
-                </label>
-              </div>
-              <div>
-                <p className="opacity-40 text-xs mt-3 text-center font-semibold">
-                  Set the product thumbnail image. Only *.png, *.jpg and *.jpeg
-                  image files are accepted
-                </p>
-              </div>
-            </ProductCard>
-            <ProductCard title="Status" showStatus={true}>
-              <SelectComponent
-                boxWidth="100%"
-                label="status"
-                value={status}
-                handleChange={(event: SelectChangeEvent) =>
-                  setStatus(event.target.value as any)
-                }
-              >
-                <MenuItem value={"Active"}>Active</MenuItem>
-                <MenuItem value={"Inactive"}>Inactive</MenuItem>
-              </SelectComponent>
-              <p className="opacity-40 text-xs mt-1 font-semibold">
-                Set the product status.
-              </p>
-            </ProductCard>
-            <ProductCard title="Product details">
-              <div>
-                <Input
-                  type="number"
-                  name="quantity"
-                  value={product.quantity}
-                  placeholder="Quantity"
-                  label="Quantity"
-                  required
-                  onChange={handleChange}
-                />
-                <Input
-                  type="number"
-                  name="stock"
-                  value={product.stock}
-                  placeholder="Stock"
-                  label="Stock"
-                  required
-                  onChange={handleChange}
-                />
-                <Input
-                  type="number"
-                  name="weight"
-                  value={product.weight}
-                  placeholder="Weight"
-                  label="Weight"
-                  required
-                  onChange={handleChange}
-                />
-                <Input
-                  type="number"
-                  name="length"
-                  value={product.length}
-                  placeholder="Length"
-                  label="Length"
-                  required
-                  onChange={handleChange}
-                />
-                <Input
-                  type="number"
-                  name="width"
-                  value={product.width}
-                  placeholder="Width"
-                  label="Width"
-                  required
-                  onChange={handleChange}
-                />
-                <Input
-                  type="number"
-                  name="height"
-                  value={product.height}
-                  placeholder="Height"
-                  label="Height"
-                  required
-                  onChange={handleChange}
-                />
+    <form onSubmit={formik.handleSubmit}>
+      <PageHeader title="New Product" params={params} />
+      <div className="w-full md:flex">
+        <div className="mb-5 md:w-2/5">
+          <ProductCard title="Status" showStatus={true}>
+            <SelectComponent
+              boxWidth="100%"
+              label="status"
+              value={status}
+              handleChange={(event: SelectChangeEvent) =>
+                setStatus(event.target.value as any)
+              }
+            >
+              <MenuItem value={"Active"}>Active</MenuItem>
+              <MenuItem value={"Inactive"}>Inactive</MenuItem>
+            </SelectComponent>
+            <p className="opacity-40 text-xs mt-1 font-semibold">
+              Set the product status.
+            </p>
+          </ProductCard>
+          <ProductCard title="Product details">
+            <div>
+              <Input
+                id="stock"
+                type="number"
+                name="stock"
+                value={formik.values.stock}
+                placeholder="Stock"
+                label="Stock"
+                required
+                onChange={formik.handleChange}
+                error={formik.errors.stock}
+              />
+              <Input
+                id="weight"
+                type="number"
+                name="weight"
+                value={formik.values.weight}
+                placeholder="Weight"
+                label="Weight"
+                required
+                onChange={formik.handleChange}
+                error={formik.errors.weight}
+              />
+              <Input
+                id="length"
+                type="number"
+                name="length"
+                value={formik.values.length}
+                placeholder="Length"
+                label="Length"
+                required
+                onChange={formik.handleChange}
+                error={formik.errors.length}
+              />
+              <Input
+                id="width"
+                type="number"
+                name="width"
+                value={formik.values.width}
+                placeholder="Width"
+                label="Width"
+                required
+                onChange={formik.handleChange}
+                error={formik.errors.width}
+              />
+              <Input
+                id="height"
+                type="number"
+                name="height"
+                value={formik.values.height}
+                placeholder="Height"
+                label="Height"
+                required
+                onChange={formik.handleChange}
+                error={formik.errors.height}
+              />
+              <div className="mt-5">
                 <RadioComponent
                   formLabel="Allow back order"
                   defaultValue={`${false}`}
@@ -226,152 +252,139 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                   />
                 </RadioComponent>
               </div>
-            </ProductCard>
-          </div>
-          <div className="md:w-3/5 md:ml-5">
-            <ProductCard title="General">
-              <Input
-                value={product.name}
-                name="name"
-                placeholder="Product Name"
-                type="text"
-                label="Product Name"
-                required
-                onChange={handleChange}
-              />
-              <p className="opacity-40 text-xs -mt-2 font-semibold">
-                A product name is required and recommended to be unique.
-              </p>
-              <div className="mt-5 h-[250px]">
-                <label className="text-gray-500 font-semibold">
-                  Description
-                </label>
-                <ReactQuill
-                  theme="snow"
-                  id="description"
-                  onChange={(value: any) => onChange("description", value)}
-                  value={product.description}
-                  className="rounded-lg h-[140px]"
-                  placeholder="Set a description to the product for better visibility."
-                />
-                <p className="opacity-40 text-xs md:mt-16 lg:mt-8 font-semibold mt-3 h-[40px]"></p>
-              </div>
-            </ProductCard>
-            <ProductCard title="Media">
-              <div className="border-dashed border cursor-pointer bg-[#d6e9fc] border-[dodgerblue] rounded-lg w-full p-2">
-                <label htmlFor="uploads" className="w-full flex cursor-pointer">
-                  <MdOutlineUploadFile
-                    fill="dodgerblue"
-                    className="w-[60px] h-[100px] mr-3"
-                  />
-                  <span className="mt-6">
-                    <p className="font-bold mb-1">
-                      Drop files here or click her to upload
-                    </p>
-                    <p className="opacity-40 text-xs font-semibold">
-                      Upload up to 10 files
-                    </p>
-                  </span>
-                  <input type="file" className="hidden" id="uploads" />
-                </label>
-              </div>
-              <p className="opacity-40 text-xs mt-1 font-semibold">
-                Set the product media gallery
-              </p>
-            </ProductCard>
-            <ProductCard title="Pricing">
-              <Input
-                value={product.price}
-                name="price"
-                placeholder="Product Price"
-                type="number"
-                label="Base Price"
-                required
-                onChange={handleChange}
-                min={0}
-              />
-              <p className="opacity-40 text-xs mt-1 font-semibold">
-                Set product price
-              </p>
-              <div className="mt-5 mb-4">
-                <RadioComponent formLabel="Discount type" defaultValue="None">
-                  <RadioInput
-                    value="None"
-                    label="No Discount"
-                    handleClick={() => onChange("discountType", "None")}
-                    control={<Radio />}
-                  />
-                  <RadioInput
-                    value="Percentage"
-                    label="Percentage"
-                    handleClick={() => onChange("discountType", "Percentage")}
-                    control={<Radio />}
-                  />
-                  <RadioInput
-                    value="Fixed"
-                    label="Fixed Price"
-                    handleClick={() => onChange("discountType", "Fixed")}
-                    control={<Radio />}
-                  />
-                </RadioComponent>
-              </div>
-              <ShouldRender visible={product.discountType === "Fixed"}>
-                <div>
-                  <Input
-                    value={product.fixedDiscount}
-                    name="fixedDiscount"
-                    placeholder="Discounted Price"
-                    type="number"
-                    label="Fixed Discounted Price"
-                    required
-                    onChange={handleChange}
-                  />
-                  <p className="opacity-40 text-xs mt-1 font-semibold">
-                    Set the discounted product price. The product will be
-                    reduced at the determined fixed price
-                  </p>
-                </div>
-              </ShouldRender>
-              <ShouldRender visible={product.discountType === "Percentage"}>
-                <div>
-                  <p className="opacity-90 text-base font-medium">
-                    Set discount Percentage
-                  </p>
-                  <p className="text-4xl font-bold text-center mt-3 mb-5">
-                    <span>{product.percentDiscount}</span>
-                    <sup>%</sup>
-                  </p>
-                  <Slider
-                    color="primary"
-                    value={product.percentDiscount}
-                    onChange={handleSliderChange}
-                  />
-                  <p className="opacity-40 text-xs mt-1 font-semibold">
-                    Set a percentage discount to be set to this product
-                  </p>
-                </div>
-              </ShouldRender>
-            </ProductCard>
-            <div className="flex justify-end items-end">
-              <Button
-                type="button"
-                className="w-[100px] mr-3 text-black opacity-60 font-semibold hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
-                onClick={() => navigate.push("/dashboard/products")}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                className="w-[140px] bg-[#3875d7] mr-3 hover:opacity-80 text-white opacity-60 font-semibold rounded-lg p-2 sm:p-3"
-              >
-                Create
-              </Button>
             </div>
+          </ProductCard>
+        </div>
+        <div className="md:w-3/5 md:ml-5">
+          <ProductCard title="General">
+            <Input
+              id="name"
+              value={formik.values.name}
+              name="name"
+              placeholder="Product Name"
+              type="text"
+              label="Product Name"
+              required
+              onChange={formik.handleChange}
+              error={formik.errors.name}
+            />
+            <p className="opacity-40 text-xs mt-1 font-semibold">
+              A product name is required and recommended to be unique.
+            </p>
+            <div className="mt-5 h-[250px]">
+              <label className="text-gray-500 font-semibold">Description</label>
+              <ReactQuill
+                theme="snow"
+                id="description"
+                onChange={(value: any) => onChange("description", value)}
+                value={product.description}
+                className="rounded-lg h-[140px]"
+                placeholder="Set a description to the product for better visibility."
+              />
+              <p className="opacity-40 text-xs md:mt-16 lg:mt-8 font-semibold mt-3 h-[40px]"></p>
+              <p className="text-sm text-red-500">
+                {fieldErrors?.decriptionError}
+              </p>
+            </div>
+          </ProductCard>
+          <ProductCard title="Pricing">
+            <Input
+              name="price"
+              id="price"
+              value={formik.values.price}
+              placeholder="Product Price"
+              type="number"
+              label="Base Price"
+              required
+              onChange={formik.handleChange}
+              min={1}
+              error={formik.errors.price}
+            />
+            <p className="opacity-40 text-xs mt-1 font-semibold">
+              Set product price
+            </p>
+            <div className="mt-5 mb-4">
+              <RadioComponent formLabel="Discount type" defaultValue="None">
+                <RadioInput
+                  value="None"
+                  label="No Discount"
+                  handleClick={() => onChange("discountType", "None")}
+                  control={<Radio />}
+                />
+                <RadioInput
+                  value="Percentage"
+                  label="Percentage"
+                  handleClick={() => onChange("discountType", "Percentage")}
+                  control={<Radio />}
+                />
+                <RadioInput
+                  value="Fixed"
+                  label="Fixed Price"
+                  handleClick={() => onChange("discountType", "Fixed")}
+                  control={<Radio />}
+                />
+              </RadioComponent>
+            </div>
+            <ShouldRender visible={product.discountType === "Fixed"}>
+              <div>
+                <Input
+                  id="fixedDiscount"
+                  value={formik.values.fixedDiscount}
+                  name="fixedDiscount"
+                  placeholder="Discounted Price"
+                  type="number"
+                  label="Fixed Discounted Price"
+                  required
+                  onChange={formik.handleChange}
+                />
+                <p className="opacity-40 text-xs mt-1 font-semibold">
+                  Set the discounted product price. The product will be reduced
+                  at the determined fixed price
+                </p>
+              </div>
+            </ShouldRender>
+            <ShouldRender visible={product.discountType === "Percentage"}>
+              <div>
+                <p className="opacity-90 text-base font-medium">
+                  Set discount Percentage
+                </p>
+                <p className="text-4xl font-bold text-center mt-3 mb-5">
+                  <span>{product.percentDiscount}</span>
+                  <sup>%</sup>
+                </p>
+                <Slider
+                  color="primary"
+                  name="percentDiscount"
+                  value={product.percentDiscount}
+                  onChange={handleSliderChange}
+                />
+                <p className="text-sm text-red-500">
+                  {fieldErrors.percentageError}
+                </p>
+                <p className="opacity-40 text-xs mt-1 font-semibold">
+                  Set a percentage discount to be set to this product
+                </p>
+              </div>
+            </ShouldRender>
+          </ProductCard>
+          <div className="flex justify-end items-end">
+            <Button
+              type="button"
+              className="w-[100px] mr-3 text-black opacity-60 font-semibold hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
+              onClick={() => navigate.push("/dashboard/products")}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="w-[140px] bg-[#3875d7] mr-3 hover:opacity-80 text-white opacity-60 font-semibold rounded-lg p-2 sm:p-3"
+            >
+              Create
+            </Button>
           </div>
         </div>
-      </form>
-    </Formik>
+      </div>
+    </form>
   );
 };
 

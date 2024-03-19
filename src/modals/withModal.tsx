@@ -55,6 +55,7 @@ export default function withModal<T>(WrappedComponent: any) {
                 loading={props.loading}
                 disabled={props.loading}
                 className="p-3 rounded-lg text-white bg-black hover:bg-gray-600"
+                style={{ backgroundColor: "#000" }}
               >
                 Ok
               </Button>

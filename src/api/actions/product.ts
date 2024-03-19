@@ -18,6 +18,13 @@ export type PostProduct = {
   errors: ErrorType[];
 };
 
+export type AddProduct = {
+  statusCode: number;
+  message: string;
+  product: ProductType;
+  errors?: ErrorType[];
+};
+
 export const getProducts = async (): Promise<GetProducts> => {
   const response = await getApi<GetProducts>({ url: "/products" });
   return response;
@@ -41,5 +48,11 @@ export const updateProduct = async (
     url: `/products/${id}`,
     data,
   });
+  return response;
+};
+
+export const addProduct = async (data: ProductType): Promise<AddProduct> => {
+  const response = await postApi<AddProduct>({ url: "/products", data });
+
   return response;
 };
