@@ -1,6 +1,11 @@
 import Stripe from "stripe";
 import { deleteApi, getApi, patchApi, postApi } from "..";
-import { CustomerSource, ErrorType, PaymentMethodType } from "@/types/entities";
+import {
+  CustomerSource,
+  ErrorType,
+  PaymentMethodType,
+  UserType,
+} from "@/types/entities";
 
 export type CreatePaymentMethod = {
   statusCode: number;
@@ -19,6 +24,17 @@ export type DeletePaymentMethod = {
   statusCode: number;
   customer: Stripe.Customer;
   message: string;
+  errors?: ErrorType[];
+};
+
+export type GetUsers = {
+  createdAt: string;
+  deleted: boolean;
+  email: string;
+  refreshToken: string;
+  roles: string[];
+  updatedAt: string;
+  id: string;
   errors?: ErrorType[];
 };
 
@@ -65,4 +81,10 @@ export const deletePaymentMethod = async (
     url: `/customers/payment-methods/${source}`,
   });
   return data;
+};
+
+export const getUsers = async (): Promise<GetUsers[]> => {
+  const response = await getApi<GetUsers[]>({ url: "/users" });
+
+  return response;
 };

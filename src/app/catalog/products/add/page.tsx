@@ -365,7 +365,7 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
           <div className="flex justify-end items-end">
             <Button
               type="button"
-              className="w-[100px] mr-3 text-black opacity-60hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
+              className="w-[100px] mr-3 text-black opacity-60 hover:bg-[#f3f3f3] rounded-lg p-2 sm:p-3"
               onClick={() => navigate.push("/dashboard/products")}
             >
               Cancel

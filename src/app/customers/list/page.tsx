@@ -14,29 +14,29 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
   const [status, setStatus] = React.useState("All");
 
   // get customers
-  const customers = useSelectorHook((state) => state.customers);
-  const [myCustomers, setMyCustomers] = React.useState<any[]>(customers);
+  // const customers = useSelectorHook((state) => state.customers);
+  const [myCustomers, setMyCustomers] = React.useState<any[]>([]);
 
-  const customersByNames = customers.filter((customer) =>
-    customer.name.toLocaleLowerCase().includes(customerName.toLocaleLowerCase())
-  );
-  const customersByStatus = customers.filter(
-    (customer) => customer.status === status
-  );
+  // const customersByNames = customers?.filter((customer) =>
+  //   customer.name.toLocaleLowerCase().includes(customerName.toLocaleLowerCase())
+  // );
+  // const customersByStatus = customers.filter(
+  //   (customer) => customer.status === status
+  // );
 
-  React.useEffect(() => {
-    if (customerName !== "") {
-      setMyCustomers(customersByNames);
-    }
-    if (customerName === "") {
-      if (customerName === "" || status === "All") {
-        setMyCustomers(customers);
-      }
-      if (status !== "All") {
-        setMyCustomers(customersByStatus);
-      }
-    }
-  }, [customerName, status]);
+  // React.useEffect(() => {
+  //   if (customerName !== "") {
+  //     setMyCustomers(customersByNames);
+  //   }
+  //   if (customerName === "") {
+  //     if (customerName === "" || status === "All") {
+  //       setMyCustomers(customers);
+  //     }
+  //     if (status !== "All") {
+  //       setMyCustomers(customersByStatus);
+  //     }
+  //   }
+  // }, [customerName, status]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);

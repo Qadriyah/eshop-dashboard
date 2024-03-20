@@ -14,18 +14,23 @@ import {
 import { GiWantedReward } from "react-icons/gi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { useParams } from "next/navigation";
-import { useSelectorHook } from "@/redux/hooks/hooks";
 import ProductCard from "@/components/ProductCard";
 import OrderDetail from "@/components/OrderDetail";
 import Address from "@/components/Address";
 import OrderDetailsTable from "@/pages/orders/OrderDetailsTable";
+import { useQuery } from "@tanstack/react-query";
+import { getSale } from "@/api/actions/sales";
 
 const OrderDetails: React.FC<{}> = (): JSX.Element => {
   const params = useParams<{ orderId: string }>();
-  const orders: any[] = useSelectorHook((state) => state.orders);
-
   const id = params?.orderId;
-  const order = orders.find((order) => order.orderId === id);
+
+  const { data } = useQuery({
+    queryKey: ["sales", id],
+    queryFn: () => getSale(id as string),
+  });
+
+  console.log(data?.sale, ">>>>>");
 
   return (
     <div>
@@ -40,7 +45,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
                   label="Date Added"
-                  value={order.dateAdded}
+                  value={"order.dateAdded"}
                 />
                 <OrderDetail
                   icon={<MdOutlinePayment className="mt-1 mr-2" />}
@@ -64,21 +69,21 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
                   label="Customer"
-                  value={order?.customer.customerName as string}
+                  value={"order?.customer.customerName as string"}
                   showImage={true}
                   imageClass="w-[30px] h-[30px] rounded-full mr-2"
-                  image={order?.customer.customerImage}
+                  image={"order?.customer.customerImage"}
                   onClick={() => null} // we shall use this to route to the profile div of the customer.
                 />
                 <OrderDetail
                   icon={<MdEmail className="mt-1 mr-2" />}
                   label="Email"
-                  value={order?.customer.customerEmail}
+                  value={"order?.customer.customerEmail"}
                 />
                 <OrderDetail
                   icon={<MdOutlinePhoneAndroid className="mt-1 mr-2" />}
                   label="Phone"
-                  value={order?.customer.customerContact}
+                  value={"order?.customer.customerContact"}
                 />
               </ul>
             </ProductCard>
@@ -89,7 +94,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<LiaFileInvoiceDollarSolid className="mt-1 mr-2" />}
                   label="Invoice"
-                  value={order.invoice}
+                  value={"order.invoice"}
                   onClick={() => null} // we shall use this for routing to the invoice.
                 />
                 <OrderDetail
@@ -109,7 +114,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
         <div className="w-full md:flex md:p-2">
           <Address
             title="Payment Address"
-            paragraph={order.paymentAddress}
+            paragraph={"order.paymentAddress"}
             icon={
               <HiOutlineShoppingCart className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
@@ -118,7 +123,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
           <div className="w-5"></div>
           <Address
             title="Shipping Address"
-            paragraph={order.shippingAddress}
+            paragraph={"order.shippingAddress"}
             icon={
               <LiaShippingFastSolid className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
@@ -126,7 +131,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
           />
         </div>
         <ProductCard title="Order #14534">
-          <OrderDetailsTable detailProducts={order.products} />
+          <OrderDetailsTable detailProducts={["order.products"]} />
         </ProductCard>
       </div>
     </div>

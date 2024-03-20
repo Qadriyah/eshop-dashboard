@@ -4,41 +4,87 @@ import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useSelectorHook } from "@/redux/hooks/hooks";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import OrdersTable from "@/pages/orders/OrdersTable";
+import { useQuery } from "@tanstack/react-query";
+import { getSale, getSales } from "@/api/actions/sales";
+import { SaleType } from "@/types/entities";
+import { getUsers } from "@/api/actions/customer";
 
 const Orders: React.FC<{}> = (): JSX.Element => {
-  const [order_, setOrder] = React.useState<string>("");
+  const [sale, setSale] = React.useState<string>("");
   const [status, setStatus] = React.useState("all");
+  const [sales, setSales] = React.useState<SaleType[]>([]);
+  const [filteredSales, setFilteredSales] = React.useState<SaleType[]>([]);
+  // get sales
+  const { data, isLoading } = useQuery({
+    queryKey: ["sales"],
+    queryFn: () => getSales(),
+  });
+
+  const user = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUsers(),
+  });
+
+  const id: string = "65fa539890490e04183d927f";
+
+  const order = useQuery({
+    queryKey: ["order", id],
+    queryFn: () => getSale(id),
+  });
+
+  console.log(order.data?.sale);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setStatus(event.target.value as string);
+    const { value } = event.target;
+    setStatus(value);
+    switch (value) {
+      case "all":
+        setFilteredSales(sales);
+        break;
+      case "Cancelled":
+      case "Completed":
+      case "Pending":
+      case "Refunded":
+      case "Delivered":
+      case "Processing":
+      case "Delivering":
+        setFilteredSales(() => sales.filter((sale) => sale.status === value));
+        break;
+      default:
+        setFilteredSales([]);
+        break;
+    }
   };
-  // get orders
-  const orders: any[] = useSelectorHook((state) => state.orders);
-  const [renderOrders, setRenderOrders] = React.useState<any[]>(orders);
 
-  const ordersByName = orders.filter((order) =>
-    order.customer.customerName
-      .toLocaleLowerCase()
-      .includes(order_.toLocaleLowerCase())
-  );
-  const filterByStatus = orders.filter((order) => order.status === status);
+  const getUserEmail = (id: string): string => {
+    const user_ = user.data?.find((user) => user.id === id);
+
+    return user_?.email as string;
+  };
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSale(value);
+    if (!value) {
+      setFilteredSales(sales);
+    } else {
+      setFilteredSales(() =>
+        sales.filter((sale) =>
+          getUserEmail(sale.user)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase())
+        )
+      );
+    }
+  };
 
   React.useEffect(() => {
-    if (order_ === "") {
-      if (status === "all" || status === "") {
-        setRenderOrders(orders);
-      } else {
-        setRenderOrders(filterByStatus);
-      }
-    }
-    if (order_ !== "") {
-      setRenderOrders(ordersByName);
-    }
-  }, [order_, status]);
+    setFilteredSales(data?.sales as SaleType[]);
+    setSales(data?.sales as SaleType[]);
+  }, [data?.sales]);
 
   return (
     <div>
@@ -58,10 +104,8 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                 <input
                   type="text"
                   name="order"
-                  value={order_}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setOrder(event.target.value)
-                  }
+                  value={sale}
+                  onChange={onChange}
                   className="bg-[#f1f0f0] placeholder:font-senibold p-2 pl-8 outline-none rounded-md w-1/2 max-w-[400px] min-w-[200px]"
                   placeholder="Search Order"
                 />
@@ -76,9 +120,6 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                   <MenuItem value={"all"}>All</MenuItem>
                   <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
                   <MenuItem value={"Completed"}>Completed</MenuItem>
-                  <MenuItem value={"Denied"}>Denied</MenuItem>
-                  <MenuItem value={"Expired"}>Expired</MenuItem>
-                  <MenuItem value={"Failed"}>Failed</MenuItem>
                   <MenuItem value={"Pending"}>Pending</MenuItem>
                   <MenuItem value={"Processing"}>Processing</MenuItem>
                   <MenuItem value={"Refunded"}>Refunded</MenuItem>
@@ -87,7 +128,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                 </SelectComponent>
               </div>
             </div>
-            <OrdersTable orders={renderOrders} />
+            <OrdersTable orders={filteredSales} />
           </div>
         </Card>
       </div>
