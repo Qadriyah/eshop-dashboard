@@ -1,9 +1,9 @@
 import { ErrorType } from "@/types/entities";
-import { postApi } from "..";
+import { deleteApi, postApi } from "..";
 
 export type UploadFile = {
   statusCode: number;
-  imageUrl: string;
+  filePath: string;
   errors?: ErrorType[];
 };
 
@@ -31,6 +31,16 @@ export const uploadProductImage = async (
     customHeaders: {
       "Content-Type": "multipart/form-data",
     },
+  });
+  return response;
+};
+
+export const deleteProductImage = async (
+  id: string,
+  filePath: string
+): Promise<UploadFile> => {
+  const response = await deleteApi<UploadFile>({
+    url: `/files/upload/${id}?file-path=${filePath}`,
   });
   return response;
 };

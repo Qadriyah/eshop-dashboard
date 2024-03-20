@@ -1,4 +1,4 @@
-import { deleteApi, getApi } from "..";
+import { deleteApi, getApi, patchApi } from "..";
 import { ErrorType, ProductType } from "@/types/entities";
 
 export type GetProduct = {
@@ -11,7 +11,7 @@ export type GetProducts = {
   products: ProductType[];
 };
 
-export type DeleteProduct = {
+export type PostProduct = {
   statusCode: number;
   product: ProductType;
   message: string;
@@ -28,7 +28,18 @@ export const getProduct = async (id: string): Promise<GetProduct> => {
   return response;
 };
 
-export const deleteProduct = async (id: string): Promise<DeleteProduct> => {
-  const response = await deleteApi<DeleteProduct>({ url: `/products/${id}` });
+export const deleteProduct = async (id: string): Promise<PostProduct> => {
+  const response = await deleteApi<PostProduct>({ url: `/products/${id}` });
+  return response;
+};
+
+export const updateProduct = async (
+  id: string,
+  data: ProductType
+): Promise<PostProduct> => {
+  const response = await patchApi<PostProduct>({
+    url: `/products/${id}`,
+    data,
+  });
   return response;
 };

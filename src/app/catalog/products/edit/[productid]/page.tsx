@@ -18,15 +18,20 @@ import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import Media from "./Media";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProduct } from "@/api/actions/product";
+import { getProduct, updateProduct } from "@/api/actions/product";
 import { ProductType } from "@/types/entities";
 import { DISCOUNT_TYPES, PRODUCT_STATUS } from "@/utils/constants";
-import { uploadProductIcon } from "@/api/actions/files";
+import {
+  deleteProductImage,
+  uploadProductIcon,
+  uploadProductImage,
+} from "@/api/actions/files";
 import Loader from "@/components/Loader";
-import { notify } from "@/utils/helpers";
+import { formatErrors, notify } from "@/utils/helpers";
 import { useFormik } from "formik";
 import { updateProductValidationSchema } from "@/validation/productSchemas";
 import TextArea from "@/components/TextArea";
+import ConfirmationModal from "@/modals/ConfirmationModal";
 
 type PageParams = {
   params: {
@@ -36,14 +41,14 @@ type PageParams = {
 
 const EditProduct: React.FC<PageParams> = ({ params }) => {
   const router = useRouter();
-  const [files, setFiles] = React.useState<any[]>([]);
   const [previews, setPreviews] = React.useState<any[]>([]);
+  const [showDeleteImageModal, setShowDeleteImageModal] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState("");
   const [product, setProduct] = React.useState<ProductType | null>(null);
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     maxFiles: 10,
-    onDrop: (acceptedFiles) => {
-      setFiles(acceptedFiles);
+    onDrop: async (acceptedFiles) => {
       setPreviews((prevState) => {
         const images = acceptedFiles.map((file) => {
           const src = URL.createObjectURL(file);
@@ -57,10 +62,11 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
         });
         return [...prevState, ...images];
       });
+      await handleImageUpload(acceptedFiles);
     },
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["get-products"],
     queryFn: () => getProduct(params.productid),
   });
@@ -69,6 +75,31 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
     mutationKey: ["product-icon"],
     mutationFn: (image: FormData) => uploadProductIcon(params.productid, image),
   });
+
+  const uploadImageMutation = useMutation({
+    mutationKey: ["product-image"],
+    mutationFn: (image: FormData) =>
+      uploadProductImage(params.productid, image),
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationKey: ["delete-image"],
+    mutationFn: (filePath: string) =>
+      deleteProductImage(params.productid, filePath),
+  });
+
+  const updateProductMutation = useMutation({
+    mutationKey: ["update-product"],
+    mutationFn: (data: ProductType) => updateProduct(params.productid, data),
+  });
+
+  const handleImageUpload = async (acceptedFiles: any) => {
+    for (const file of acceptedFiles) {
+      const formData = new FormData();
+      formData.append("image", file);
+      await uploadImageMutation.mutateAsync(formData);
+    }
+  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -98,15 +129,35 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
     }
   };
 
-  const onDeleteImage = (event: React.MouseEvent<HTMLDivElement>) => {
+  const onDeleteImage = (
+    event: React.MouseEvent<HTMLDivElement> & {
+      target: HTMLDivElement | HTMLImageElement;
+    }
+  ) => {
     event.stopPropagation();
-    console.log("Clicked");
+    const { id } = event.target;
+    setSelectedImage(id);
+    setShowDeleteImageModal(true);
   };
 
-  const onChangeStatus = () => {};
+  const confirmDeleteImage = async () => {
+    const { errors } = await deleteImageMutation.mutateAsync(selectedImage);
+    if (errors) {
+      notify(errors[0].message, "error");
+      return;
+    }
+    refetch();
+    setShowDeleteImageModal(false);
+    notify("Image has been deleted successfully", "success");
+  };
 
-  const handleSubmit = (values: any) => {
-    console.log(values, "|||||", product);
+  const handleSubmit = async (values: any) => {
+    const { errors, message } = await updateProductMutation.mutateAsync(values);
+    if (errors) {
+      formik.setErrors(formatErrors(errors));
+      return;
+    }
+    notify(message, "success");
   };
 
   const formik = useFormik({
@@ -157,15 +208,13 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.product]);
 
-  const quillRef = React.useRef();
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <PageHeader title="Edit Product" params={params} />
       <div className="w-full flex flex-col lg:flex-row gap-5">
         <div className="w-full lg:w-2/5 flex flex-col gap-5">
           <Card>
-            <h2 className="text-2xl mb-4 opacity-90 text-[#152238]">
+            <h2 className="text-[1.275rem] mb-4 opacity-90 text-[#152238]">
               Thumbnail
             </h2>
             <div className="label-shadow w-[150px] h-[150px] rounded-lg p-5 mb-5 mx-auto my-auto">
@@ -204,7 +253,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
           </Card>
           <Card>
             <div className="flex items-center mb-5">
-              <h2 className="text-2xl opacity-90 text-[#152238] flex-1">
+              <h2 className="text-[1.275rem] opacity-90 text-[#152238] flex-1">
                 Status
               </h2>
               <GoDotFill
@@ -233,7 +282,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
             </p>
           </Card>
           <Card>
-            <h2 className="text-2xl opacity-90 text-[#152238] mb-5">
+            <h2 className="text-[1.275rem] opacity-90 text-[#152238] mb-5">
               Product details
             </h2>
             <div>
@@ -286,18 +335,20 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   defaultValue={`${true}`}
                   value={formik.values.allowBackorders}
                 >
-                  <RadioInput
-                    value={true}
-                    label="Yes"
-                    onChange={formik.handleChange}
-                    control={<Radio />}
-                  />
-                  <RadioInput
-                    value={false}
-                    label="No"
-                    onChange={formik.handleChange}
-                    control={<Radio />}
-                  />
+                  <Space direction="vertical" size={16}>
+                    <RadioInput
+                      value={true}
+                      label="Yes"
+                      onChange={formik.handleChange}
+                      control={<Radio />}
+                    />
+                    <RadioInput
+                      value={false}
+                      label="No"
+                      onChange={formik.handleChange}
+                      control={<Radio />}
+                    />
+                  </Space>
                 </RadioComponent>
               </Space>
             </div>
@@ -305,7 +356,9 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
         </div>
         <div className="flex-1 flex flex-col gap-5">
           <Card>
-            <h2 className="text-2xl opacity-90 text-[#152238] mb-5">General</h2>
+            <h2 className="text-[1.275rem] opacity-90 text-[#152238] mb-5">
+              General
+            </h2>
             <Input
               id="name"
               name="name"
@@ -333,7 +386,9 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
             </div>
           </Card>
           <Card>
-            <h2 className="text-2xl opacity-90 text-[#152238] mb-5">Media</h2>
+            <h2 className="text-[1.275rem] opacity-90 text-[#152238] mb-5">
+              Media
+            </h2>
             <div
               {...getRootProps({
                 className:
@@ -363,7 +418,9 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
             </p>
           </Card>
           <Card>
-            <h2 className="text-2xl opacity-90 text-[#152238] mb-5">Pricing</h2>
+            <h2 className="text-[1.275rem] opacity-90 text-[#152238] mb-5">
+              Pricing
+            </h2>
             <Input
               id="price"
               type="text"
@@ -385,24 +442,27 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                 defaultValue={DISCOUNT_TYPES.none}
                 value={formik.values.discountType}
               >
-                <RadioInput
-                  value={DISCOUNT_TYPES.none}
-                  label="No Discount"
-                  onChange={formik.handleChange}
-                  control={<Radio />}
-                />
-                <RadioInput
-                  value={DISCOUNT_TYPES.percentage}
-                  label="Percentage"
-                  onChange={formik.handleChange}
-                  control={<Radio />}
-                />
-                <RadioInput
-                  value={DISCOUNT_TYPES.fixed}
-                  label="Fixed Price"
-                  onChange={formik.handleChange}
-                  control={<Radio />}
-                />
+                <Space direction="vertical" size={16}>
+                  <RadioInput
+                    value={DISCOUNT_TYPES.none}
+                    label="No Discount"
+                    onChange={formik.handleChange}
+                    control={<Radio />}
+                  />
+                  <RadioInput
+                    value={DISCOUNT_TYPES.percentage}
+                    label="Percentage"
+                    onChange={formik.handleChange}
+                    control={<Radio />}
+                  />
+                  <RadioInput
+                    value={DISCOUNT_TYPES.fixed}
+                    label="Fixed Price"
+                    onChange={formik.handleChange}
+                    control={<Radio />}
+                    error={formik.errors.fixedDiscount}
+                  />
+                </Space>
               </RadioComponent>
             </div>
             <ShouldRender
@@ -416,6 +476,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   type="number"
                   label="Fixed Discounted Price"
                   value={formik.values.fixedDiscount}
+                  min={0}
                   onChange={formik.handleChange}
                   error={formik.errors.fixedDiscount}
                 />
@@ -465,6 +526,8 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
             </Button>
             <Button
               type="submit"
+              disabled={updateProductMutation.isPending}
+              loading={updateProductMutation.isPending}
               className="bg-[#3875d7] mr-3 hover:opacity-80 text-white rounded-lg p-2 sm:p-3"
             >
               Save Changes
@@ -472,6 +535,16 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
           </div>
         </div>
       </div>
+      <ShouldRender visible={showDeleteImageModal}>
+        <ConfirmationModal
+          title="Delete Image"
+          message="Are you sure you want to delete this image?"
+          open={showDeleteImageModal}
+          handleOk={confirmDeleteImage}
+          handleClose={() => setShowDeleteImageModal(false)}
+          loading={deleteImageMutation.isPending}
+        />
+      </ShouldRender>
     </form>
   );
 };

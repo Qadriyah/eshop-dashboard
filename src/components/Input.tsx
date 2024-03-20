@@ -27,7 +27,7 @@ const Input = React.forwardRef<Ref, InputProps>(function Input(
         className={`${
           className
             ? className
-            : "w-full p-2 bg-white text-xl rounded-none border border-[#d3d3d3] outline-none mt-1 font-normal"
+            : "w-full p-2 bg-white rounded-none border border-[#d3d3d3] outline-none mt-1 font-normal"
         } ${error && "border-red-600 text-red-600"}`}
       />
       {error && <div className="text-red-600">{error}</div>}
