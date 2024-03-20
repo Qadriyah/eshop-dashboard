@@ -3,7 +3,6 @@
 import React from "react";
 import { NumericFormat } from "react-number-format";
 import Dropdown from "../../components/Dropdown";
-import ConfirmationModel from "../../modals/ConfimationModel";
 import ShouldRender from "../../components/ShouldRender";
 import { Table, TableProps } from "antd";
 import { OrdersProps, deleteOrder } from "../../redux/slices/orders";
@@ -141,9 +140,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
             <ul>
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() =>
-                  navigate.push(`/dashboard/orders/${orderId}`)
-                }
+                onClick={() => navigate.push(`/dashboard/orders/${orderId}`)}
               >
                 View
               </li>
@@ -170,18 +167,6 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
           <Table columns={columns} dataSource={orders} />
         </div>
       </div>
-      <ShouldRender visible={openDeleteModal}>
-        <ConfirmationModel
-          title="Delete Order"
-          message="Are sure you want to delete this order?"
-          open={openDeleteModal}
-          handleClose={() => setOpenDeleteModal(false)}
-          onConfirm={() => {
-            handleConfirm();
-            setOpenDeleteModal(false);
-          }}
-        />
-      </ShouldRender>
     </>
   );
 };

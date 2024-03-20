@@ -123,6 +123,14 @@ const SideNavBar: React.FC<{}> = () => {
     return () => window.removeEventListener("resize", () => {});
   }, [dispatch]);
 
+  React.useEffect(() => {
+    if (window.innerWidth <= 768) {
+      dispatch(closeDrawer());
+    } else {
+      dispatch(openDrawer());
+    }
+  }, [dispatch]);
+
   return (
     <nav
       id="side-nav"

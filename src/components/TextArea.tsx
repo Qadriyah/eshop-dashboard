@@ -1,13 +1,13 @@
-import React, { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+type IProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
   error?: string;
 };
 
-type Ref = HTMLInputElement;
+type Ref = HTMLTextAreaElement;
 
-const Input = React.forwardRef<Ref, InputProps>(function Input(
+const TextArea = React.forwardRef<Ref, IProps>(function TextArea(
   { label, error, className, ...props },
   ref
 ) {
@@ -21,7 +21,7 @@ const Input = React.forwardRef<Ref, InputProps>(function Input(
       >
         *
       </span>
-      <input
+      <textarea
         ref={ref}
         {...props}
         className={`${
@@ -35,4 +35,4 @@ const Input = React.forwardRef<Ref, InputProps>(function Input(
   );
 });
 
-export default Input;
+export default TextArea;

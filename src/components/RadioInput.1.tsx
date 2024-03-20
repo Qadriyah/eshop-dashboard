@@ -3,7 +3,9 @@ import FormControlLabel, {
   FormControlLabelProps,
 } from "@mui/material/FormControlLabel";
 
-const RadioInput: React.FC<FormControlLabelProps> = (props): JSX.Element => {
+export const RadioInput: React.FC<FormControlLabelProps> = (
+  props
+): JSX.Element => {
   const ref = React.useRef<HTMLInputElement>(null);
 
   return (
@@ -13,7 +15,10 @@ const RadioInput: React.FC<FormControlLabelProps> = (props): JSX.Element => {
     >
       <FormControlLabel
         {...props}
-        inputRef={ref}
+        // inputRef={ref}
+        value={value}
+        control={control}
+        label={label}
         sx={{
           ".MuiFormControlLabel-label": {
             opacity: 0.9,
@@ -21,9 +26,8 @@ const RadioInput: React.FC<FormControlLabelProps> = (props): JSX.Element => {
             fontSize: "1.25rem",
           },
         }}
+        onChange={handleClick}
       />
     </div>
   );
 };
-
-export default RadioInput;

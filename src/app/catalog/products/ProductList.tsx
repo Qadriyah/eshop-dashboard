@@ -76,8 +76,8 @@ const ProductList: React.FC<IProps> = ({
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               backgroundSize: "cover",
-              height: 40,
-              width: 40,
+              height: 50,
+              width: 50,
             }}
           >
             &nbsp;
@@ -131,7 +131,7 @@ const ProductList: React.FC<IProps> = ({
             columns={columns}
             dataSource={products?.map((product) => ({
               ...product,
-              key: product.id,
+              // key: product.id,
             }))}
             className="hide-scrollbar"
           />

@@ -4,16 +4,15 @@ import React from "react";
 import Dropdown from "./Dropdown";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { postApi } from "@/api";
-import { LoginResponse } from "@/types/responses";
 import { notify } from "@/utils/helpers";
 import Image from "next/image";
+import { logoutUser } from "@/api/actions/auth";
 
 const UserProfile: React.FC<{}> = (): JSX.Element => {
   const navigate = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const logoutMuutation = useMutation({
-    mutationFn: () => postApi<LoginResponse>({ url: "/auth/logout" }),
+    mutationFn: () => logoutUser(),
   });
 
   const open = Boolean(anchorEl);
@@ -30,7 +29,7 @@ const UserProfile: React.FC<{}> = (): JSX.Element => {
       notify("Something went wrong", "error");
       return;
     }
-    navigate.replace("/login");
+    navigate.replace("/");
   };
 
   return (
