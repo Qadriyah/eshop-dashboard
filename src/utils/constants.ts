@@ -22,3 +22,14 @@ export const SALE_STATUS = {
   cancelled: "Cancelled",
   refunded: "Refunded",
 };
+
+export const DISCOUNT_TYPES = {
+  none: "None",
+  percentage: "Percentage",
+  fixed: "Fixed",
+};
+
+export const PRODUCT_STATUS = {
+  active: "Active",
+  inactive: "Inactive",
+};

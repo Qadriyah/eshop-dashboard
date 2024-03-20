@@ -14,7 +14,7 @@ import ProductCard from "@/components/ProductCard";
 import SelectComponent from "@/components/SelectComponent";
 import Input from "@/components/Input";
 import RadioComponent from "@/components/Radio";
-import RadioInput from "@/components/RadioInput";
+import RadioInput from "@/components/RadioInput.1";
 import ShouldRender from "@/components/ShouldRender";
 import Button from "@/components/Button";
 import { useParams } from "next/navigation";

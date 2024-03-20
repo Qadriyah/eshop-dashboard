@@ -2,7 +2,6 @@
 
 import React from "react";
 import Dropdown from "../../components/Dropdown";
-import ConfirmationModel from "../../modals/ConfimationModel";
 import ShouldRender from "../../components/ShouldRender";
 import { Table } from "antd";
 import type { TableProps } from "antd";
@@ -138,17 +137,6 @@ const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
           <Table columns={columns} dataSource={customers} />
         </div>
       </div>
-      <ShouldRender visible={openModal}>
-        <ConfirmationModel
-          title="Delete Customer"
-          message="Are you sure you want to delete this customer?"
-          open={openModal}
-          onConfirm={onDeleteCustomer}
-          handleClose={() => {
-            setOpenModal(false);
-          }}
-        />
-      </ShouldRender>
     </>
   );
 };

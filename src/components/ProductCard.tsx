@@ -13,13 +13,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }): JSX.Element => {
   return (
     <div className="card-content rounded-lg p-5 bg-white mb-5">
-      <div className="flex justify-between">
-        <h2 className="text-[26px] font-bold mb-4 opacity-90 text-[#152238]">
-          {title}
-        </h2>
+      <div className="">
+        <h2 className="text-2xl mb-4 opacity-90 text-[#152238]">{title}</h2>
         <div
           className={`w-[17px] h-[17px] rounded-full bg-green-500 ${
-            !showStatus ? "hidden" : "block"
+            showStatus ? "hidden" : "block"
           }`}
         ></div>
       </div>

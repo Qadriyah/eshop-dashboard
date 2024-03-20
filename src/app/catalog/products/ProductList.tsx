@@ -15,6 +15,7 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import { deleteProduct } from "@/api/actions/product";
+import { DISCOUNT_TYPES } from "@/utils/constants";
 
 type IProps = {
   products: ProductType[];
@@ -64,11 +65,13 @@ const ProductList: React.FC<IProps> = ({
       title: "Product",
       key: "product",
       dataIndex: "product",
-      className: "text-[18px]",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div className="flex gap-5 h-[40px] items-center">
           <div
-            className="rounded-md border border-gray-400"
+            className={`rounded-md border border-gray-400 ${
+              item.icon ? "opacity-100" : "opacity-50"
+            }`}
             style={{
               backgroundImage: `url(${
                 item.icon || "/assets/images/picture.png"
@@ -76,8 +79,8 @@ const ProductList: React.FC<IProps> = ({
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               backgroundSize: "cover",
-              height: 40,
-              width: 40,
+              height: 50,
+              width: 50,
             }}
           >
             &nbsp;
@@ -90,14 +93,29 @@ const ProductList: React.FC<IProps> = ({
       title: "Price",
       key: "price",
       dataIndex: "price",
-      className: "text-[18px]",
+      className: "text-[1.063rem]",
       render: (_, item) => <div>{formatCurrency(item.price)}</div>,
+    },
+    {
+      title: "Discount",
+      key: "discount",
+      dataIndex: "discount",
+      className: "text-[1.063rem]",
+      render: (_, item) => (
+        <div>
+          {item.discountType === DISCOUNT_TYPES.fixed
+            ? formatCurrency(item.fixedDiscount)
+            : item.discountType === DISCOUNT_TYPES.percentage
+            ? `${item.percentDiscount}%`
+            : "-"}
+        </div>
+      ),
     },
     {
       title: "Status",
       key: "status",
       dataIndex: "status",
-      className: "text-[18px]",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div
           className={`opacity-70 text-center p-1 rounded-lg font-semibold ${
@@ -116,7 +134,7 @@ const ProductList: React.FC<IProps> = ({
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      className: "text-[18px] flex justify-center",
+      className: "text-[1.063rem] flex justify-center",
       render: (_, item) => (
         <ProductMenu product={item} onDeleteProduct={onDeleteProduct} />
       ),

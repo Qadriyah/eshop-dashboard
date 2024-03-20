@@ -18,8 +18,8 @@ import { getProducts } from "@/api/actions/product";
 const Products: React.FC<{}> = (): JSX.Element => {
   const navigate = useRouter();
   const [status, setStatus] = React.useState<string>("all");
-  const [products, setProducts] = React.useState<ProductType[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [products, setProducts] = React.useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = React.useState<ProductType[]>(
     []
   );
@@ -29,12 +29,7 @@ const Products: React.FC<{}> = (): JSX.Element => {
     queryFn: () => getProducts(),
   });
 
-  // const mutation = useMutation({
-  //   mutationKey: ["productd", productId],
-  //   mutationFn: () => deleteApi({ url: `/products/${productId}` }),
-  // });
-
-  const handleChange = (event: SelectChangeEvent): void => {
+  const handleChange = (event: SelectChangeEvent<any>): void => {
     const { value } = event.target;
     setStatus(value);
     switch (value) {
@@ -104,8 +99,9 @@ const Products: React.FC<{}> = (): JSX.Element => {
             </form>
             <div className="flex status-add-product">
               <SelectComponent
-                handleChange={handleChange}
+                onChange={handleChange}
                 label="Status"
+                variant="outlined"
                 value={status}
                 defaultValue="all"
               >

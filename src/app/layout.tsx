@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import "react-quill/dist/quill.snow.css";
 import QueryProvider from "./QueryProvider";
 import StoreProvider from "./StoreProvider";
 
@@ -20,6 +20,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Toaster
+          toastOptions={{
+            style: {
+              background: "rgba(0, 0, 0, 0.8)",
+              color: "#fff",
+            },
+          }}
+        />
         <StoreProvider>
           <QueryProvider>{children}</QueryProvider>
         </StoreProvider>

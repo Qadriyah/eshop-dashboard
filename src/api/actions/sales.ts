@@ -1,5 +1,5 @@
 import { ErrorType, SaleType } from "@/types/entities";
-import { getApi } from "../appApi";
+import { getApi } from "..";
 
 export type SalesResponse = {
   statusCode: number;

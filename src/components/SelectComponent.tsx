@@ -2,41 +2,24 @@ import React, { PropsWithChildren } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select, { SelectProps } from "@mui/material/Select";
 
-type SelectProps = PropsWithChildren & {
-  label: string;
-  value?: string;
-  boxWidth?: string | number;
-  handleChange?: (event: SelectChangeEvent) => void;
-  defaultValue?: string;
-  name_?: string;
-};
+type IProps = SelectProps &
+  PropsWithChildren & {
+    boxWidth?: string | number;
+  };
 
-const SelectComponent: React.FC<SelectProps> = ({
-  label,
-  value,
+const SelectComponent: React.FC<IProps> = ({
   children,
-  handleChange,
+  label,
   boxWidth = 150,
-  defaultValue,
-  name_,
+  ...props
 }): JSX.Element => {
   return (
     <Box sx={{ width: boxWidth }}>
       <FormControl fullWidth size="small">
         <InputLabel id="demo-simple-select-label">{label}</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={value}
-          label={label}
-          defaultValue={defaultValue}
-          onChange={handleChange}
-          name={name_}
-        >
-          {children}
-        </Select>
+        <Select {...props}>{children}</Select>
       </FormControl>
     </Box>
   );
