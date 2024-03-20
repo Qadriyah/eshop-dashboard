@@ -44,6 +44,7 @@ const SignIn = () => {
       formik.setErrors(formatErrors(errors));
       return;
     }
+
     router.replace("/home");
   };
 

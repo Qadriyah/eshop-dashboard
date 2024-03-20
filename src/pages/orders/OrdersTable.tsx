@@ -5,12 +5,14 @@ import { NumericFormat } from "react-number-format";
 import Dropdown from "../../components/Dropdown";
 import ShouldRender from "../../components/ShouldRender";
 import { Table, TableProps } from "antd";
-import { OrdersProps, deleteOrder } from "../../redux/slices/orders";
-import { useDispatchHook } from "../../redux/hooks/hooks";
 import { useRouter } from "next/navigation";
+import { SaleType } from "@/types/entities";
+import { useQuery } from "@tanstack/react-query";
+import { getUsers } from "@/api/actions/customer";
+import ConfirmationModal from "@/modals/ConfirmationModal";
 
 type OrderProps = {
-  orders: any[];
+  orders: SaleType[];
 };
 
 const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
@@ -30,13 +32,21 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
   const handleClose = (): void => {
     setAnchorEl(null);
   };
-  const dispatch = useDispatchHook();
 
-  const handleConfirm = (): void => {
-    dispatch(deleteOrder(orderId));
+  const handleConfirm = (): void => {};
+
+  const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUsers(),
+  });
+
+  const getUserEmail = (id: string): string => {
+    const user = data?.find((user) => user.id === id);
+
+    return user?.email as string;
   };
 
-  const columns: TableProps<OrdersProps>["columns"] = [
+  const columns: TableProps<SaleType>["columns"] = [
     {
       key: "customer",
       title: "Customer",
@@ -44,12 +54,12 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       render: (_, item) => (
         <div className="flex">
           <img
-            src={item.customer.customerImage}
+            src={item.user}
             alt=""
             className="w-[40px] h-[40px] rounded-md mr-2"
           />
           <div className="font-semibold text-sm opacity-90 mb-0 translate-y-2">
-            {item.customer.customerName}
+            {getUserEmail(item.user)}
           </div>
         </div>
       ),
@@ -59,9 +69,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       title: "Order ID",
       dataIndex: "orderid",
       render: (_, item) => (
-        <div className="font-semibold text-black opacity-60">
-          {item.orderId}
-        </div>
+        <div className="font-semibold text-black opacity-60">{}</div>
       ),
     },
     {
@@ -71,10 +79,6 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       render: (_, item) => (
         <div
           className={`font-semibold text-xs opacity-70 p-1 rounded-lg text-center ${
-            item.status === "Expired" ||
-            item.status === "Failed" ||
-            item.status === "Refunded" ||
-            item.status === "Denied" ||
             item.status === "Cancelled"
               ? "text-[#f7657d] bg-[#f7d0d6]"
               : item.status === "Completed" || item.status === "Delivered"
@@ -95,7 +99,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       render: (_, item) => (
         <div className="font-bold text-black opacity-60 text-center">
           <NumericFormat
-            value={item.total}
+            value={item.totalAmount}
             prefix={"$"}
             thousandSeparator=","
             displayType="text"
@@ -109,7 +113,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       dataIndex: "date_added",
       render: (_, item) => (
         <div className={`font-bold opacity-70 text-center p-1 rounded-lg`}>
-          {item.dateAdded}
+          {item.createdAt.split("T")[0]}
         </div>
       ),
     },
@@ -119,7 +123,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       dataIndex: "date_Modified",
       render: (_, item) => (
         <div className={`font-semibold opacity-70 p-1 rounded-lg`}>
-          {item.dateModified}
+          {item.updatedAt.split("T")[0]}
         </div>
       ),
     },
@@ -130,7 +134,7 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       render: (_, item) => (
         <Dropdown
           anchorEl={anchorEl}
-          handleClick={(event) => handleClick(event, item.orderId as string)}
+          handleClick={(event) => handleClick(event, item.id)}
           handleClose={handleClose}
           id="image"
           open={open}
@@ -140,18 +144,9 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
             <ul>
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() => navigate.push(`/dashboard/orders/${orderId}`)}
+                onClick={() => navigate.push(`/sales/orders/${orderId}`)}
               >
                 View
-              </li>
-              <li
-                className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() => {
-                  setOpenDeleteModal(true);
-                  handleClose();
-                }}
-              >
-                Delete
               </li>
             </ul>
           </div>
@@ -164,7 +159,10 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
     <>
       <div className="overflow-x-scroll w-full">
         <div className="min-w-[800px]">
-          <Table columns={columns} dataSource={orders} />
+          <Table
+            columns={columns}
+            dataSource={orders?.map((order) => ({ ...order, key: order.id }))}
+          />
         </div>
       </div>
     </>

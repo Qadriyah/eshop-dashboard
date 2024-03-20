@@ -5,22 +5,20 @@ import Radio from "@mui/material/Radio";
 import { PiImagesSquareDuotone } from "react-icons/pi";
 import { Formik, Form } from "formik";
 import { MenuItem } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { MdOutlineUploadFile } from "react-icons/md";
 import Slider from "@mui/material/Slider";
-import ReactQuill from "react-quill";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import SelectComponent from "@/components/SelectComponent";
 import Input from "@/components/Input";
 import RadioComponent from "@/components/Radio";
-import RadioInput from "@/components/RadioInput.1";
+import RadioInput from "@/components/RadioInput";
 import ShouldRender from "@/components/ShouldRender";
 import Button from "@/components/Button";
-import { useParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getApi, patchApi } from "@/api";
 import PageHeader from "@/components/PageHeader";
+import TextArea from "@/components/TextArea";
 
 type PageParams = {
   params: {
@@ -156,10 +154,9 @@ const EditProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
               <SelectComponent
                 boxWidth="100%"
                 label="status"
+                variant="outlined"
                 value={status}
-                handleChange={(event: SelectChangeEvent) =>
-                  setStatus(event.target.value as string)
-                }
+                // onChange={}
               >
                 <MenuItem value={"Active"}>Active</MenuItem>
                 <MenuItem value={"Inactive"}>Inactive</MenuItem>
@@ -231,13 +228,13 @@ const EditProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                   <RadioInput
                     value={false}
                     label="No"
-                    handleClick={() => onChange("allowBackorders", false)}
+                    onChange={() => onChange("allowBackorders", false)}
                     control={<Radio />}
                   />
                   <RadioInput
                     value={true}
                     label="Yes"
-                    handleClick={() => onChange("allowBackorders", true)}
+                    onChange={() => onChange("allowBackorders", true)}
                     control={<Radio />}
                   />
                 </RadioComponent>
@@ -259,17 +256,16 @@ const EditProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                 A product name is required and recommended to be unique.
               </p>
               <div className="mt-5 h-[250px]">
-                <label className="text-gray-500 font-semibold">
-                  Description
-                </label>
-                <ReactQuill
-                  theme="snow"
-                  onChange={(value: any) => onChange("desc", value)}
-                  value={myProduct.description}
-                  className="rounded-lg h-[140px]"
-                  placeholder="Set a description to the product for better visibility."
+                <TextArea
+                  id="description"
+                  name="description"
+                  rows={5}
+                  placeholder="Description"
+                  label="Description"
+                  required
+                  // value={formik.values.description}
+                  // onChange={formik.handleChange}
                 />
-                <p className="opacity-40 text-xs md:mt-16 lg:mt-8 font-semibold mt-3 h-[40px]"></p>
               </div>
             </ProductCard>
             <ProductCard title="Media">
@@ -317,19 +313,19 @@ const EditProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
                   <RadioInput
                     value="No Discount"
                     label="No Discount"
-                    handleClick={() => onChange("discountType", "No Discount")}
+                    onChange={() => onChange("discountType", "No Discount")}
                     control={<Radio />}
                   />
                   <RadioInput
                     value="Percentage"
                     label="Percentage"
-                    handleClick={() => onChange("discountType", "Percentage")}
+                    onChange={() => onChange("discountType", "Percentage")}
                     control={<Radio />}
                   />
                   <RadioInput
                     value="Fixed Price"
                     label="Fixed Price"
-                    handleClick={() => onChange("discountType", "Fixed Price")}
+                    onChange={() => onChange("discountType", "Fixed Price")}
                     control={<Radio />}
                   />
                 </RadioComponent>

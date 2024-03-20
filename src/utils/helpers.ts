@@ -1,7 +1,7 @@
 import numeral from "numeral";
 import toast from "react-hot-toast";
 
-type FieldError = {
+export type FieldError = {
   field: string;
   message: string;
 };
