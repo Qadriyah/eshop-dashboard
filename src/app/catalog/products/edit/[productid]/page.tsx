@@ -286,7 +286,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
               Product details
             </h2>
             <div>
-              <Space direction="vertical" size={20}>
+              <Space direction="vertical" size={20} className="w-full">
                 <Input
                   id="stock"
                   type="number"
@@ -295,6 +295,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   placeholder="Stock"
                   label="Stock"
                   onChange={formik.handleChange}
+                  error={formik.errors.stock}
                 />
                 <Input
                   type="number"
@@ -303,6 +304,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   placeholder="Weight"
                   label="Weight"
                   onChange={formik.handleChange}
+                  error={formik.errors.weight}
                 />
                 <Input
                   type="number"
@@ -311,6 +313,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   placeholder="Length"
                   label="Length"
                   onChange={formik.handleChange}
+                  error={formik.errors.length}
                 />
                 <Input
                   type="number"
@@ -319,6 +322,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   placeholder="Width"
                   label="Width"
                   onChange={formik.handleChange}
+                  error={formik.errors.width}
                 />
                 <Input
                   type="number"
@@ -327,6 +331,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                   placeholder="Height"
                   label="Height"
                   onChange={formik.handleChange}
+                  error={formik.errors.height}
                 />
                 <RadioComponent
                   id="allowBackorders"
@@ -368,6 +373,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
               label="Product Name"
               required
               onChange={formik.handleChange}
+              error={formik.errors.name}
             />
             <p className="opacity-40 text-xs font-semibold">
               A product name is required and recommended to be unique.
@@ -379,9 +385,9 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
                 rows={5}
                 placeholder="Description"
                 label="Description"
-                required
                 value={formik.values.description}
                 onChange={formik.handleChange}
+                error={formik.errors.description}
               />
             </div>
           </Card>
@@ -430,6 +436,7 @@ const EditProduct: React.FC<PageParams> = ({ params }) => {
               value={formik.values.price}
               placeholder="Product Price"
               onChange={formik.handleChange}
+              error={formik.errors.price}
             />
             <p className="opacity-40 text-xl mt-1 font-semibold">
               Set product price

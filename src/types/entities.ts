@@ -10,12 +10,12 @@ export type AddressType = {
 };
 
 export type ProductType = {
-  id?: string;
-  sku?: string;
+  id: string;
+  sku: string;
   name: string;
-  status?: string;
-  icon?: string;
-  images?: string[];
+  status: string;
+  icon: string;
+  images: string[];
   description: string;
   price: number;
   discountType: string;
@@ -27,7 +27,7 @@ export type ProductType = {
   length: number;
   width: number;
   height: number;
-  slug?: string;
+  slug: string;
 };
 
 export type ProfileType = {
