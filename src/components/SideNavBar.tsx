@@ -26,8 +26,12 @@ const menuItems = [
     icon: <GrCatalog />,
     children: [
       {
-        title: "Products",
+        title: "Product List",
         link: "/catalog/products",
+      },
+      {
+        title: "New Product",
+        link: "/catalog/products/add",
       },
     ],
   },

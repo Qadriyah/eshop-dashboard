@@ -1,9 +1,11 @@
-import Image from "next/image";
 import React from "react";
-import { RxCross1 } from "react-icons/rx";
+import Image from "next/image";
+import Loader from "@/components/Loader";
+import ShouldRender from "@/components/ShouldRender";
 
 type IProps = {
   imageSrc: string;
+  loading?: boolean;
   onDeleteImage: (
     event: React.MouseEvent<HTMLDivElement> & {
       target: HTMLDivElement | HTMLImageElement;
@@ -35,6 +37,11 @@ const Media: React.FC<IProps> = ({ imageSrc, onDeleteImage }) => {
           alt="close"
         />
       </div>
+      <ShouldRender visible={true!}>
+        <div className="relative flex justify-center items-center opacity-50 bg-gray-300 h-full w-full -top-[30px]">
+          <Loader color="black" />
+        </div>
+      </ShouldRender>
     </div>
   );
 };
