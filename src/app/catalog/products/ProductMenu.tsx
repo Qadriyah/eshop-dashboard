@@ -18,17 +18,6 @@ const ProductMenu: React.FC<IProps> = ({ product, onDeleteProduct }) => {
       key: "1",
       label: (
         <div className="flex gap-2 items-center">
-          <HiViewfinderCircle />
-          <Link href={`/catalog/products/${product.id}`}>
-            <div>View</div>
-          </Link>
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <div className="flex gap-2 items-center">
           <FiEdit3 />
           <Link href={`/catalog/products/edit/${product.id}`}>
             <div>Edit</div>
@@ -37,7 +26,7 @@ const ProductMenu: React.FC<IProps> = ({ product, onDeleteProduct }) => {
       ),
     },
     {
-      key: "3",
+      key: "2",
       label: (
         <div className="flex gap-2 items-center">
           <RiDeleteBin6Line />
