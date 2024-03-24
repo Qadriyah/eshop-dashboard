@@ -63,10 +63,11 @@ const Report: React.FC<ReportProps> = ({
           <div className="xl:ml-2 mt-2 xl:mt-0 sm:w-[150px] lg:mr-2 lg:mt-0">
             <ShouldRender visible={showStatus}>
               <SelectComponent
-                handleChange={handleChange}
+                onChange={handleChange}
                 label="Status"
                 value={value}
                 defaultValue=""
+                variant="outlined"
               >
                 {children}
               </SelectComponent>

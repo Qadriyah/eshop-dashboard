@@ -67,6 +67,10 @@ const menuItems = [
         link: "/reports/sales",
       },
       {
+        title: "Products",
+        link: "/reports/products",
+      },
+      {
         title: "Returns",
         link: "/reports/returns",
       },
@@ -219,7 +223,8 @@ const SideNavBar: React.FC<{}> = () => {
                       href={item.link}
                       key={pos}
                       className={`flex py-3 hover:text-white hover:bg-[#2a2a3c] hover:font-bold rounded pl-14 mb-2 ${
-                        pathname?.includes(item.link)
+                        pathname?.substring(pathname?.lastIndexOf("/")) ===
+                        item.link.substring(item.link.lastIndexOf("/"))
                           ? "bg-[#2a2a3c] text-white text-base font-bold"
                           : "text-gray-400"
                       }`}
