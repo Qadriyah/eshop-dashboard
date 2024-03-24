@@ -3,13 +3,9 @@
 import React from "react";
 import { NumericFormat } from "react-number-format";
 import Dropdown from "../../components/Dropdown";
-import ShouldRender from "../../components/ShouldRender";
 import { Table, TableProps } from "antd";
 import { useRouter } from "next/navigation";
 import { SaleType } from "@/types/entities";
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/api/actions/customer";
-import ConfirmationModal from "@/modals/ConfirmationModal";
 
 type OrderProps = {
   orders: SaleType[];
@@ -17,7 +13,6 @@ type OrderProps = {
 
 const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
   const [orderId, setOrderId] = React.useState<string>("");
   const navigate = useRouter();
 
@@ -33,19 +28,6 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
     setAnchorEl(null);
   };
 
-  const handleConfirm = (): void => {};
-
-  const { data } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUsers(),
-  });
-
-  const getUserEmail = (id: string): string => {
-    const user = data?.find((user) => user.id === id);
-
-    return user?.email as string;
-  };
-
   const columns: TableProps<SaleType>["columns"] = [
     {
       key: "customer",
@@ -53,13 +35,13 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       dataIndex: "customer",
       render: (_, item) => (
         <div className="flex">
-          <img
+          {/* <img
             src={item.user}
             alt=""
             className="w-[40px] h-[40px] rounded-md mr-2"
-          />
-          <div className="font-semibold text-sm opacity-90 mb-0 translate-y-2">
-            {getUserEmail(item.user)}
+          /> */}
+          <div className="font-semibold text-sm opacity-90 mb-4 translate-y-2">
+            {item?.customer.name}
           </div>
         </div>
       ),
@@ -69,7 +51,9 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
       title: "Order ID",
       dataIndex: "orderid",
       render: (_, item) => (
-        <div className="font-semibold text-black opacity-60">{}</div>
+        <div className="font-semibold text-black opacity-60">
+          {item.orderNumber}
+        </div>
       ),
     },
     {
@@ -127,32 +111,6 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
         </div>
       ),
     },
-    {
-      key: "actions",
-      title: "Actions",
-      dataIndex: "actions",
-      render: (_, item) => (
-        <Dropdown
-          anchorEl={anchorEl}
-          handleClick={(event) => handleClick(event, item.id)}
-          handleClose={handleClose}
-          id="image"
-          open={open}
-          title="Actions"
-        >
-          <div className="w-[150px]">
-            <ul>
-              <li
-                className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
-                onClick={() => navigate.push(`/sales/orders/${orderId}`)}
-              >
-                View
-              </li>
-            </ul>
-          </div>
-        </Dropdown>
-      ),
-    },
   ];
 
   return (
@@ -162,6 +120,11 @@ const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
           <Table
             columns={columns}
             dataSource={orders?.map((order) => ({ ...order, key: order.id }))}
+            onRow={(data): any => {
+              return {
+                onClick: () => navigate.push(`/sales/orders/${data.id}`),
+              };
+            }}
           />
         </div>
       </div>

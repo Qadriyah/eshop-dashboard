@@ -8,7 +8,7 @@ import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import OrdersTable from "@/pages/orders/OrdersTable";
 import { useQuery } from "@tanstack/react-query";
-import { getSale, getSales } from "@/api/actions/sales";
+import { getSales } from "@/api/actions/sales";
 import { SaleType } from "@/types/entities";
 import { getUsers } from "@/api/actions/customer";
 
@@ -22,22 +22,9 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     queryKey: ["sales"],
     queryFn: () => getSales(),
   });
+  console.log(data?.sales, ";;;;;;;");
 
-  const user = useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUsers(),
-  });
-
-  const id: string = "65fa539890490e04183d927f";
-
-  const order = useQuery({
-    queryKey: ["order", id],
-    queryFn: () => getSale(id),
-  });
-
-  console.log(order.data?.sale);
-
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: SelectChangeEvent<any>) => {
     const { value } = event.target;
     setStatus(value);
     switch (value) {
@@ -59,12 +46,6 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     }
   };
 
-  const getUserEmail = (id: string): string => {
-    const user_ = user.data?.find((user) => user.id === id);
-
-    return user_?.email as string;
-  };
-
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setSale(value);
@@ -73,7 +54,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     } else {
       setFilteredSales(() =>
         sales.filter((sale) =>
-          getUserEmail(sale.user)
+          sale.user?.email
             .toLocaleLowerCase()
             .includes(value.toLocaleLowerCase())
         )
@@ -112,7 +93,8 @@ const Orders: React.FC<{}> = (): JSX.Element => {
               </span>
               <div className="flex status-add-product">
                 <SelectComponent
-                  handleChange={handleChange}
+                  onChange={handleChange}
+                  variant="outlined"
                   label="Status"
                   value={status}
                   defaultValue="all"

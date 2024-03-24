@@ -7,14 +7,22 @@ import PaymentMethod from "@/components/PaymentMethod";
 import ProductCard from "@/components/ProductCard";
 import ShouldRender from "@/components/ShouldRender";
 import CustomerTransactionsTable from "@/pages/customer/CustomerTransactionsTable";
-import { useParams } from "next/navigation";
-import { useSelectorHook } from "@/redux/hooks/hooks";
+import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getCustomer } from "@/api/actions/customer";
+import { IoArrowBackSharp } from "react-icons/io5";
 
 const CustomerDetails: React.FC<{}> = (): JSX.Element => {
   const params = useParams<{ customerId: any }>();
   const id = params?.customerId;
-  const customers = useSelectorHook((state) => state.customers);
-  const customer = customers.find((customer) => customer.id === +id);
+  const router = useRouter();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["customer", id],
+    queryFn: () => getCustomer(id),
+  });
+
+  const customer = data?.user;
 
   type stateProps = {
     mytab: string;
@@ -29,21 +37,28 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Customer Details
-      </h2>
+      <div className="flex">
+        <IoArrowBackSharp
+          size={25}
+          className="mt-1 mr-3 cursor-pointer"
+          onClick={() => router.back()}
+        />
+        <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
+          Customer Details
+        </h2>
+      </div>
       <div className="md:flex w-full">
         <div className="w-full mr-5 md:w-1/4 sm:min-w-[250px]">
           <Card>
             <div className="w-full">
               <img
-                src={customer?.image}
+                src={customer?.id}
                 alt=""
                 className="w-[100px] h-[100px] mx-auto rounded-full sm:w-[150px] sm:h-[150px]"
               />
               <span>
                 <h2 className="font-bold mt-5 opacity-80 text-lg text-center">
-                  {customer?.name}
+                  {customer?.profile.fullName}
                 </h2>
                 <p className="font-semibold opacity-55 text-center">
                   {customer?.email}
