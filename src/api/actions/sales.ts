@@ -1,5 +1,6 @@
 import { ErrorType, SaleType } from "@/types/entities";
 import { getApi } from "..";
+// import Stripe from "stripe";
 
 export type SalesResponse = {
   statusCode: number;
@@ -7,10 +8,15 @@ export type SalesResponse = {
   errors?: ErrorType[];
 };
 
-export type DeleteResp = {
+export type SaleTypes = {
   statusCode: number;
   sale: SaleType;
   errors?: ErrorType[];
+};
+
+export type SaleDetailsTypes = {
+  statusCode: number;
+  session: any;
 };
 
 export const getCustomerSales = async (): Promise<SalesResponse> => {
@@ -26,9 +32,8 @@ export const getSales = async (): Promise<SalesResponse> => {
   return response;
 };
 
-export const getSale = async (id: string): Promise<DeleteResp> => {
-  const response = await getApi<DeleteResp>({ url: `/sales/${id}` });
-  console.log(id, "pppppp");
+export const getSale = async (id: string): Promise<SaleTypes> => {
+  const response = await getApi<SaleTypes>({ url: `/sales/${id}` });
 
   return response;
 };

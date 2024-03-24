@@ -39,16 +39,38 @@ export type ProfileType = {
   customer: string;
 };
 
+export type CustomerTypes = {
+  email: string;
+  name: string;
+  phone: string;
+};
+
 export type SaleType = {
   id: string;
-  user: string;
+  user: {
+    email: string;
+    id: string;
+    roles: string[];
+    profile: {
+      createdAt: string;
+      fullName: string;
+      id: string;
+      updatedAt: string;
+      user: string;
+    };
+  };
   session: string;
   lineItems: SaleItemType[];
   status: SaleStatusType;
-  orderNumber: string;
+  orderNumber: number;
   totalAmount: number;
   createdAt: string;
   updatedAt: string;
+  billingAddress: AddressType;
+  customer: CustomerTypes;
+  shipping: number;
+  shippingAddress: AddressType;
+  tax: number;
 };
 
 export type SaleItemType = {
@@ -60,6 +82,7 @@ export type SaleItemType = {
   width?: number;
   height?: number;
   icon: string;
+  sku?: number;
 };
 
 export type SaleStatusType =

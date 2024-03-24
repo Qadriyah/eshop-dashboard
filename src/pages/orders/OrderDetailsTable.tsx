@@ -7,23 +7,28 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { NumericFormat } from "react-number-format";
+import { SaleItemType } from "@/types/entities";
 
-type OrderDetailProps = { detailProducts: any[] };
+type OrderDetailProps = {
+  detailProducts: SaleItemType[];
+  shippingRate?: number;
+  tax?: number;
+  total: number;
+};
 
 const OrderDetailsTable: React.FC<OrderDetailProps> = ({
   detailProducts,
+  shippingRate = 5,
+  tax,
+  total,
 }): JSX.Element => {
-  const shippingRate = 5;
-  const totals = detailProducts.map((detail) => detail.qty * detail.unitCost);
-  const total = totals.reduce((total, currentValue) => total + currentValue);
-
   return (
     <>
       <TableContainer component={Paper} className="hide-scroll-bar">
         <Table sx={{ minWidth: 786 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              {["product", "sku", "qty", "unit price", "total"].map((item) => (
+              {["product", "qty", "unit price", "total"].map((item) => (
                 <TableCell
                   align={item === "product" ? "left" : "center"}
                   key={item}
@@ -36,38 +41,38 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {detailProducts.map((row, index) => (
+            {detailProducts?.map((row, index) => (
               <TableRow
                 key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell className="min-w-[300px]">
                   <img
-                    src={row.productImage}
+                    src={row.icon}
                     alt=""
                     className="w-[45px] h-[45px] rounded-md translate-y-3 mr-0"
                   />
                   <div className="mb-0 -translate-y-7 ml-14">
                     <p className="font-bold text-base opacity-90 -mb-1">
-                      {row.productName}
+                      {row.name}
                     </p>
-                    <p className="opacity-60 text-xs">
+                    {/* <p className="opacity-60 text-xs">
                       Delivery date:{row.date}
-                    </p>
+                    </p> */}
                   </div>
                 </TableCell>
-                <TableCell align="right" className="min-w-[100px]">
+                {/* <TableCell align="right" className="min-w-[100px]">
                   <div className="font-bold text-black opacity-60 hover:text-[#3875d7] text-center">
-                    {row.productId}
+                    {row.sku}
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell align="right" className="min-w-[140px]">
-                  <div className="text-center">{row.qty}</div>
+                  <div className="text-center">{row.quantity}</div>
                 </TableCell>
                 <TableCell align="right" className="min-w-[150px]">
                   <div className="font-bold text-black opacity-60 text-center">
                     <NumericFormat
-                      value={row.unitCost}
+                      value={row.price}
                       prefix={"$"}
                       thousandSeparator=","
                       displayType="text"
@@ -79,7 +84,7 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
                     className={`font-bold opacity-70 text-center p-1 rounded-lg`}
                   >
                     <NumericFormat
-                      value={row.qty * row.unitCost}
+                      value={row.quantity * row.price}
                       prefix="$"
                       thousandSeparator=","
                       displayType="text"
@@ -89,7 +94,7 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
               </TableRow>
             ))}
             <TableRow>
-              <TableCell colSpan={3}></TableCell>
+              <TableCell colSpan={2}></TableCell>
               <TableCell align="right" className="min-w-[150px]">
                 <div className="text-black opacity-60 text-center">
                   Sub total
@@ -102,16 +107,16 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={3}> </TableCell>
+              <TableCell colSpan={2}> </TableCell>
               <TableCell align="right" className="min-w-[150px]">
                 <div className="text-black opacity-60 text-center">VAT(%)</div>
               </TableCell>
               <TableCell align="right" className="min-w-[150px]">
-                <div className="text-black opacity-60 text-center">0</div>
+                <div className="text-black opacity-60 text-center">{tax}</div>
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={3}></TableCell>
+              <TableCell colSpan={2}></TableCell>
               <TableCell align="right" className="min-w-[150px]">
                 <div className="text-black opacity-60 text-center">
                   Shipping Rate
@@ -129,7 +134,7 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={3}></TableCell>
+              <TableCell colSpan={2}></TableCell>
               <TableCell align="right" className="min-w-[150px]">
                 <div className="text-black opacity-60 text-center font-semibold">
                   Grand Total
@@ -138,7 +143,7 @@ const OrderDetailsTable: React.FC<OrderDetailProps> = ({
               <TableCell align="right" className="min-w-[150px]">
                 <div className="text-black text-lg font-bold opacity-100 text-center">
                   <NumericFormat
-                    value={total - shippingRate}
+                    value={total - shippingRate - (tax! / 100) * total}
                     prefix="$"
                     thousandSeparator=","
                     displayType="text"

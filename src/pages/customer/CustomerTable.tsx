@@ -2,56 +2,37 @@
 
 import React from "react";
 import Dropdown from "../../components/Dropdown";
-import ShouldRender from "../../components/ShouldRender";
 import { Table } from "antd";
 import type { TableProps } from "antd";
-import { useDispatchHook, useSelectorHook } from "../../redux/hooks/hooks";
-import { deleteCustomer } from "../../redux/slices/customers";
 import { useRouter } from "next/navigation";
+import { Customers } from "@/api/actions/customer";
 
 type CustomerProps = {
-  customers: any[];
+  customers: Customers[];
 };
 
 const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
   const navigate = useRouter();
-  const [customerId, setCustomerId] = React.useState<number>();
+  // const [customerId, setCustomerId] = React.useState<string>();
 
   const open = Boolean(anchorEl);
 
   const handleClick = (
     event: React.MouseEvent<HTMLImageElement>,
-    customerId: number
+    customerId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setCustomerId(customerId);
+    // setCustomerId(customerId);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const dispatch = useDispatchHook();
-
-  const onDeleteCustomer = () => {
-    dispatch(deleteCustomer(customerId as number));
-    setOpenModal(false);
-  };
-
-  const filterCustomersByName = customers.filter;
   // ant
-  interface DataProps {
-    key: string;
-    name: string;
-    email: string;
-    status: string;
-    createdAt: string;
-    id: number;
-  }
 
-  const columns: TableProps<DataProps>["columns"] = [
+  const columns: TableProps<Customers>["columns"] = [
     {
       key: "customer_name",
       title: "Customer name",
@@ -59,9 +40,9 @@ const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
       render: (_, item) => (
         <div
           className="text-base opacity-90 mb-0 cursor-pointer hover:text-blue-400"
-          onClick={() => navigate.push(`/dashboard/customers/${item.id}`)}
+          onClick={() => navigate.push(`/customers/${item.id}`)}
         >
-          {item.name}
+          {item.profile.fullName}
         </div>
       ),
     },
@@ -75,28 +56,30 @@ const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
         </div>
       ),
     },
-    {
-      key: "status",
-      title: "Status",
-      dataIndex: "status",
-      render: (_, item) => (
-        <div
-          className={`p-1 opacity-60 text-xs text-center rounded-md ${
-            item.status === "Locked"
-              ? "text-[#f18d9d] bg-red-50"
-              : "text-[#5ced73] bg-green-50"
-          }`}
-        >
-          {item.status}
-        </div>
-      ),
-    },
+    // {
+    //   key: "status",
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   render: (_, item) => (
+    //     <div
+    //       className={`p-1 opacity-60 text-xs text-center rounded-md ${
+    //         item.status === "Locked"
+    //           ? "text-[#f18d9d] bg-red-50"
+    //           : "text-[#5ced73] bg-green-50"
+    //       }`}
+    //     >
+    //       {item.status}
+    //     </div>
+    //   ),
+    // },
     {
       key: "created_date",
       title: "Created date",
       dataIndex: "created_date",
       render: (_, item) => (
-        <div className="text-black opacity-60">{item.createdAt}</div>
+        <div className="text-black opacity-60">
+          {item.createdAt.split("T")[0]}
+        </div>
       ),
     },
     {
@@ -117,11 +100,11 @@ const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
               <li
                 className="hover:bg-[#f0f0f1] p-2 cursor-pointer"
                 onClick={() => {
-                  setOpenModal(true);
                   handleClose();
+                  navigate.push(`/customers/${item.id}`);
                 }}
               >
-                Delete
+                View
               </li>
             </ul>
           </div>
@@ -134,7 +117,13 @@ const CustomerTable: React.FC<CustomerProps> = ({ customers }): JSX.Element => {
     <>
       <div className="overflow-x-scroll hide-scrollbar w-full">
         <div className="min-w-[800px] hide-scrollbar">
-          <Table columns={columns} dataSource={customers} />
+          <Table
+            columns={columns}
+            dataSource={customers.map((customer) => ({
+              ...customer,
+              key: customer.id,
+            }))}
+          />
         </div>
       </div>
     </>
