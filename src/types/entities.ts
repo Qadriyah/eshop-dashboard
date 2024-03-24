@@ -46,6 +46,12 @@ export type CustomerTypes = {
   phone: string;
 };
 
+export type CustomerTypes = {
+  email: string;
+  name: string;
+  phone: string;
+};
+
 export type SaleType = {
   id: string;
   user: {

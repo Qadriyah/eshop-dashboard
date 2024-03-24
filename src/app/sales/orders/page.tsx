@@ -25,6 +25,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     queryKey: ["sales"],
     queryFn: () => getSales(),
   });
+  console.log(data?.sales, ";;;;;;;");
 
   const handleChange = (event: SelectChangeEvent<any>) => {
     const { value } = event.target;
