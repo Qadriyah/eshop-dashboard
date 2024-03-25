@@ -1,168 +1,180 @@
 "use client";
 
 import React from "react";
-import { MenuItem, SelectChangeEvent } from "@mui/material";
-import { Table } from "antd";
-import type { TableProps } from "antd";
-import { NumericFormat } from "react-number-format";
-import { useSelectorHook } from "@/redux/hooks/hooks";
 import Card from "@/components/Card";
-import Report from "@/components/Report";
+import { formatCurrency } from "@/utils/helpers";
+import { Table, TableProps } from "antd";
+import moment from "moment";
+import dayjs from "dayjs";
+import { DatePicker, Space } from "antd";
+import PageHeader from "@/components/PageHeader";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getCustomerSalesReport,
+  getReturnsReport,
+} from "@/api/actions/reports";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
+import DownloadCsv from "@/components/DownloadCsv";
+import { CustomerSalesReport } from "@/types/entities";
+
+const { RangePicker } = DatePicker;
+const columns: TableProps<CustomerSalesReport>["columns"] = [
+  {
+    key: "email",
+    dataIndex: "email",
+    title: "Email",
+    className: "text-[1.063rem]",
+    render: (_, item) => <div>{item.email}</div>,
+  },
+  {
+    key: "name",
+    dataIndex: "name",
+    title: "Full Name",
+    className: "text-[1.063rem]",
+    render: (_, item) => (
+      <div className="opacity-70 hover:text-[#3875d7]">{item.fullName}</div>
+    ),
+  },
+  {
+    key: "status",
+    dataIndex: "status",
+    title: "Status",
+    className: "text-[1.063rem]",
+    render: (_, item) => (
+      <div
+        className={`border px-2 rounded-md ${
+          item.status === "Active"
+            ? "bg-green-200 text-green-600 border-green-600"
+            : "bg-red-200 text-red-600 border-red-600"
+        }`}
+      >
+        {item.status}
+      </div>
+    ),
+  },
+  {
+    key: "date",
+    dataIndex: "date",
+    title: "Date Joined",
+    className: "text-[1.063rem]",
+    render: (_, item) => (
+      <div className="opacity-70">
+        {moment(item.createdAt).format("MM/DD/YYYY")}
+      </div>
+    ),
+  },
+  {
+    key: "orders",
+    dataIndex: "orders",
+    title: "No. of Orders",
+    className: "text-[1.063rem]",
+    align: "center",
+    render: (_, item) => <div className="opacity-70">{item.orders}</div>,
+  },
+  {
+    key: "products",
+    dataIndex: "products",
+    title: "No. of Products",
+    className: "text-[1.063rem]",
+    align: "center",
+    render: (_, item) => <div className="opacity-70">{item.products}</div>,
+  },
+  {
+    key: "total",
+    dataIndex: "total",
+    title: "Total",
+    className: "text-[1.063rem]",
+    align: "right",
+    render: (_, item) => (
+      <div className="opacity-70">{formatCurrency(item.total)}</div>
+    ),
+  },
+];
+
+const csvColumns = [
+  {
+    id: "email",
+    displayName: "Email",
+  },
+  {
+    id: "name",
+    displayName: "Full Name",
+  },
+  {
+    id: "status",
+    displayName: "Status",
+  },
+  {
+    id: "date",
+    displayName: "Date Joined",
+  },
+  {
+    id: "orders",
+    displayName: "No. of Order",
+  },
+  {
+    id: "products",
+    displayName: "No.of Products",
+  },
+  {
+    id: "total",
+    displayName: "Total",
+  },
+];
 
 const CustomerOrders: React.FC<{}> = (): JSX.Element => {
-  const [report, setReport] = React.useState<string>("");
-  const [status, setStatus] = React.useState<string>("All");
-  const customerOrdersReports = useSelectorHook(
-    (state) => state.report.customerOrders
-  );
-  const [renderSales, setRendersales] = React.useState<any[]>(
-    customerOrdersReports
-  );
-  const [dateValue, setDateValue] = React.useState<string[]>([]);
+  const [dateValue, setDateValue] = React.useState<string[]>([
+    moment().startOf("M").format("YYYY-MM-DD"),
+    moment().endOf("M").format("YYYY-MM-DD"),
+  ]);
 
-  const searchedData = customerOrdersReports.filter((customer) =>
-    customer.customerName.toLocaleLowerCase().includes(report)
-  );
-  const searchByDate = customerOrdersReports.filter(
-    (customer) =>
-      customer.datesJoined >= dateValue[0] &&
-      customer.datesJoined <= dateValue[1]
-  );
-  const searchByStatus = customerOrdersReports.filter(
-    (customer) => customer.status === status
-  );
+  const { data, isLoading } = useQuery({
+    queryKey: ["customer-sales-report", dateValue],
+    queryFn: () => getCustomerSalesReport(dateValue[0], dateValue[1]),
+    enabled: dateValue.length > 0,
+  });
 
-  const getDateValue = (date: string[]): void => setDateValue(date);
-
-  React.useEffect(() => {
-    if (report === "") {
-      if (dateValue[0] !== "") {
-        setRendersales(searchByDate);
-      }
-      if (dateValue.length <= 0 || dateValue[0] === "" || status === "All") {
-        setRendersales(customerOrdersReports);
-      }
-      if (status !== "All") {
-        setRendersales(searchByStatus);
-      }
-    } else {
-      setRendersales(searchedData);
-    }
-  }, [report, dateValue, status]);
-  // ant
-  type CustomerOrder = {
-    key: string;
-    customerName: string;
-    email: string;
-    status: string;
-    datesJoined: string;
-    noOrders: number;
-    noProducts: number;
-    total: number;
-  };
-
-  const columns: TableProps<CustomerOrder>["columns"] = [
-    {
-      key: "customer_name",
-      title: "Customer name",
-      dataIndex: "customer_name",
-      render: (_, item) => (
-        <div className="opacity-70 mb-0">{item.customerName}</div>
-      ),
-    },
-    {
-      key: "email",
-      title: "Email",
-      dataIndex: "email",
-      render: (_, item) => (
-        <div className="opacity-70 hover:text-[#3875d7]">{item.email}</div>
-      ),
-    },
-    {
-      key: "status",
-      title: "Status",
-      dataIndex: "status",
-      render: (_, item) => (
-        <div
-          className={`opacity-70 font-semibold text-center p-1 text-xs ${
-            item.status === "Active"
-              ? "text-green-500 border border-green-500 rounded-lg"
-              : item.status === "Disabled"
-              ? "text-blue-500 border border-blue-500 rounded-lg"
-              : "text-red-500 border border-red-500 rounded-lg"
-          }`}
-        >
-          {item.status}
-        </div>
-      ),
-    },
-    {
-      key: "date_joined",
-      title: "Date joined",
-      dataIndex: "date_joined",
-      render: (_, item) => <div>{item.datesJoined}</div>,
-    },
-    {
-      key: "no_orders",
-      title: "No. orders",
-      dataIndex: "no_orders",
-      render: (_, item) => <div>{item.noOrders}</div>,
-    },
-    {
-      key: "no_products",
-      title: "No. products",
-      dataIndex: "no_products",
-      render: (_, item) => <div>{item.noProducts}</div>,
-    },
-    {
-      key: "total",
-      title: "Total",
-      dataIndex: "total",
-      render: (_, item) => (
-        <div className="opacity-70">
-          <NumericFormat
-            value={item.total}
-            prefix={"$"}
-            thousandSeparator=","
-            displayType="text"
-          />
-        </div>
-      ),
-    },
-  ];
+  const getDateValue = (date: string[]) => setDateValue(date);
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Customer Orders report
-      </h2>
+      <PageHeader title="Customer Orders Report" />
       <Card>
-        <Report
-          searchName="report"
-          searchValue={report}
-          placeholder="Search report"
-          searchOnChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setReport(event.target.value)
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-40">
+              <Loader color="black" />
+            </div>
           }
-          handleChange={(event: SelectChangeEvent) =>
-            setStatus(event.target.value as string)
-          }
-          value={status}
-          showStatus={true}
-          handleExport={() => {}}
-          getDateValue={getDateValue}
+          loading={isLoading}
         >
-          <MenuItem value={"All"}>All</MenuItem>
-          <MenuItem value={"Active"}>Active</MenuItem>
-          <MenuItem value={"Locked"}>Locked</MenuItem>
-          <MenuItem value={"Disabled"}>Disabled</MenuItem>
-          <MenuItem value={"Banned"}>Banned</MenuItem>
-        </Report>
-        <div className="overflow-x-scroll hide-scrollbar w-full">
-          <div className="min-w-[800px] hide-scrollbar">
-            <Table columns={columns} dataSource={renderSales} />
-          </div>
-        </div>
+          <Space direction="vertical" size={20} className="w-full">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-1">
+                <div>
+                  <RangePicker
+                    defaultValue={[dayjs(dateValue[0]), dayjs(dateValue[1])]}
+                    onChange={(_, dates) => getDateValue(dates)}
+                    className="p-2 text-[1.063rem]"
+                  />
+                </div>
+              </div>
+              <div>
+                <DownloadCsv
+                  filename="customer-orders"
+                  columns={csvColumns}
+                  data={data?.report!}
+                />
+              </div>
+            </div>
+            <div className="overflow-x-scroll hide-scrollbar w-full">
+              <div className="min-w-[800px] hide-scrollbar">
+                <Table columns={columns} dataSource={data?.report} />
+              </div>
+            </div>
+          </Space>
+        </Suspense>
       </Card>
     </div>
   );
