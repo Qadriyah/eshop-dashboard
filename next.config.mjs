@@ -9,6 +9,7 @@ const nextConfig = {
         pathname: "/api/v1/files/download/**",
       },
     ],
+    domains: ["localhost"],
   },
   swcMinify: true,
 };

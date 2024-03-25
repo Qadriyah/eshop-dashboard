@@ -9,7 +9,7 @@ import SelectComponent from "@/components/SelectComponent";
 import Button from "@/components/Button";
 import ProductsTable from "@/app/catalog/products/ProductList";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
 import Suspense from "@/components/Suspense";
 import { ProductType } from "@/types/entities";

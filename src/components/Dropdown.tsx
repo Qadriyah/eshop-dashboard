@@ -3,7 +3,7 @@ import Menu from "@mui/material/Menu";
 
 type DropdownProps = PropsWithChildren & {
   showImage?: boolean;
-  title?: string;
+  title?: string | JSX.Element;
   id: string;
   image?: any;
   anchorEl: any;
@@ -43,8 +43,6 @@ const Dropdown: React.FC<DropdownProps> = ({
           id={id}
           className="text-black font-semibold opacity-70 cursor-pointer hover:text-[#3875d7]"
           aria-controls={open ? "basic-menu" : undefined}
-          // aria-haspopup="true"
-          // aria-expanded={open ? "true" : undefined}
           onClick={handleClick}
         >
           {title}

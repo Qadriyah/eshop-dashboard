@@ -14,10 +14,11 @@ export type ModalProps = {
   subTitle?: string;
   open: boolean;
   handleOk?: () => void;
-  handleClose: () => void;
+  handleClose?: () => void;
   okText?: string;
   okBtnColor?: string;
   loading?: boolean;
+  children?: React.ReactNode;
 };
 
 export default function withModal<T>(WrappedComponent: any) {
@@ -45,7 +46,7 @@ export default function withModal<T>(WrappedComponent: any) {
           <div className="text-xl">
             <Button
               onClick={props.handleClose}
-              className="p-3 rounded-lg text-black hover:text-blue-600 bg-white"
+              className="p-3 rounded-lg text-black hover:text-blue-600 bg-white mr-3 outline-none hover:bg-[#d3d3d3]"
             >
               Close
             </Button>
@@ -54,7 +55,7 @@ export default function withModal<T>(WrappedComponent: any) {
                 onClick={handleOk}
                 loading={props.loading}
                 disabled={props.loading}
-                className="p-3 rounded-lg text-white bg-black hover:bg-gray-600"
+                className="p-3 rounded-lg text-white bg-black hover:bg-gray-600 hover:opacity-70"
                 style={{ backgroundColor: "#000" }}
               >
                 Ok

@@ -13,43 +13,32 @@ import {
 } from "react-icons/lia";
 import { GiWantedReward } from "react-icons/gi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import OrderDetail from "@/components/OrderDetail";
 import Address from "@/components/Address";
-import OrderDetailsTable from "@/pages/orders/OrderDetailsTable";
+import OrderDetailsTable from "@/app/sales/OrderDetailsTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSale } from "@/api/actions/sales";
-import { IoArrowBackSharp } from "react-icons/io5";
+import PageHeader from "@/components/PageHeader";
 
 const OrderDetails: React.FC<{}> = (): JSX.Element => {
   const params = useParams<{ orderId: string }>();
   const id = params?.orderId;
-  const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["sales", id],
     queryFn: () => getSale(id as string),
   });
   const sale = data?.sale;
-  console.log(sale, "///////");
 
   return (
     <div>
-      <div className="flex">
-        <IoArrowBackSharp
-          size={25}
-          className="mt-1 mr-3 cursor-pointer"
-          onClick={() => router.back()}
-        />
-        <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-          Order Details
-        </h2>
-      </div>
+      <PageHeader title="Order Details"></PageHeader>
       <div>
         <div className="xl:flex">
           <div className="w-full xl:w-1/3">
-            <ProductCard title="Order Details (#14534)">
+            <ProductCard title="Order Details (#14534)" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
@@ -73,7 +62,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
             </ProductCard>
           </div>
           <div className="xl:mr-5 xl:ml-5 mt-5 mb-5 w-full xl:w-1/3 xl:mt-0 xl:mb-0">
-            <ProductCard title="Customer Details">
+            <ProductCard title="Customer Details" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
@@ -98,7 +87,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
             </ProductCard>
           </div>
           <div className="w-full xl:w-1/3">
-            <ProductCard title="Order Details (#14534)">
+            <ProductCard title="Order Details (#14534)" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<LiaFileInvoiceDollarSolid className="mt-1 mr-2" />}
@@ -139,12 +128,12 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
             className="w-full md:w-1/2 md:ml-1 md:-mr-2"
           />
         </div>
-        <ProductCard title="Order #14534">
+        <ProductCard title="Order #14534" showStatus={true}>
           <OrderDetailsTable
             detailProducts={sale?.lineItems!}
             tax={sale?.tax}
-            shippingRate={sale?.shipping! / 100}
-            total={sale?.totalAmount! / 100}
+            shippingRate={sale?.shipping!}
+            total={sale?.totalAmount!}
           />
         </ProductCard>
       </div>
