@@ -13,7 +13,7 @@ type IProps = {
   ) => void;
 };
 
-const Media: React.FC<IProps> = ({ imageSrc, onDeleteImage }) => {
+const Media: React.FC<IProps> = ({ imageSrc, loading, onDeleteImage }) => {
   return (
     <div
       className="h-[100px] w-[100px] border border-gray-400 rounded-md"
@@ -37,7 +37,7 @@ const Media: React.FC<IProps> = ({ imageSrc, onDeleteImage }) => {
           alt="close"
         />
       </div>
-      <ShouldRender visible={true!}>
+      <ShouldRender visible={loading!}>
         <div className="relative flex justify-center items-center opacity-50 bg-gray-300 h-full w-full -top-[30px]">
           <Loader color="black" />
         </div>

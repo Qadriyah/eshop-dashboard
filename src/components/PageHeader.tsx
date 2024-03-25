@@ -13,7 +13,7 @@ const PageHeader: React.FC<HeaderProps> = ({ title, params, children }) => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 my-10">
+    <div className="flex flex-col md:flex-row gap-3 my-5">
       <div className="flex-1">
         <div className="flex items-center gap-3">
           {((params && Object.keys(params)?.length > 0) ||
