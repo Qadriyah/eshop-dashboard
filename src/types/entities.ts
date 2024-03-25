@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 export type AddressType = {
   line1: string;
-  line2?: string;
+  line2: string;
   city: string;
   state: string;
   postal_code: string;
@@ -10,12 +10,12 @@ export type AddressType = {
 };
 
 export type ProductType = {
-  id?: string;
-  sku?: string;
+  id: string;
+  sku: string;
   name: string;
-  status?: string;
-  icon?: string;
-  images?: string[];
+  status: string;
+  icon: string;
+  images: string[];
   description: string;
   price: number;
   discountType: string;
@@ -27,7 +27,7 @@ export type ProductType = {
   length: number;
   width: number;
   height: number;
-  slug?: string;
+  slug: string;
 };
 
 export type ProfileType = {
@@ -78,15 +78,15 @@ export type SaleItemType = {
   name: string;
   price: number;
   quantity: number;
-  weight?: number;
-  length?: number;
-  width?: number;
-  height?: number;
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
   icon: string;
-  sku?: number;
+  sku: number;
 };
 
-export type SaleStatusType =
+export type SaleStatusType<> =
   | "Pending"
   | "Processing"
   | "Completed"
@@ -113,13 +113,13 @@ export type PaymentMethodType = {
       city: string;
       country: string;
       line1: string;
-      line2?: string;
+      line2: string;
       postal_code: string;
       state: string;
     };
-    email?: string;
+    email: string;
     name: string;
-    phone?: string;
+    phone: string;
   };
 } & Stripe.PaymentMethod.Card;
 
@@ -129,21 +129,21 @@ export type ErrorType = {
 };
 
 export type CustomerSource = {
-  account_holder_name?: string;
-  account_holder_type?: string;
-  address_city?: string;
-  address_country?: string;
-  address_line1?: string;
-  address_line2?: string;
-  address_state?: string;
-  address_zip?: string;
-  name?: string;
+  account_holder_name: string;
+  account_holder_type: string;
+  address_city: string;
+  address_country: string;
+  address_line1: string;
+  address_line2: string;
+  address_state: string;
+  address_zip: string;
+  name: string;
 };
 
 export type MessageType = {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   comment: string;
 };
 

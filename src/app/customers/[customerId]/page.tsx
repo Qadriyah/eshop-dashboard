@@ -58,7 +58,7 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
               />
               <span>
                 <h2 className="font-bold mt-5 opacity-80 text-lg text-center">
-                  {customer?.profile.fullName}
+                  {customer?.profile?.fullName}
                 </h2>
                 <p className="font-semibold opacity-55 text-center">
                   {customer?.email}

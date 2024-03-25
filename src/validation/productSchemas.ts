@@ -70,7 +70,6 @@ export const updateProductValidationSchema = Yup.object().shape({
         return schema.required("Fixed discount price is required");
       }
       if (discountType[0] === DISCOUNT_TYPES.none) {
-        console.log("None >>>>>>>>");
         return schema.optional();
       }
       return schema;

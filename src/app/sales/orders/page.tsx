@@ -6,11 +6,10 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
-import OrdersTable from "@/pages/orders/OrdersTable";
+import OrdersTable from "@/app/sales/OrdersTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSales } from "@/api/actions/sales";
 import { SaleType } from "@/types/entities";
-import { getUsers } from "@/api/actions/customer";
 
 const Orders: React.FC<{}> = (): JSX.Element => {
   const [sale, setSale] = React.useState<string>("");
@@ -22,7 +21,6 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     queryKey: ["sales"],
     queryFn: () => getSales(),
   });
-  console.log(data?.sales, ";;;;;;;");
 
   const handleChange = (event: SelectChangeEvent<any>) => {
     const { value } = event.target;
@@ -54,7 +52,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     } else {
       setFilteredSales(() =>
         sales.filter((sale) =>
-          sale.user?.email
+          sale.customer.name
             .toLocaleLowerCase()
             .includes(value.toLocaleLowerCase())
         )
@@ -110,7 +108,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                 </SelectComponent>
               </div>
             </div>
-            <OrdersTable orders={filteredSales} />
+            <OrdersTable orders={filteredSales} isLoading={isLoading} />
           </div>
         </Card>
       </div>

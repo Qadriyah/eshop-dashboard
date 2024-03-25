@@ -5,18 +5,26 @@ import FormControlLabel, {
 
 type IProps = FormControlLabelProps & {
   error?: string;
+  ref_?: boolean;
 };
 
-const RadioInput: React.FC<IProps> = ({ error, ...props }): JSX.Element => {
+const RadioInput: React.FC<IProps> = ({
+  error,
+  ref_ = true,
+  ...props
+}): JSX.Element => {
   const ref = React.useRef<HTMLInputElement>(null);
 
   return (
     <>
       <div
-        className={`border-dashed cursor-pointer border hover:bg-[#c8dff5] hover:border-[dodgerblue] border-gray-400 rounded-lg w-full p-2 ${
+        className={`border-dashed cursor-pointer ${
+          ref_ &&
+          "border hover:bg-[#c8dff5] hover:border-[dodgerblue] border-gray-400"
+        } rounded-lg w-full p-2 ${
           error ? "border-red-500" : "border-gray-400"
         }`}
-        onClick={() => ref.current?.click()}
+        onClick={() => ref_ && ref.current?.click()}
       >
         <FormControlLabel
           {...props}
