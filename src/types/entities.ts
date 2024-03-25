@@ -49,6 +49,7 @@ export type SaleType = {
   totalAmount: number;
   createdAt: string;
   updatedAt: string;
+  refunded: boolean;
 };
 
 export type SaleItemType = {
@@ -121,4 +122,32 @@ export type MessageType = {
   email: string;
   phone?: string;
   comment: string;
+};
+
+export type SaleReport = {
+  key: string;
+  date: string;
+  orders: number;
+  sold: number;
+  tax: number;
+  total: number;
+};
+
+export type ReturnsReport = {
+  key: string;
+  date: string;
+  returned: number;
+  refunded: number;
+  totalRefunded: number;
+};
+
+export type CustomerSalesReport = {
+  key: string;
+  email: string;
+  fullName: string;
+  status: string;
+  createdAt: string;
+  orders: number;
+  products: number;
+  total: number;
 };

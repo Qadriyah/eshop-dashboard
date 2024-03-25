@@ -1,13 +1,20 @@
 "use client";
 
+import React from "react";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import { formatCurrency } from "@/utils/helpers";
 import { Table, TableProps } from "antd";
-import React from "react";
 import { BsDownload } from "react-icons/bs";
-import { IoSearchOutline } from "react-icons/io5";
+import CsvDownloader from "react-csv-downloader";
+import moment from "moment";
+import dayjs from "dayjs";
 import { DatePicker, Space } from "antd";
+import PageHeader from "@/components/PageHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getSalesReport } from "@/api/actions/reports";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
 
 const { RangePicker } = DatePicker;
 const columns: TableProps["columns"] = [
@@ -16,17 +23,16 @@ const columns: TableProps["columns"] = [
     dataIndex: "date",
     title: "Date",
     className: "text-[1.063rem]",
-    render: (_, item) => <div className="opacity-70 mb-0">{item.date}</div>,
+    render: (_, item) => <div>{moment(item.date).format("MM/DD/YYYY")}</div>,
   },
   {
     key: "no_orders",
     dataIndex: "orders",
     title: "No. Orders",
     className: "text-[1.063rem]",
+    align: "center",
     render: (_, item) => (
-      <div className="opacity-70 hover:text-[#3875d7]">
-        {item.numberOfOrders}
-      </div>
+      <div className="opacity-70 hover:text-[#3875d7]">{item.orders}</div>
     ),
   },
   {
@@ -34,13 +40,15 @@ const columns: TableProps["columns"] = [
     dataIndex: "sold",
     title: "Products Sold",
     className: "text-[1.063rem]",
-    render: (_, item) => <div className="opacity-70">{item.productsSold}</div>,
+    align: "center",
+    render: (_, item) => <div className="opacity-70">{item.sold}</div>,
   },
   {
     key: "tax",
     dataIndex: "tax",
     title: "Tax",
     className: "text-[1.063rem]",
+    align: "right",
     render: (_, item) => (
       <div className="opacity-70">{formatCurrency(item.tax)}</div>
     ),
@@ -50,68 +58,97 @@ const columns: TableProps["columns"] = [
     dataIndex: "total",
     title: "Total",
     className: "text-[1.063rem]",
+    align: "right",
     render: (_, item) => (
       <div className="opacity-70">{formatCurrency(item.total)}</div>
     ),
   },
 ];
 
-const Sales: React.FC<{}> = (): JSX.Element => {
-  const [report, setReport] = React.useState<string>("");
-  const [renderSales, setRendersales] = React.useState<any[]>([]);
-  const [dateValue, setDateValue] = React.useState<string[]>([]);
+const csvColumns = [
+  {
+    id: "date",
+    displayName: "Date",
+  },
+  {
+    id: "orders",
+    displayName: "No. of Orders",
+  },
+  {
+    id: "sold",
+    displayName: "Products Sold",
+  },
+  {
+    id: "tax",
+    displayName: "Tax",
+  },
+  {
+    id: "total",
+    displayName: "Total",
+  },
+];
 
-  const getDateValue = (date: string[]): void => setDateValue(date);
+const Sales: React.FC<{}> = (): JSX.Element => {
+  const [dateValue, setDateValue] = React.useState<string[]>([
+    moment().startOf("M").format("YYYY-MM-DD"),
+    moment().endOf("M").format("YYYY-MM-DD"),
+  ]);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["sales-report"],
+    queryFn: () => getSalesReport(dateValue[0], dateValue[1]),
+    enabled: dateValue.length > 0,
+  });
+
+  const getDateValue = (date: string[]) => setDateValue(date);
 
   return (
-    <div className="flex flex-col gap-5">
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Sales Report
-      </h2>
+    <div>
+      <PageHeader title="Sales Report" />
       <Card>
-        <Space direction="vertical" size={20} className="w-full">
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1">
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-40">
+              <Loader color="black" />
+            </div>
+          }
+          loading={isLoading}
+        >
+          <Space direction="vertical" size={20} className="w-full">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-1">
+                <div>
+                  <RangePicker
+                    defaultValue={[dayjs(dateValue[0]), dayjs(dateValue[1])]}
+                    onChange={(_, dates) => getDateValue(dates)}
+                    className="p-2 text-[1.063rem]"
+                  />
+                </div>
+              </div>
               <div>
-                <input
-                  type="text"
-                  placeholder="Search sales"
-                  // name={searchName}
-                  // value={searchValue}
-                  // onChange={searchOnChange}
-                  className="bg-[#f1f0f0] outline-none rounded-tl-md rounded-bl-md w-full h-[45px] px-5"
-                />
-              </div>
-              <div className="bg-[#f1f0f0] flex items-center justify-center h-[45px] w-[60px] rounded-tr-md rounded-br-md cursor-pointer">
-                <IoSearchOutline
-                  size={20}
-                  fill="gray"
-                  className="opacity-60 translate-x-2"
-                />
+                <CsvDownloader
+                  filename="myfile"
+                  extension=".csv"
+                  separator=","
+                  wrapColumnChar=""
+                  columns={csvColumns}
+                  datas={data?.report as any}
+                >
+                  <Button className="font-semibold rounded-md p-2 text-[dodgerblue] bg-[#e3f2f7]">
+                    <BsDownload className="mr-1 text-[dodgerblue] font-bold mt-1" />{" "}
+                    Export Report
+                  </Button>
+                </CsvDownloader>
               </div>
             </div>
-            <div>
-              <Button
-                className="font-semibold rounded-md h-[45px] px-2 text-[dodgerblue] bg-[#e3f2f7]"
-                // onClick={handleExport}
-              >
-                <BsDownload className="mr-1 text-[dodgerblue] font-bold mt-1" />{" "}
-                Export Report
-              </Button>
+
+            <div className="overflow-x-scroll hide-scrollbar w-full">
+              <div className="min-w-[800px] hide-scrollbar">
+                <Table columns={columns} dataSource={data?.report} />
+              </div>
             </div>
-          </div>
-          <div>
-            <RangePicker
-              onChange={(_: any, info: any) => getDateValue?.(info)}
-              className="p-3 text-[1.063rem]"
-            />
-          </div>
-          <div className="overflow-x-scroll hide-scrollbar w-full">
-            <div className="min-w-[800px] hide-scrollbar">
-              <Table columns={columns} dataSource={renderSales} />
-            </div>
-          </div>
-        </Space>
+          </Space>
+        </Suspense>
       </Card>
     </div>
   );
