@@ -1,144 +1,133 @@
 "use client";
 
-import Card from "@/components/Card";
-import Report from "@/components/Report";
-import { useSelectorHook } from "@/redux/hooks/hooks";
-import { Table, TableProps } from "antd";
 import React from "react";
-import { NumericFormat } from "react-number-format";
+import Card from "@/components/Card";
+import { formatCurrency } from "@/utils/helpers";
+import { Table, TableProps } from "antd";
+import moment from "moment";
+import dayjs from "dayjs";
+import { DatePicker, Space } from "antd";
+import PageHeader from "@/components/PageHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getReturnsReport } from "@/api/actions/reports";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
+import DownloadCsv from "@/components/DownloadCsv";
+import { ReturnsReport } from "@/types/entities";
 
-const Returns: React.FC<{}> = (): JSX.Element => {
-  const [return_, setReturn] = React.useState<string>("");
-  const returns = useSelectorHook((state) => state.report.returns);
-  const [renderSales, setRendersales] = React.useState<any[]>(returns);
-  const [dateValue, setDateValue] = React.useState<string[]>([]);
+const { RangePicker } = DatePicker;
+const columns: TableProps<ReturnsReport>["columns"] = [
+  {
+    key: "date",
+    dataIndex: "date",
+    title: "Date",
+    className: "text-[1.063rem]",
+    render: (_, item) => <div>{moment(item.date).format("MM/DD/YYYY")}</div>,
+  },
+  {
+    key: "no_orders",
+    dataIndex: "returned",
+    title: "No. of Orders Returned",
+    className: "text-[1.063rem]",
+    align: "center",
+    render: (_, item) => (
+      <div className="opacity-70 hover:text-[#3875d7]">{item.returned}</div>
+    ),
+  },
+  {
+    key: "products_sold",
+    dataIndex: "refunded",
+    title: "No. of Orders Refunded",
+    className: "text-[1.063rem]",
+    align: "center",
+    render: (_, item) => <div className="opacity-70">{item.refunded}</div>,
+  },
+  {
+    key: "total",
+    dataIndex: "totalRefunded",
+    title: "Total Refunded",
+    className: "text-[1.063rem]",
+    align: "right",
+    render: (_, item) => (
+      <div className="opacity-70">{formatCurrency(item.totalRefunded)}</div>
+    ),
+  },
+];
 
-  const searchedData = returns.filter((item) =>
-    item.date.toLocaleLowerCase().includes(return_)
-  );
-  const searchByDate = returns.filter(
-    (item) => item.date >= dateValue[0] && item.date <= dateValue[1]
-  );
+const csvColumns = [
+  {
+    id: "date",
+    displayName: "Date",
+  },
+  {
+    id: "returned",
+    displayName: "No. of Orders Returned",
+  },
+  {
+    id: "refunded",
+    displayName: "No. of Orders Refunded",
+  },
+  {
+    id: "totalRefunded",
+    displayName: "Total Refunded",
+  },
+];
 
-  const getDateValue = (date: string[]): void => setDateValue(date);
+const ReturnsReport: React.FC<{}> = (): JSX.Element => {
+  const [dateValue, setDateValue] = React.useState<string[]>([
+    moment().startOf("M").format("YYYY-MM-DD"),
+    moment().endOf("M").format("YYYY-MM-DD"),
+  ]);
 
-  React.useEffect(() => {
-    if (return_ === "") {
-      if (dateValue[0] !== "") {
-        setRendersales(searchByDate);
-      }
-      if (dateValue.length <= 0 || dateValue[0] === "") {
-        setRendersales(returns);
-      }
-    } else {
-      setRendersales(searchedData);
-    }
-  }, [return_, dateValue]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["returns-report"],
+    queryFn: () => getReturnsReport(dateValue[0], dateValue[1]),
+    enabled: dateValue.length > 0,
+  });
 
-  // antd
-  type ReturnsProps = {
-    key: string;
-    date: string;
-    noOrdersReturned: number;
-    noOrdersRefuned: number;
-    noOrdersReplaced: number;
-    totalRefunded: number;
-    totalReplaced: number;
-  };
-  const columns: TableProps<ReturnsProps>["columns"] = [
-    {
-      key: "date",
-      title: "Date",
-      dataIndex: "date",
-      render: (_, item) => <div className="opacity-70 mb-0">{item.date}</div>,
-    },
-    {
-      key: "no_orders_returned",
-      title: "No. orders returned",
-      dataIndex: "no_orders_returned",
-      render: (_, item) => (
-        <div className="opacity-70 hover:text-[#3875d7] text-center">
-          {item.noOrdersReturned}
-        </div>
-      ),
-    },
-    {
-      key: "no_orders_refunded",
-      title: "No. orders refunded",
-      dataIndex: "no_orders_refunded",
-      render: (_, item) => (
-        <div className="opacity-70 hover:text-[#3875d7] text-center">
-          {item.noOrdersRefuned}
-        </div>
-      ),
-    },
-    {
-      key: "no_orders_replaced",
-      title: "No. orders replaced",
-      dataIndex: "no_orders_replaced",
-      render: (_, item) => (
-        <div className="text-center">{item.noOrdersReplaced}</div>
-      ),
-    },
-    {
-      key: "total_refunded",
-      title: "Total refunded",
-      dataIndex: "total_refunded",
-      render: (_, item) => (
-        <div className="opacity-70">
-          <NumericFormat
-            value={item.totalRefunded}
-            prefix={"$"}
-            thousandSeparator=","
-            displayType="text"
-            className="text-center"
-          />
-        </div>
-      ),
-    },
-    {
-      key: "total_replaced",
-      title: "Total replaced",
-      dataIndex: "total_replaced",
-      render: (_, item) => (
-        <div className="opacity-70">
-          <NumericFormat
-            value={item.totalReplaced}
-            prefix={"$"}
-            thousandSeparator=","
-            displayType="text"
-            className="text-center"
-          />
-        </div>
-      ),
-    },
-  ];
+  const getDateValue = (date: string[]) => setDateValue(date);
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Returns report
-      </h2>
+      <PageHeader title="Returns Report" />
       <Card>
-        <Report
-          searchName="report"
-          searchValue={return_}
-          placeholder="Search report"
-          searchOnChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setReturn(event.target.value)
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-40">
+              <Loader color="black" />
+            </div>
           }
-          showStatus={false}
-          handleExport={() => {}}
-          getDateValue={getDateValue}
-        />
-        <div className="overflow-x-scroll hide-scrollbar w-full">
-          <div className="min-w-[900px] hide-scrollbar">
-            <Table columns={columns} dataSource={renderSales} />
-          </div>
-        </div>
+          loading={isLoading}
+        >
+          <Space direction="vertical" size={20} className="w-full">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-1">
+                <div>
+                  <RangePicker
+                    defaultValue={[dayjs(dateValue[0]), dayjs(dateValue[1])]}
+                    onChange={(_, dates) => getDateValue(dates)}
+                    className="p-2 text-[1.063rem]"
+                  />
+                </div>
+              </div>
+              <div>
+                <DownloadCsv
+                  filename="returns"
+                  columns={csvColumns}
+                  data={data?.report!}
+                />
+              </div>
+            </div>
+            <div className="overflow-x-scroll hide-scrollbar w-full">
+              <div className="min-w-[800px] hide-scrollbar">
+                <Table columns={columns} dataSource={data?.report} />
+              </div>
+            </div>
+          </Space>
+        </Suspense>
       </Card>
     </div>
   );
 };
 
-export default Returns;
+export default ReturnsReport;
