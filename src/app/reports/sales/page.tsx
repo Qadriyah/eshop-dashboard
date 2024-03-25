@@ -6,7 +6,6 @@ import Card from "@/components/Card";
 import { formatCurrency } from "@/utils/helpers";
 import { Table, TableProps } from "antd";
 import { BsDownload } from "react-icons/bs";
-import CsvDownloader from "react-csv-downloader";
 import moment from "moment";
 import dayjs from "dayjs";
 import { DatePicker, Space } from "antd";
@@ -15,9 +14,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getSalesReport } from "@/api/actions/reports";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
+import DownloadCsv from "@/components/DownloadCsv";
+import { SaleReport } from "@/types/entities";
 
 const { RangePicker } = DatePicker;
-const columns: TableProps["columns"] = [
+const columns: TableProps<SaleReport>["columns"] = [
   {
     key: "date",
     dataIndex: "date",
@@ -126,22 +127,13 @@ const Sales: React.FC<{}> = (): JSX.Element => {
                 </div>
               </div>
               <div>
-                <CsvDownloader
-                  filename="myfile"
-                  extension=".csv"
-                  separator=","
-                  wrapColumnChar=""
+                <DownloadCsv
+                  filename="sales"
                   columns={csvColumns}
-                  datas={data?.report as any}
-                >
-                  <Button className="font-semibold rounded-md p-2 text-[dodgerblue] bg-[#e3f2f7]">
-                    <BsDownload className="mr-1 text-[dodgerblue] font-bold mt-1" />{" "}
-                    Export Report
-                  </Button>
-                </CsvDownloader>
+                  data={data?.report!}
+                />
               </div>
             </div>
-
             <div className="overflow-x-scroll hide-scrollbar w-full">
               <div className="min-w-[800px] hide-scrollbar">
                 <Table columns={columns} dataSource={data?.report} />
