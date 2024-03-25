@@ -96,7 +96,7 @@ const Sales: React.FC<{}> = (): JSX.Element => {
   ]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["sales-report"],
+    queryKey: ["sales-report", dateValue],
     queryFn: () => getSalesReport(dateValue[0], dateValue[1]),
     enabled: dateValue.length > 0,
   });

@@ -1,5 +1,6 @@
 import { deleteApi, getApi, patchApi, postApi } from "..";
 import {
+  CustomerSalesReport,
   ErrorType,
   ProductType,
   ReturnsReport,
@@ -15,6 +16,12 @@ export type GetSalesReport = {
 export type GetReturnsReport = {
   statusCode: number;
   report: ReturnsReport[];
+  errors?: ErrorType[];
+};
+
+export type GetCustomerSalesReport = {
+  statusCode: number;
+  report: CustomerSalesReport[];
   errors?: ErrorType[];
 };
 
@@ -34,6 +41,16 @@ export const getReturnsReport = async (
 ): Promise<GetReturnsReport> => {
   const response = await getApi<GetReturnsReport>({
     url: `/reports/returns?start-date=${startDate}&end-date=${endDate}`,
+  });
+  return response;
+};
+
+export const getCustomerSalesReport = async (
+  startDate: string,
+  endDate: string
+): Promise<GetCustomerSalesReport> => {
+  const response = await getApi<GetCustomerSalesReport>({
+    url: `/reports/customer-orders?start-date=${startDate}&end-date=${endDate}`,
   });
   return response;
 };

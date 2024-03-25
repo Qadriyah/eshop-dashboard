@@ -80,7 +80,7 @@ const ReturnsReport: React.FC<{}> = (): JSX.Element => {
   ]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["returns-report"],
+    queryKey: ["returns-report", dateValue],
     queryFn: () => getReturnsReport(dateValue[0], dateValue[1]),
     enabled: dateValue.length > 0,
   });
