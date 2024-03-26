@@ -13,7 +13,7 @@ import { getReturnsReport } from "@/api/actions/reports";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import DownloadCsv from "@/components/DownloadCsv";
-import { ReturnsReport } from "@/types/entities";
+import { ReturnReport } from "@/types/entities";
 import { useReactToPrint } from "react-to-print";
 import ReportHeader from "../ReportHeader";
 import Button from "@/components/Button";
@@ -21,7 +21,7 @@ import { FiPrinter } from "react-icons/fi";
 import ReportSummary from "./ReportSummary";
 
 const { RangePicker } = DatePicker;
-const columns: TableProps<ReturnsReport>["columns"] = [
+const columns: TableProps<ReturnReport>["columns"] = [
   {
     key: "date",
     dataIndex: "date",
@@ -79,7 +79,7 @@ const csvColumns = [
 ];
 
 const calculateTotals = (
-  data: ReturnsReport[]
+  data: ReturnReport[]
 ): {
   totalOrdersRefunded: number;
   totalOrdersReturned: number;

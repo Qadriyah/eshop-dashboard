@@ -157,7 +157,7 @@ export type SaleReport = {
   total: number;
 };
 
-export type ReturnsReport = {
+export type ReturnReport = {
   key: string;
   date: string;
   returned: number;
