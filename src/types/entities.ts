@@ -151,3 +151,10 @@ export type CustomerSalesReport = {
   products: number;
   total: number;
 };
+
+export type ProductReport = {
+  key: string;
+  name: string;
+  sold: number;
+  total: number;
+};
