@@ -136,6 +136,33 @@ body {
     transform: translateX(0px);
   }
 }
+
+@media print {
+  html,
+  body {
+    height: 100vh;
+    overflow: hidden;
+    font-size: 1.063rem;
+    overflow: visible;
+    height: fit-content;
+    width: fit-content;
+    background-color: #fff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .page-break {
+    margin-top: 1rem;
+    display: block;
+    page-break-before: auto;
+    background-color: #fff;
+  }
+}
+
+@page {
+  size: auto;
+  margin: 10mm;
+}
+
 .label-shadow {
   box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.2);
 }

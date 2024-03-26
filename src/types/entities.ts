@@ -48,6 +48,7 @@ export type CustomerTypes = {
 export type SaleType = {
   id: string;
   user: {
+    avator: string;
     email: string;
     id: string;
     roles: string[];
@@ -86,7 +87,7 @@ export type SaleItemType = {
   sku: number;
 };
 
-export type SaleStatusType<> =
+export type SaleStatusType =
   | "Pending"
   | "Processing"
   | "Completed"

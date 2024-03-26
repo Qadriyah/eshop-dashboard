@@ -10,13 +10,13 @@ import OrdersTable from "@/app/sales/OrdersTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSales } from "@/api/actions/sales";
 import { SaleType } from "@/types/entities";
+import { SALE_STATUS } from "@/utils/constants";
 
 const Orders: React.FC<{}> = (): JSX.Element => {
   const [sale, setSale] = React.useState<string>("");
   const [status, setStatus] = React.useState("all");
   const [sales, setSales] = React.useState<SaleType[]>([]);
   const [filteredSales, setFilteredSales] = React.useState<SaleType[]>([]);
-  // get sales
   const { data, isLoading } = useQuery({
     queryKey: ["sales"],
     queryFn: () => getSales(),
@@ -52,9 +52,9 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     } else {
       setFilteredSales(() =>
         sales.filter((sale) =>
-          sale.customer.name
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase())
+          sale?.customer?.name
+            ?.toLocaleLowerCase()
+            ?.includes(value.toLocaleLowerCase())
         )
       );
     }
@@ -98,13 +98,11 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                   defaultValue="all"
                 >
                   <MenuItem value={"all"}>All</MenuItem>
-                  <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
-                  <MenuItem value={"Completed"}>Completed</MenuItem>
-                  <MenuItem value={"Pending"}>Pending</MenuItem>
-                  <MenuItem value={"Processing"}>Processing</MenuItem>
-                  <MenuItem value={"Refunded"}>Refunded</MenuItem>
-                  <MenuItem value={"Delivered"}>Delivered</MenuItem>
-                  <MenuItem value={"Delivering"}>Delivering</MenuItem>
+                  <MenuItem value={SALE_STATUS.cancelled}>Cancelled</MenuItem>
+                  <MenuItem value={SALE_STATUS.completed}>Completed</MenuItem>
+                  <MenuItem value={SALE_STATUS.processing}>Processing</MenuItem>
+                  <MenuItem value={SALE_STATUS.returned}>Returned</MenuItem>
+                  <MenuItem value={SALE_STATUS.delivering}>Delivering</MenuItem>
                 </SelectComponent>
               </div>
             </div>

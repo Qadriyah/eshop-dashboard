@@ -2,18 +2,18 @@
 
 import React from "react";
 import { NumericFormat } from "react-number-format";
-import { Table, TableProps } from "antd";
+import { Space, Table, TableProps } from "antd";
 import { SaleStatusType, SaleType } from "@/types/entities";
 import moment from "moment";
 import { CgMoreVerticalO } from "react-icons/cg";
 import Dropdown from "@/components/Dropdown";
-import { MenuItem, Radio } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import Link from "next/link";
 import UpdateStatusModal from "@/modals/UpdateStatusModal";
-import RadioComponent from "@/components/Radio";
-import RadioInput from "@/components/RadioInput";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
+import { SALE_STATUS } from "@/utils/constants";
+import ShouldRender from "@/components/ShouldRender";
 
 type OrderProps = {
   orders: SaleType[];
@@ -48,43 +48,47 @@ const OrdersTable: React.FC<OrderProps> = ({
       key: "customer",
       title: "Customer",
       dataIndex: "customer",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div className="flex">
-          {/* <img
-            src={item.user}
-            alt=""
-            className="w-[40px] h-[40px] rounded-md mr-2"
-          /> */}
-          <div className="font-semibold text-[1.063rem] opacity-90 mb-4 translate-y-2">
-            {item?.customer?.name}
-          </div>
-        </div>
+        <Space direction="horizontal">
+          <div
+            className="h-[45px] rounded-md"
+            style={{
+              backgroundImage: `url(${item.user.avator})`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              width: "45px",
+            }}
+          />
+          <div>{item?.customer?.name}</div>
+        </Space>
       ),
     },
     {
       key: "orderid",
       title: "Order ID",
       dataIndex: "orderid",
-      render: (_, item) => (
-        <div className="font-semibold text-[1.063rem] text-black opacity-60">
-          {item.orderNumber}
-        </div>
-      ),
+      className: "text-[1.063rem]",
+      render: (_, item) => <div>{item.orderNumber}</div>,
     },
     {
       key: "status",
       title: "Status",
       dataIndex: "status",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className={`font-semibold text-[1.063rem] opacity-70 p-1 rounded-lg text-center ${
-            item.status === "Cancelled"
-              ? "text-[#f7657d] bg-[#f7d0d6]"
-              : item.status === "Completed" || item.status === "Delivered"
-              ? "text-[#57ec70] bg-[#abf7b1]"
-              : item.status === "Delivering" || item.status === "Processing"
-              ? "text-blue-500 bg-[#dff2ff]"
-              : "text-orange-500 bg-orange-100"
+          className={`p-1 rounded-md text-center ${
+            item.status === SALE_STATUS.cancelled
+              ? "text-red-600 bg-red-200 border border-red-600"
+              : item.status === SALE_STATUS.completed ||
+                item.status === SALE_STATUS.delivered
+              ? "text-green-600 bg-green-200 border border-green-600"
+              : item.status === SALE_STATUS.delivering ||
+                item.status === SALE_STATUS.processing
+              ? "text-blue-600 bg-blue-200 border border-blue-600"
+              : "text-orange-600 bg-orange-200 border border-orange-600"
           }`}
         >
           {item?.status}
@@ -95,8 +99,10 @@ const OrdersTable: React.FC<OrderProps> = ({
       key: "total",
       title: "Total",
       dataIndex: "total",
+      className: "text-[1.063rem]",
+      align: "right",
       render: (_, item) => (
-        <div className="font-bold text-black opacity-60 text-[1.063rem] text-center">
+        <div>
           <NumericFormat
             value={item.totalAmount}
             prefix={"$"}
@@ -110,30 +116,26 @@ const OrdersTable: React.FC<OrderProps> = ({
       key: "date_added",
       title: "Date Added",
       dataIndex: "date_added",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div
-          className={`font-bold opacity-70 text-[1.063rem] text-center p-1 rounded-lg`}
-        >
-          {moment(item.createdAt).format("MM-DD-YYYY")}
-        </div>
+        <div>{moment(item.createdAt).format("MM/DD/YYYY")}</div>
       ),
     },
     {
       key: "date_Modified",
       title: "Date Modified",
       dataIndex: "date_Modified",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div
-          className={`font-semibold opacity-70 p-1 rounded-lg text-[1.063rem]`}
-        >
-          {moment(item.updatedAt).format("MM-DD-YYYY")}
-        </div>
+        <div>{moment(item.updatedAt).format("MM/DD/YYYY")}</div>
       ),
     },
     {
       key: "actions",
       title: "Actions",
       dataIndex: "actions",
+      align: "center",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <Dropdown
           title={<CgMoreVerticalO size={24} className="cursor-pointer" />}
@@ -160,89 +162,33 @@ const OrdersTable: React.FC<OrderProps> = ({
   ];
 
   return (
-    <>
-      <div className="overflow-x-scroll w-full">
-        <Suspense
-          fallback={
-            <div className="w-full flex justify-center p-0 m-0">
-              <Loader color="black" />
-            </div>
-          }
-          loading={isLoading}
-        >
-          <div className="min-w-[800px]">
-            <Table
-              columns={columns}
-              dataSource={orders?.map((order) => ({ ...order, key: order.id }))}
-            />
+    <div className="overflow-x-scroll w-full">
+      <Suspense
+        fallback={
+          <div className="w-full flex justify-center items-center h-52">
+            <Loader color="black" />
           </div>
-        </Suspense>
-      </div>
-      <UpdateStatusModal
-        title="Update status"
-        open={openModal}
-        handleOk={(): any => {}}
-        handleClose={(): void => setOpenModal(false)}
+        }
+        loading={isLoading}
       >
-        <RadioComponent
-          id="discountType"
-          name="discountType"
-          formLabel=""
-          defaultValue={status}
+        <div className="min-w-[800px]">
+          <Table
+            columns={columns}
+            dataSource={orders?.map((order) => ({ ...order, key: order.id }))}
+          />
+        </div>
+      </Suspense>
+      <ShouldRender visible={openModal}>
+        <UpdateStatusModal
+          title="Update status"
+          open={openModal}
+          handleOk={(): any => {}}
+          handleClose={(): void => setOpenModal(false)}
+          setStatus={setStatus}
           value={status}
-        >
-          <RadioInput
-            ref_={false}
-            value={"Pending"}
-            label="Pending"
-            onChange={() => setStatus("Pending")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Processing"}
-            label="Processing"
-            onChange={() => setStatus("Processing")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Completed"}
-            label="Completed"
-            onChange={() => setStatus("Completed")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Delivering"}
-            label="Delivering"
-            onChange={() => setStatus("Delivering")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Delivered"}
-            label="Delivered"
-            onChange={() => setStatus("Delivered")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Cancelled"}
-            label="Cancelled"
-            onChange={() => setStatus("Cancelled")}
-            control={<Radio />}
-          />
-          <RadioInput
-            ref_={false}
-            value={"Refunded"}
-            label="Refunded"
-            onChange={() => setStatus("Refunded")}
-            control={<Radio />}
-          />
-        </RadioComponent>
-      </UpdateStatusModal>
-    </>
+        />
+      </ShouldRender>
+    </div>
   );
 };
 

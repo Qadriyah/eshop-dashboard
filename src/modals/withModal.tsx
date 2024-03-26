@@ -18,7 +18,6 @@ export type ModalProps = {
   okText?: string;
   okBtnColor?: string;
   loading?: boolean;
-  children?: React.ReactNode;
 };
 
 export default function withModal<T>(WrappedComponent: any) {

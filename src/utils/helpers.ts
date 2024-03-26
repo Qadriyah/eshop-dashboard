@@ -7,7 +7,7 @@ export type FieldError = {
 };
 
 export const formatCurrency = (amount: string | number) => {
-  if (!amount) {
+  if (!amount && amount !== 0) {
     return "";
   }
   return numeral(amount).format("$0,0");

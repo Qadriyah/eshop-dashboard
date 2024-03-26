@@ -15,7 +15,7 @@ import { GiWantedReward } from "react-icons/gi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { useParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
-import OrderDetail from "@/components/OrderDetail";
+import OrderDetail from "@/app/sales/OrderDetail";
 import Address from "@/components/Address";
 import OrderDetailsTable from "@/app/sales/OrderDetailsTable";
 import { useQuery } from "@tanstack/react-query";
@@ -67,7 +67,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
                   label="Customer"
-                  value={sale?.customer.name!}
+                  value={sale?.customer?.name!}
                   showImage={true}
                   imageClass="w-[30px] h-[30px] rounded-full mr-2"
                   image={"order?.customer.customerImage"}
@@ -76,12 +76,12 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<MdEmail className="mt-1 mr-2" />}
                   label="Email"
-                  value={sale?.customer.email!}
+                  value={sale?.customer?.email!}
                 />
                 <OrderDetail
                   icon={<MdOutlinePhoneAndroid className="mt-1 mr-2" />}
                   label="Phone"
-                  value={sale?.customer.phone!}
+                  value={sale?.customer?.phone!}
                 />
               </ul>
             </ProductCard>
@@ -112,7 +112,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
         <div className="w-full md:flex md:p-2">
           <Address
             title="Payment Address"
-            paragraph={sale?.billingAddress.line1!}
+            paragraph={sale?.billingAddress?.line1!}
             icon={
               <HiOutlineShoppingCart className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
@@ -121,7 +121,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
           <div className="w-5"></div>
           <Address
             title="Shipping Address"
-            paragraph={sale?.shippingAddress.line1!}
+            paragraph={sale?.shippingAddress?.line1!}
             icon={
               <LiaShippingFastSolid className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
