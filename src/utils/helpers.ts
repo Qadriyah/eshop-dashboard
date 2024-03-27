@@ -10,7 +10,7 @@ export const formatCurrency = (amount: string | number) => {
   if (!amount && amount !== 0) {
     return "";
   }
-  return numeral(amount).format("$0,0");
+  return numeral(amount).format("$0,0.00");
 };
 
 export const getInitials = (name?: string) => {
