@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 export type AddressType = {
   line1: string;
-  line2?: string;
+  line2: string;
   city: string;
   state: string;
   postal_code: string;
@@ -39,28 +39,52 @@ export type ProfileType = {
   customer: string;
 };
 
+export type CustomerTypes = {
+  email: string;
+  name: string;
+  phone: string;
+};
+
 export type SaleType = {
   id: string;
-  user: string;
+  user: {
+    avator: string;
+    email: string;
+    id: string;
+    roles: string[];
+    profile: {
+      createdAt: string;
+      fullName: string;
+      id: string;
+      updatedAt: string;
+      user: string;
+    };
+  };
   session: string;
   lineItems: SaleItemType[];
   status: SaleStatusType;
-  orderNumber: string;
+  orderNumber: number;
   totalAmount: number;
   createdAt: string;
   updatedAt: string;
   refunded: boolean;
+  billingAddress: AddressType;
+  customer: CustomerTypes;
+  shipping: number;
+  shippingAddress: AddressType;
+  tax: number;
 };
 
 export type SaleItemType = {
   name: string;
   price: number;
   quantity: number;
-  weight?: number;
-  length?: number;
-  width?: number;
-  height?: number;
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
   icon: string;
+  sku: number;
 };
 
 export type SaleStatusType =
@@ -90,13 +114,13 @@ export type PaymentMethodType = {
       city: string;
       country: string;
       line1: string;
-      line2?: string;
+      line2: string;
       postal_code: string;
       state: string;
     };
-    email?: string;
+    email: string;
     name: string;
-    phone?: string;
+    phone: string;
   };
 } & Stripe.PaymentMethod.Card;
 
@@ -106,21 +130,21 @@ export type ErrorType = {
 };
 
 export type CustomerSource = {
-  account_holder_name?: string;
-  account_holder_type?: string;
-  address_city?: string;
-  address_country?: string;
-  address_line1?: string;
-  address_line2?: string;
-  address_state?: string;
-  address_zip?: string;
-  name?: string;
+  account_holder_name: string;
+  account_holder_type: string;
+  address_city: string;
+  address_country: string;
+  address_line1: string;
+  address_line2: string;
+  address_state: string;
+  address_zip: string;
+  name: string;
 };
 
 export type MessageType = {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   comment: string;
 };
 
@@ -133,7 +157,7 @@ export type SaleReport = {
   total: number;
 };
 
-export type ReturnsReport = {
+export type ReturnReport = {
   key: string;
   date: string;
   returned: number;

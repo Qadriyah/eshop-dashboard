@@ -21,8 +21,8 @@ const DownloadCsv: React.FC<IProps> = ({ filename, columns, data }) => {
       datas={data as Datas}
     >
       <Button className="font-semibold rounded-md p-2 text-[dodgerblue] bg-[#e3f2f7]">
-        <BsDownload className="mr-1 text-[dodgerblue] font-bold mt-1" /> Export
-        Report
+        <BsDownload className="mr-1 text-[dodgerblue] font-bold mt-1" /> CSV
+        Export
       </Button>
     </CsvDownloader>
   );

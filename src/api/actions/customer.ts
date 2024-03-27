@@ -38,6 +38,21 @@ export type GetUsers = {
   errors?: ErrorType[];
 };
 
+export type Customers = GetUsers & {
+  profile: {
+    user: string;
+    createdAt: string;
+    updatedAt: string;
+    fullName: string;
+    id: string;
+  };
+};
+
+export type CustomerTypes = {
+  statusCode: number;
+  users: Customers[];
+};
+
 export const createPaymentMethod = async (
   token: any
 ): Promise<CreatePaymentMethod> => {
@@ -85,6 +100,26 @@ export const deletePaymentMethod = async (
 
 export const getUsers = async (): Promise<GetUsers[]> => {
   const response = await getApi<GetUsers[]>({ url: "/users" });
+
+  return response;
+};
+
+export const getCustomers = async (): Promise<CustomerTypes> => {
+  const response = await getApi<CustomerTypes>({ url: "/users" });
+
+  return response;
+};
+
+export const getCustomer = async (
+  id: string
+): Promise<{
+  statusCode: number;
+  user: Customers;
+}> => {
+  const response = await getApi<{
+    statusCode: number;
+    user: Customers;
+  }>({ url: `/users/${id}` });
 
   return response;
 };

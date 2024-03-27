@@ -15,11 +15,12 @@ import { GiWantedReward } from "react-icons/gi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { useParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
-import OrderDetail from "@/components/OrderDetail";
+import OrderDetail from "@/app/sales/OrderDetail";
 import Address from "@/components/Address";
-import OrderDetailsTable from "@/pages/orders/OrderDetailsTable";
+import OrderDetailsTable from "@/app/sales/OrderDetailsTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSale } from "@/api/actions/sales";
+import PageHeader from "@/components/PageHeader";
 
 const OrderDetails: React.FC<{}> = (): JSX.Element => {
   const params = useParams<{ orderId: string }>();
@@ -29,23 +30,20 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
     queryKey: ["sales", id],
     queryFn: () => getSale(id as string),
   });
-
-  console.log(data?.sale, ">>>>>");
+  const sale = data?.sale;
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Order Details
-      </h2>
+      <PageHeader title="Order Details"></PageHeader>
       <div>
         <div className="xl:flex">
           <div className="w-full xl:w-1/3">
-            <ProductCard title="Order Details (#14534)">
+            <ProductCard title="Order Details (#14534)" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
                   label="Date Added"
-                  value={"order.dateAdded"}
+                  value={sale?.createdAt.split("T")[0] as string}
                 />
                 <OrderDetail
                   icon={<MdOutlinePayment className="mt-1 mr-2" />}
@@ -64,12 +62,12 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
             </ProductCard>
           </div>
           <div className="xl:mr-5 xl:ml-5 mt-5 mb-5 w-full xl:w-1/3 xl:mt-0 xl:mb-0">
-            <ProductCard title="Customer Details">
+            <ProductCard title="Customer Details" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<SlCalender className="mt-1 mr-2" />}
                   label="Customer"
-                  value={"order?.customer.customerName as string"}
+                  value={sale?.customer?.name!}
                   showImage={true}
                   imageClass="w-[30px] h-[30px] rounded-full mr-2"
                   image={"order?.customer.customerImage"}
@@ -78,18 +76,18 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
                 <OrderDetail
                   icon={<MdEmail className="mt-1 mr-2" />}
                   label="Email"
-                  value={"order?.customer.customerEmail"}
+                  value={sale?.customer?.email!}
                 />
                 <OrderDetail
                   icon={<MdOutlinePhoneAndroid className="mt-1 mr-2" />}
                   label="Phone"
-                  value={"order?.customer.customerContact"}
+                  value={sale?.customer?.phone!}
                 />
               </ul>
             </ProductCard>
           </div>
           <div className="w-full xl:w-1/3">
-            <ProductCard title="Order Details (#14534)">
+            <ProductCard title="Order Details (#14534)" showStatus={true}>
               <ul>
                 <OrderDetail
                   icon={<LiaFileInvoiceDollarSolid className="mt-1 mr-2" />}
@@ -114,7 +112,7 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
         <div className="w-full md:flex md:p-2">
           <Address
             title="Payment Address"
-            paragraph={"order.paymentAddress"}
+            paragraph={sale?.billingAddress?.line1!}
             icon={
               <HiOutlineShoppingCart className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
@@ -123,15 +121,20 @@ const OrderDetails: React.FC<{}> = (): JSX.Element => {
           <div className="w-5"></div>
           <Address
             title="Shipping Address"
-            paragraph={"order.shippingAddress"}
+            paragraph={sale?.shippingAddress?.line1!}
             icon={
               <LiaShippingFastSolid className="opacity-5 -mt-3 lg:-mt-12 lg:w-[150px] lg:h-[150px] md:w-[100px] md:h-[100px] w-[80px] h-[80px]" />
             }
             className="w-full md:w-1/2 md:ml-1 md:-mr-2"
           />
         </div>
-        <ProductCard title="Order #14534">
-          <OrderDetailsTable detailProducts={["order.products"]} />
+        <ProductCard title="Order #14534" showStatus={true}>
+          <OrderDetailsTable
+            detailProducts={sale?.lineItems!}
+            tax={sale?.tax}
+            shippingRate={sale?.shipping!}
+            total={sale?.totalAmount!}
+          />
         </ProductCard>
       </div>
     </div>

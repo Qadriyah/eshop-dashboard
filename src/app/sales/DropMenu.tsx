@@ -1,26 +1,25 @@
-import { ProductType } from "@/types/entities";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
 import React from "react";
 import { CgMoreVerticalO } from "react-icons/cg";
-import { FiEdit3 } from "react-icons/fi";
 import { HiViewfinderCircle } from "react-icons/hi2";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { FiEdit3 } from "react-icons/fi";
+import { SaleType } from "@/types/entities";
 
 type IProps = {
-  product: ProductType;
-  onDeleteProduct: (product: ProductType) => void;
+  order: SaleType;
+  onUpdateStatus: (order: SaleType) => void;
 };
 
-const ProductMenu: React.FC<IProps> = ({ product, onDeleteProduct }) => {
+const DropMenu: React.FC<IProps> = ({ order, onUpdateStatus }) => {
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <Link href={`/catalog/products/edit/${product.id}`}>
+        <Link href={`/sales/orders/${order.id}`}>
           <div className="flex gap-2 items-center">
-            <FiEdit3 />
-            <div>Edit</div>
+            <HiViewfinderCircle />
+            <div>View</div>
           </div>
         </Link>
       ),
@@ -29,11 +28,11 @@ const ProductMenu: React.FC<IProps> = ({ product, onDeleteProduct }) => {
       key: "2",
       label: (
         <div className="flex gap-2 items-center">
-          <RiDeleteBin6Line />
-          <div>Delete</div>
+          <FiEdit3 />
+          <div>Update Status</div>
         </div>
       ),
-      onClick: () => onDeleteProduct(product),
+      onClick: () => onUpdateStatus(order),
     },
   ];
 
@@ -49,4 +48,4 @@ const ProductMenu: React.FC<IProps> = ({ product, onDeleteProduct }) => {
   );
 };
 
-export default ProductMenu;
+export default DropMenu;

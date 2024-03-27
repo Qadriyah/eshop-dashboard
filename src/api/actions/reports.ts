@@ -3,7 +3,7 @@ import {
   CustomerSalesReport,
   ErrorType,
   ProductReport,
-  ReturnsReport,
+  ReturnReport,
   SaleReport,
 } from "@/types/entities";
 
@@ -15,7 +15,7 @@ export type GetSalesReport = {
 
 export type GetReturnsReport = {
   statusCode: number;
-  report: ReturnsReport[];
+  report: ReturnReport[];
   errors?: ErrorType[];
 };
 

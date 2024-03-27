@@ -9,14 +9,16 @@ import dayjs from "dayjs";
 import { DatePicker, Space } from "antd";
 import PageHeader from "@/components/PageHeader";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getCustomerSalesReport,
-  getReturnsReport,
-} from "@/api/actions/reports";
+import { getCustomerSalesReport } from "@/api/actions/reports";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import DownloadCsv from "@/components/DownloadCsv";
 import { CustomerSalesReport } from "@/types/entities";
+import { useReactToPrint } from "react-to-print";
+import ReportHeader from "../ReportHeader";
+import Button from "@/components/Button";
+import { FiPrinter } from "react-icons/fi";
+import ReportSummary from "./ReportSummary";
 
 const { RangePicker } = DatePicker;
 const columns: TableProps<CustomerSalesReport>["columns"] = [
@@ -24,14 +26,14 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
     key: "email",
     dataIndex: "email",
     title: "Email",
-    className: "text-[1.063rem]",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => <div>{item.email}</div>,
   },
   {
     key: "name",
     dataIndex: "name",
     title: "Full Name",
-    className: "text-[1.063rem]",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div className="opacity-70 hover:text-[#3875d7]">{item.fullName}</div>
     ),
@@ -40,10 +42,10 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
     key: "status",
     dataIndex: "status",
     title: "Status",
-    className: "text-[1.063rem]",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div
-        className={`border px-2 rounded-md ${
+        className={`border px-2 rounded-md text-center ${
           item.status === "Active"
             ? "bg-green-200 text-green-600 border-green-600"
             : "bg-red-200 text-red-600 border-red-600"
@@ -57,7 +59,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
     key: "date",
     dataIndex: "date",
     title: "Date Joined",
-    className: "text-[1.063rem]",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div className="opacity-70">
         {moment(item.createdAt).format("MM/DD/YYYY")}
@@ -67,16 +69,16 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
   {
     key: "orders",
     dataIndex: "orders",
-    title: "No. of Orders",
-    className: "text-[1.063rem]",
+    title: "No.Orders",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     align: "center",
     render: (_, item) => <div className="opacity-70">{item.orders}</div>,
   },
   {
     key: "products",
     dataIndex: "products",
-    title: "No. of Products",
-    className: "text-[1.063rem]",
+    title: "No. Products",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     align: "center",
     render: (_, item) => <div className="opacity-70">{item.products}</div>,
   },
@@ -84,7 +86,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
     key: "total",
     dataIndex: "total",
     title: "Total",
-    className: "text-[1.063rem]",
+    className: "text-[1.063rem] print:text-[0.75rem]",
     align: "right",
     render: (_, item) => (
       <div className="opacity-70">{formatCurrency(item.total)}</div>
@@ -123,7 +125,22 @@ const csvColumns = [
   },
 ];
 
+const calculateTotals = (
+  data: CustomerSalesReport[]
+): { totalOrders: number; totalProducts: number; totalSales: number } => {
+  let totalSales = 0;
+  let totalProducts = 0;
+  let totalOrders = 0;
+  data?.forEach((item) => {
+    totalSales = item.total ? totalSales + item.total : totalSales + 0;
+    totalProducts += item.products;
+    totalOrders += item.orders;
+  });
+  return { totalOrders, totalProducts, totalSales };
+};
+
 const CustomerOrders: React.FC<{}> = (): JSX.Element => {
+  const reportRef = React.useRef<HTMLDivElement>(null);
   const [dateValue, setDateValue] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
@@ -135,7 +152,16 @@ const CustomerOrders: React.FC<{}> = (): JSX.Element => {
     enabled: dateValue.length > 0,
   });
 
+  const { totalSales, totalOrders, totalProducts } = React.useMemo(
+    () => calculateTotals(data?.report!),
+    [data?.report]
+  );
+
   const getDateValue = (date: string[]) => setDateValue(date);
+
+  const handlePrint = useReactToPrint({
+    content: () => reportRef?.current!,
+  });
 
   return (
     <div>
@@ -161,16 +187,49 @@ const CustomerOrders: React.FC<{}> = (): JSX.Element => {
                 </div>
               </div>
               <div>
+                <Button
+                  className="border border-blue-600 text-blue-600 bg-white p-[6px] rounded-md hover:bg-blue-200"
+                  onClick={handlePrint}
+                >
+                  <FiPrinter size={25} />
+                </Button>
+              </div>
+              <div>
                 <DownloadCsv
                   filename="customer-orders"
                   columns={csvColumns}
-                  data={data?.report!}
+                  data={
+                    data?.report?.map((item) => ({
+                      ...item,
+                      name: item.fullName,
+                      date: moment(item.createdAt).format("MM/DD/YYYY"),
+                    }))!
+                  }
                 />
               </div>
             </div>
-            <div className="overflow-x-scroll hide-scrollbar w-full">
+            <div
+              className="overflow-x-scroll hide-scrollbar w-full page-break"
+              ref={reportRef}
+            >
+              <ReportHeader
+                title="Customer Sales Report"
+                startDate={dateValue[0]}
+                endDate={dateValue[1]}
+              />
               <div className="min-w-[800px] hide-scrollbar">
-                <Table columns={columns} dataSource={data?.report} />
+                <Table
+                  columns={columns}
+                  dataSource={data?.report}
+                  pagination={false}
+                  summary={() => (
+                    <ReportSummary
+                      totalSales={totalSales || 0}
+                      totalOrders={totalOrders || 0}
+                      totalProducts={totalProducts || 0}
+                    />
+                  )}
+                />
               </div>
             </div>
           </Space>

@@ -13,10 +13,15 @@ import { getReturnsReport } from "@/api/actions/reports";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import DownloadCsv from "@/components/DownloadCsv";
-import { ReturnsReport } from "@/types/entities";
+import { ReturnReport } from "@/types/entities";
+import { useReactToPrint } from "react-to-print";
+import ReportHeader from "../ReportHeader";
+import Button from "@/components/Button";
+import { FiPrinter } from "react-icons/fi";
+import ReportSummary from "./ReportSummary";
 
 const { RangePicker } = DatePicker;
-const columns: TableProps<ReturnsReport>["columns"] = [
+const columns: TableProps<ReturnReport>["columns"] = [
   {
     key: "date",
     dataIndex: "date",
@@ -73,7 +78,26 @@ const csvColumns = [
   },
 ];
 
+const calculateTotals = (
+  data: ReturnReport[]
+): {
+  totalOrdersRefunded: number;
+  totalOrdersReturned: number;
+  totalRefund: number;
+} => {
+  let totalOrdersRefunded = 0;
+  let totalOrdersReturned = 0;
+  let totalRefund = 0;
+  data?.forEach((item) => {
+    totalOrdersRefunded += item.refunded;
+    totalOrdersReturned += item.returned;
+    totalRefund += item.totalRefunded;
+  });
+  return { totalOrdersRefunded, totalOrdersReturned, totalRefund };
+};
+
 const ReturnsReport: React.FC<{}> = (): JSX.Element => {
+  const reportRef = React.useRef<HTMLDivElement>(null);
   const [dateValue, setDateValue] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
@@ -86,6 +110,13 @@ const ReturnsReport: React.FC<{}> = (): JSX.Element => {
   });
 
   const getDateValue = (date: string[]) => setDateValue(date);
+
+  const handlePrint = useReactToPrint({
+    content: () => reportRef?.current!,
+  });
+
+  const { totalOrdersRefunded, totalOrdersReturned, totalRefund } =
+    React.useMemo(() => calculateTotals(data?.report!), [data?.report]);
 
   return (
     <div>
@@ -111,16 +142,48 @@ const ReturnsReport: React.FC<{}> = (): JSX.Element => {
                 </div>
               </div>
               <div>
+                <Button
+                  className="border border-blue-600 text-blue-600 bg-white p-[6px] rounded-md hover:bg-blue-200"
+                  onClick={handlePrint}
+                >
+                  <FiPrinter size={25} />
+                </Button>
+              </div>
+              <div>
                 <DownloadCsv
                   filename="returns"
                   columns={csvColumns}
-                  data={data?.report!}
+                  data={
+                    data?.report?.map((item) => ({
+                      ...item,
+                      date: moment(item.date).format("MM/DD/YYYY"),
+                    }))!
+                  }
                 />
               </div>
             </div>
-            <div className="overflow-x-scroll hide-scrollbar w-full">
+            <div
+              className="overflow-x-scroll hide-scrollbar w-full page-break"
+              ref={reportRef}
+            >
+              <ReportHeader
+                title="Returns Report"
+                startDate={dateValue[0]}
+                endDate={dateValue[1]}
+              />
               <div className="min-w-[800px] hide-scrollbar">
-                <Table columns={columns} dataSource={data?.report} />
+                <Table
+                  columns={columns}
+                  dataSource={data?.report}
+                  pagination={false}
+                  summary={() => (
+                    <ReportSummary
+                      totalRefund={totalRefund || 0}
+                      totalOrdersRefunded={totalOrdersRefunded || 0}
+                      totalOrdersReturned={totalOrdersReturned || 0}
+                    />
+                  )}
+                />
               </div>
             </div>
           </Space>
