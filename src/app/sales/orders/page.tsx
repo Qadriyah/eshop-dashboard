@@ -11,13 +11,17 @@ import { useQuery } from "@tanstack/react-query";
 import { getSales } from "@/api/actions/sales";
 import { SaleType } from "@/types/entities";
 import { SALE_STATUS } from "@/utils/constants";
+import ShouldRender from "@/components/ShouldRender";
+import UpdateStatusModal from "@/modals/UpdateStatusModal";
 
 const Orders: React.FC<{}> = (): JSX.Element => {
   const [sale, setSale] = React.useState<string>("");
   const [status, setStatus] = React.useState("all");
   const [sales, setSales] = React.useState<SaleType[]>([]);
   const [filteredSales, setFilteredSales] = React.useState<SaleType[]>([]);
-  const { data, isLoading } = useQuery({
+  const [openStatusModal, setOpenStatusModal] = React.useState(false);
+  const [selectedOrder, setSelectedOrder] = React.useState<SaleType>();
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["sales"],
     queryFn: () => getSales(),
   });
@@ -25,26 +29,14 @@ const Orders: React.FC<{}> = (): JSX.Element => {
   const handleChange = (event: SelectChangeEvent<any>) => {
     const { value } = event.target;
     setStatus(value);
-    switch (value) {
-      case "all":
-        setFilteredSales(sales);
-        break;
-      case "Cancelled":
-      case "Completed":
-      case "Pending":
-      case "Refunded":
-      case "Delivered":
-      case "Processing":
-      case "Delivering":
-        setFilteredSales(() => sales.filter((sale) => sale.status === value));
-        break;
-      default:
-        setFilteredSales([]);
-        break;
+    if (!value || value === "all") {
+      setFilteredSales(sales);
+    } else {
+      setFilteredSales(() => sales.filter((sale) => sale.status === value));
     }
   };
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setSale(value);
     if (!value) {
@@ -58,6 +50,11 @@ const Orders: React.FC<{}> = (): JSX.Element => {
         )
       );
     }
+  };
+
+  const onUpdateStatus = (order: SaleType) => {
+    setSelectedOrder(order);
+    setOpenStatusModal(true);
   };
 
   React.useEffect(() => {
@@ -84,7 +81,7 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                   type="text"
                   name="order"
                   value={sale}
-                  onChange={onChange}
+                  onChange={handleSearch}
                   className="bg-[#f1f0f0] placeholder:font-senibold p-2 pl-8 outline-none rounded-md w-1/2 max-w-[400px] min-w-[200px]"
                   placeholder="Search Order"
                 />
@@ -106,10 +103,23 @@ const Orders: React.FC<{}> = (): JSX.Element => {
                 </SelectComponent>
               </div>
             </div>
-            <OrdersTable orders={filteredSales} isLoading={isLoading} />
+            <OrdersTable
+              orders={filteredSales}
+              isLoading={isLoading}
+              onUpdateStatus={onUpdateStatus}
+            />
           </div>
         </Card>
       </div>
+      <ShouldRender visible={openStatusModal}>
+        <UpdateStatusModal
+          title="Update status"
+          open={openStatusModal}
+          order={selectedOrder!}
+          refetch={refetch}
+          handleClose={(): void => setOpenStatusModal(false)}
+        />
+      </ShouldRender>
     </div>
   );
 };

@@ -1,14 +1,13 @@
 import { ErrorType, SaleType } from "@/types/entities";
-import { getApi } from "..";
-// import Stripe from "stripe";
+import { getApi, patchApi } from "..";
 
-export type SalesResponse = {
+export type GetSales = {
   statusCode: number;
   sales: SaleType[];
   errors?: ErrorType[];
 };
 
-export type SaleTypes = {
+export type GetSale = {
   statusCode: number;
   sale: SaleType;
   errors?: ErrorType[];
@@ -19,21 +18,33 @@ export type SaleDetailsTypes = {
   session: any;
 };
 
-export const getCustomerSales = async (): Promise<SalesResponse> => {
-  const response = await getApi<SalesResponse>({
+export const getCustomerSales = async (): Promise<GetSales> => {
+  const response = await getApi<GetSales>({
     url: "/sales/customer/my/orders",
   });
   return response;
 };
 
-export const getSales = async (): Promise<SalesResponse> => {
-  const response = await getApi<SalesResponse>({ url: "/sales" });
+export const getSales = async (): Promise<GetSales> => {
+  const response = await getApi<GetSales>({ url: "/sales" });
 
   return response;
 };
 
-export const getSale = async (id: string): Promise<SaleTypes> => {
-  const response = await getApi<SaleTypes>({ url: `/sales/${id}` });
+export const getSale = async (id: string): Promise<GetSale> => {
+  const response = await getApi<GetSale>({ url: `/sales/${id}` });
+
+  return response;
+};
+
+export const updateSale = async (
+  id: string,
+  data: SaleType
+): Promise<GetSale> => {
+  const response = await patchApi<GetSale>({
+    url: `/sales/${id}`,
+    data,
+  });
 
   return response;
 };

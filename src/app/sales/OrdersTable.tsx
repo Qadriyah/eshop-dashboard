@@ -3,46 +3,24 @@
 import React from "react";
 import { NumericFormat } from "react-number-format";
 import { Space, Table, TableProps } from "antd";
-import { SaleStatusType, SaleType } from "@/types/entities";
+import { SaleType } from "@/types/entities";
 import moment from "moment";
-import { CgMoreVerticalO } from "react-icons/cg";
-import Dropdown from "@/components/Dropdown";
-import { MenuItem } from "@mui/material";
-import Link from "next/link";
-import UpdateStatusModal from "@/modals/UpdateStatusModal";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import { SALE_STATUS } from "@/utils/constants";
-import ShouldRender from "@/components/ShouldRender";
+import DropMenu from "./DropMenu";
 
 type OrderProps = {
   orders: SaleType[];
   isLoading: boolean;
+  onUpdateStatus: (order: SaleType) => void;
 };
 
 const OrdersTable: React.FC<OrderProps> = ({
   orders,
   isLoading,
+  onUpdateStatus,
 }): JSX.Element => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const [orderId, setOrderId] = React.useState<string>("");
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<SaleStatusType>();
-
-  const handleClick = (
-    event: React.MouseEvent<HTMLImageElement>,
-    orderId: string,
-    status: SaleStatusType
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setOrderId(orderId);
-    setStatus(status);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const columns: TableProps<SaleType>["columns"] = [
     {
       key: "customer",
@@ -52,9 +30,11 @@ const OrdersTable: React.FC<OrderProps> = ({
       render: (_, item) => (
         <Space direction="horizontal">
           <div
-            className="h-[45px] rounded-md"
+            className="h-[45px] rounded-md border border-gray-300"
             style={{
-              backgroundImage: `url(${item.user.avator})`,
+              backgroundImage: `url(${
+                item.user.avator || "/assets/images/image.svg"
+              })`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -79,15 +59,16 @@ const OrdersTable: React.FC<OrderProps> = ({
       className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className={`p-1 rounded-md text-center ${
+          className={`px-1 w-[110px] rounded-md text-center ${
             item.status === SALE_STATUS.cancelled
               ? "text-red-600 bg-red-200 border border-red-600"
-              : item.status === SALE_STATUS.completed ||
-                item.status === SALE_STATUS.delivered
+              : item.status === SALE_STATUS.completed
               ? "text-green-600 bg-green-200 border border-green-600"
               : item.status === SALE_STATUS.delivering ||
                 item.status === SALE_STATUS.processing
               ? "text-blue-600 bg-blue-200 border border-blue-600"
+              : item.status === SALE_STATUS.returned
+              ? "text-purple-600 bg-purple-200 border border-purple-600"
               : "text-orange-600 bg-orange-200 border border-orange-600"
           }`}
         >
@@ -137,26 +118,7 @@ const OrdersTable: React.FC<OrderProps> = ({
       align: "center",
       className: "text-[1.063rem]",
       render: (_, item) => (
-        <Dropdown
-          title={<CgMoreVerticalO size={24} className="cursor-pointer" />}
-          anchorEl={anchorEl}
-          handleClick={(event) => handleClick(event, item.id, item.status)}
-          handleClose={handleClose}
-          id="confirm"
-          open={open}
-        >
-          <MenuItem>
-            <Link href={`/sales/orders/${orderId}`}>View</Link>
-          </MenuItem>
-          <MenuItem
-            onClick={(): void => {
-              setOpenModal(true);
-              handleClose();
-            }}
-          >
-            Update order status
-          </MenuItem>
-        </Dropdown>
+        <DropMenu order={item} onUpdateStatus={onUpdateStatus} />
       ),
     },
   ];
@@ -178,16 +140,6 @@ const OrdersTable: React.FC<OrderProps> = ({
           />
         </div>
       </Suspense>
-      <ShouldRender visible={openModal}>
-        <UpdateStatusModal
-          title="Update status"
-          open={openModal}
-          handleOk={(): any => {}}
-          handleClose={(): void => setOpenModal(false)}
-          setStatus={setStatus}
-          value={status}
-        />
-      </ShouldRender>
     </div>
   );
 };
