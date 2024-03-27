@@ -53,11 +53,12 @@ export type SaleType = {
     id: string;
     roles: string[];
     profile: {
+      id: string;
       createdAt: string;
       fullName: string;
-      id: string;
       updatedAt: string;
       user: string;
+      phone: string;
     };
   };
   session: string;

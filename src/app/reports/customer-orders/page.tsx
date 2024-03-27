@@ -45,7 +45,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
     className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div
-        className={`border px-2 rounded-md text-center ${
+        className={`border px-1 rounded-md text-center ${
           item.status === "Active"
             ? "bg-green-200 text-green-600 border-green-600"
             : "bg-red-200 text-red-600 border-red-600"

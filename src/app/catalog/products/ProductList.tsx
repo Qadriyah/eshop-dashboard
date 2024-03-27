@@ -69,12 +69,10 @@ const ProductList: React.FC<IProps> = ({
       render: (_, item) => (
         <div className="flex gap-5 h-[40px] items-center">
           <div
-            className={`rounded-md border border-gray-400 ${
-              item.icon ? "opacity-100" : "opacity-50"
-            }`}
+            className="rounded-md border border-gray-300"
             style={{
               backgroundImage: `url(${
-                item.icon || "/assets/images/picture.png"
+                item.icon || "/assets/images/image.svg"
               })`,
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",

@@ -18,9 +18,8 @@ const ProductIcon: React.FC<IProps> = ({ icon, loading, handleFileChange }) => {
       </h2>
       <div className="label-shadow w-[150px] h-[150px] rounded-lg p-5 mb-5 mx-auto my-auto">
         <div
-          className={`${icon ? "opacity-100" : "opacity-50"}`}
           style={{
-            backgroundImage: `url(${icon || "/assets/images/picture.png"})`,
+            backgroundImage: `url(${icon || "/assets/images/image.svg"})`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "cover",

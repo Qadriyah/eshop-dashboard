@@ -1,22 +1,19 @@
+import { Space } from "antd";
+import Image from "next/image";
 import React, { LiHTMLAttributes } from "react";
 
 type OrderDetailProps = LiHTMLAttributes<HTMLLIElement> & {
   icon: any;
   label: string;
   value: string;
-  showImage?: boolean;
   image?: string;
-  imageClass?: string;
 };
 
 const OrderDetail: React.FC<OrderDetailProps> = ({
   icon,
   label,
   value,
-  showImage = false,
   image,
-  imageClass,
-  ...props
 }): JSX.Element => {
   return (
     <li className="w-full border-b border-b-[#e2dfdf] m-0 pb-3 flex justify-between mt-3">
@@ -24,14 +21,23 @@ const OrderDetail: React.FC<OrderDetailProps> = ({
         {icon} {label}
       </span>
       <span
-        className={`font-bold opacity-70 flex ${
+        className={`flex ${
           (label === "Customer" || label === "Invoice") &&
           "hover:text-[#3875d7] cursor-pointer"
         }`}
-        {...props}
       >
-        {showImage && <img src={image} alt="" className={imageClass} />}
-        {value}
+        <Space direction="horizontal">
+          {image && (
+            <Image
+              src={image}
+              alt=""
+              width={30}
+              height={30}
+              className="rounded-full"
+            />
+          )}
+          {value}
+        </Space>
       </span>
     </li>
   );
