@@ -3,14 +3,27 @@
 import React from "react";
 import Dropdown from "./Dropdown";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { notify } from "@/utils/helpers";
-import Image from "next/image";
 import { logoutUser } from "@/api/actions/auth";
+import withAuth from "@/app/withAuth";
+import { Space } from "antd";
+import { me } from "@/api/actions/profile";
 
-const UserProfile: React.FC<{}> = (): JSX.Element => {
+type IProps = {
+  isAuthenticated: string;
+};
+
+const UserProfile: React.FC<IProps> = ({ isAuthenticated }): JSX.Element => {
   const navigate = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const { data } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => me(),
+    enabled: !!isAuthenticated,
+  });
+
   const logoutMuutation = useMutation({
     mutationFn: () => logoutUser(),
   });
@@ -36,39 +49,43 @@ const UserProfile: React.FC<{}> = (): JSX.Element => {
     <Dropdown
       id="image"
       showImage={true}
-      image="/assets/images/man_image.png"
+      image={data?.profile?.user?.avator || "/assets/images/user.svg"}
       anchorEl={anchorEl}
       handleClick={handleClick}
       handleClose={handleClose}
       open={open}
     >
       <div className="w-[300px] p-0">
-        <div className="flex border-b border-[#d3d3d3]">
-          <Image
-            src="/assets/images/man_image.png"
-            alt=""
-            width={55}
-            height={55}
-            className="rounded-lg m-4 cursor-pointer"
-          />
-          <span className="mt-4">
-            <h2 className="font-bold text-lg">Max Smith</h2>
-            <p className="text-sm text-black opacity-50 font-semibold">
-              maxsmith98@email.com
-            </p>
-          </span>
+        <div className="flex border-b border-[#d3d3d3] p-3">
+          <Space direction="horizontal">
+            <div
+              className="h-[40px] w-[40px] rounded-full"
+              style={{
+                backgroundImage: `url(${
+                  data?.profile?.user?.avator || "/assets/images/user.svg"
+                })`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }}
+            />
+            <div>
+              <h2 className="font-bold">{data?.profile?.fullName}</h2>
+              <div className="text-sm text-black opacity-50">
+                {data?.profile?.user?.email}
+              </div>
+            </div>
+          </Space>
         </div>
-        <div className="pl-4 pr-4 mt-2">
-          <p
-            className="w-full cursor-pointer rounded-lg p-2 text-black opacity-80 font-semibold hover:font-bold hover:text-[#3875d7] hover:bg-[#ededed]"
-            onClick={onLogout}
-          >
-            Sign Out
-          </p>
+        <div
+          className="w-full cursor-pointer p-3 text-black hover:font-bold hover:text-[#3875d7] hover:bg-[#ededed]"
+          onClick={onLogout}
+        >
+          Sign Out
         </div>
       </div>
     </Dropdown>
   );
 };
 
-export default UserProfile;
+export default withAuth(UserProfile);

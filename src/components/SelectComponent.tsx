@@ -12,7 +12,7 @@ type IProps = SelectProps &
 const SelectComponent: React.FC<IProps> = ({
   children,
   label,
-  boxWidth = 150,
+  boxWidth = "100%",
   ...props
 }): JSX.Element => {
   return (

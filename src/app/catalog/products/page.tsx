@@ -14,6 +14,8 @@ import Loader from "@/components/Loader";
 import Suspense from "@/components/Suspense";
 import { ProductType } from "@/types/entities";
 import { getProducts } from "@/api/actions/product";
+import { Space } from "antd";
+import PageHeader from "@/components/PageHeader";
 
 const Products: React.FC<{}> = (): JSX.Element => {
   const navigate = useRouter();
@@ -73,31 +75,32 @@ const Products: React.FC<{}> = (): JSX.Element => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-        Products
-      </h2>
+      <PageHeader title="Products" />
       <Card>
-        <div className="w-full">
-          <div className="flex justify-between mb-8 h-10">
+        <div className="flex flex-col gap-5 mb-8 lg:flex-row w-full">
+          <div className="flex-1">
             <form onSubmit={handleSearch}>
-              <div className="flex items-center">
+              <div className="h-[40px] flex">
                 <input
                   type="text"
                   name="product"
                   value={searchQuery}
                   onChange={onSearch}
-                  className="bg-[#f1f0f0] p-2 pl-4 outline-none rounded-tl-md rounded-bl-md min-w-[200px] w-full"
+                  className="bg-[#f1f0f0] h-[40px] px-4 outline-none rounded-tl-md rounded-bl-md w-full"
                   placeholder="Search Product"
                 />
                 <button
-                  className="p-2 bg-[#f1f0f0] rounded-tr-md rounded-br-md hover:bg-white hover:border-2 hover:border-[#f1f0f0]"
+                  className="h-[40px] px-4 bg-[#f1f0f0] rounded-tr-md rounded-br-md flex items-center justify-center hover:bg-gray-200"
                   type="submit"
                 >
-                  <IoSearchOutline size={22} fill="gray" />
+                  <IoSearchOutline fill="gray" />
                 </button>
               </div>
             </form>
-            <div className="flex status-add-product">
+          </div>
+          <div className="flex-1 hidden xl:block" />
+          <div className="flex gap-5 flex-1">
+            <div className="flex-1">
               <SelectComponent
                 onChange={handleChange}
                 label="Status"
@@ -109,28 +112,30 @@ const Products: React.FC<{}> = (): JSX.Element => {
                 <MenuItem value={"Active"}>Active</MenuItem>
                 <MenuItem value={"Inactive"}>Inactive</MenuItem>
               </SelectComponent>
+            </div>
+            <div className="">
               <Button
-                className="p-2 add-pdt hover:opacity-70 text-white ml-3 font-semibold text-center bg-[#3875d7] rounded-md w-[150px]"
+                className="p-2 hover:opacity-70 text-white text-center bg-[#3875d7] rounded-md"
                 onClick={() => navigate.push("/catalog/products/add")}
               >
                 Add Product
               </Button>
             </div>
           </div>
-          <Suspense
-            fallback={
-              <div className="p-20 w-full flex items-center justify-center">
-                <Loader color="text-black" />
-              </div>
-            }
-            loading={isLoading}
-          >
-            <ProductsTable
-              products={filteredProducts}
-              refetchProducts={refetch}
-            />
-          </Suspense>
         </div>
+        <Suspense
+          fallback={
+            <div className="p-20 w-full flex items-center justify-center">
+              <Loader color="text-black" />
+            </div>
+          }
+          loading={isLoading}
+        >
+          <ProductsTable
+            products={filteredProducts}
+            refetchProducts={refetch}
+          />
+        </Suspense>
       </Card>
     </div>
   );

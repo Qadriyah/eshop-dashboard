@@ -28,14 +28,14 @@ const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div className={classname}>
       {showImage ? (
-        <img
-          src={image}
-          alt=""
-          className="w-[40xp] h-[40px] rounded-lg cursor-pointer -mt-2"
-          id={id}
-          aria-controls={open ? "basic-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
+        <div
+          className="h-[40px] w-[40px] rounded-full cursor-pointer"
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
           onClick={handleClick}
         />
       ) : (

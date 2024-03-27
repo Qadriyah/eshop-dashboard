@@ -37,6 +37,7 @@ export type ProfileType = {
   lastName: string;
   phone: string;
   customer: string;
+  fullName: string;
 };
 
 export type CustomerTypes = {
