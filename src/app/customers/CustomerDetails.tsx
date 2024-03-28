@@ -1,5 +1,5 @@
 import React from "react";
-// import Page from "../../pages/Page";
+import Page from "../../pages/Page";
 import Card from "../../components/Card";
 import CustomerDetail from "../../components/CustomerDetail";
 import ProductCard from "../../components/ProductCard";
@@ -20,7 +20,7 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
     setTab((prevState) => ({ ...prevState, [tab]: value }));
 
   return (
-    <div>
+    <Page>
       <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
         Customer Details
       </h2>
@@ -118,7 +118,7 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
           </ShouldRender>
         </div>
       </div>
-    </div>
+    </Page>
   );
 };
 
