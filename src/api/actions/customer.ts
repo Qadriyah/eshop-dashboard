@@ -36,6 +36,7 @@ export type GetUsers = {
   updatedAt: string;
   id: string;
   errors?: ErrorType[];
+  status?: string;
 };
 
 export type Customers = GetUsers & {

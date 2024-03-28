@@ -12,21 +12,7 @@ type OrderProps = {
 };
 
 const OrdersTable: React.FC<OrderProps> = ({ orders }): JSX.Element => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [orderId, setOrderId] = React.useState<string>("");
   const navigate = useRouter();
-
-  const open = Boolean(anchorEl);
-  const handleClick = (
-    event: React.MouseEvent<HTMLImageElement>,
-    orderId: string
-  ): void => {
-    setAnchorEl(event.currentTarget);
-    setOrderId(orderId);
-  };
-  const handleClose = (): void => {
-    setAnchorEl(null);
-  };
 
   const columns: TableProps<SaleType>["columns"] = [
     {

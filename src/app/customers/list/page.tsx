@@ -20,6 +20,8 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
     queryFn: () => getCustomers(),
   });
 
+  console.log(data?.users, ">>>>>");
+
   const [customers, setCustomers] = React.useState<Customers[]>([]);
   const [filteredCustomers, setFilteredCustomers] = React.useState<Customers[]>(
     []
