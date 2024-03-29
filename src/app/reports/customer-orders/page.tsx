@@ -32,7 +32,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
   {
     key: "name",
     dataIndex: "name",
-    title: "Full Name",
+    title: "Name",
     className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div className="opacity-70 hover:text-[#3875d7]">{item.fullName}</div>
@@ -58,7 +58,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
   {
     key: "date",
     dataIndex: "date",
-    title: "Date Joined",
+    title: "Joined",
     className: "text-[1.063rem] print:text-[0.75rem]",
     render: (_, item) => (
       <div className="opacity-70">
@@ -69,7 +69,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
   {
     key: "orders",
     dataIndex: "orders",
-    title: "No.Orders",
+    title: "Orders#",
     className: "text-[1.063rem] print:text-[0.75rem]",
     align: "center",
     render: (_, item) => <div className="opacity-70">{item.orders}</div>,
@@ -77,7 +77,7 @@ const columns: TableProps<CustomerSalesReport>["columns"] = [
   {
     key: "products",
     dataIndex: "products",
-    title: "No. Products",
+    title: "Products#",
     className: "text-[1.063rem] print:text-[0.75rem]",
     align: "center",
     render: (_, item) => <div className="opacity-70">{item.products}</div>,
