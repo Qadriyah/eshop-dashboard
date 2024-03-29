@@ -1,6 +1,7 @@
 import { ErrorType } from "@/types/entities";
 import { postApi } from "..";
 import { LoginCredentials } from "@/types/requests";
+import { removeItem } from "../localstorage";
 
 export type SessionDataType = {
   email: string;
@@ -41,6 +42,7 @@ export const loginWithCredentials = async (
 };
 
 export const logoutUser = async (): Promise<LoginResponse> => {
+  removeItem("user");
   const response = await postApi<LoginResponse>({
     url: "/auth/logout",
   });

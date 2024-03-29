@@ -1,5 +1,6 @@
 import { ProfileType } from "@/types/entities";
 import { getApi, patchApi, postApi } from "..";
+import { getItem, setItem } from "../localstorage";
 
 export type SessionDataType = {
   email: string;
@@ -23,9 +24,17 @@ export type UploadProfileImage = {
 };
 
 export const me = async (): Promise<GetProfile> => {
+  const user = getItem("user");
+  if (user) {
+    return {
+      profile: user,
+      statusCode: 200,
+    };
+  }
   const response = await getApi<GetProfile>({
     url: "/profile/me",
   });
+  setItem("user", response.profile);
   return response;
 };
 

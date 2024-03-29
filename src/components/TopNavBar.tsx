@@ -11,7 +11,7 @@ const TopNavBar = () => {
   const drawerState = useAppSelector((state) => state.drawer);
 
   return (
-    <div className="small-device-nav h-[75px] m-0 large-device-container bg-white flex items-center px-4">
+    <div className="h-[75px] m-0 bg-white flex items-center px-4">
       <div className="flex-1">
         <div onClick={() => dispatch(toggleDrawer())} id="toggler">
           <MdKeyboardDoubleArrowLeft
