@@ -116,7 +116,7 @@ const ProductList: React.FC<IProps> = ({
       className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className={`opacity-70 text-center p-1 rounded-lg font-semibold ${
+          className={`opacity-70 text-center px-1 rounded-lg font-semibold ${
             item.status === "Inactive"
               ? "text-red-500 bg-[#f7d0d6]"
               : item.status === "Published"
@@ -132,9 +132,11 @@ const ProductList: React.FC<IProps> = ({
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      className: "text-[1.063rem] flex justify-center",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <ProductMenu product={item} onDeleteProduct={onDeleteProduct} />
+        <div className="flex justify-center items-center">
+          <ProductMenu product={item} onDeleteProduct={onDeleteProduct} />
+        </div>
       ),
     },
   ];
