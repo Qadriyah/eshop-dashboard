@@ -6,7 +6,8 @@ import { HiViewfinderCircle } from "react-icons/hi2";
 import { TbUserPause } from "react-icons/tb";
 import Link from "next/link";
 import { CgMoreVerticalO } from "react-icons/cg";
-import { UserType } from "@/types/entities";
+import { ProfileType, UserType } from "@/types/entities";
+import { getItem } from "@/api/localstorage";
 
 type DropdownProps = {
   customer: UserType;
@@ -19,11 +20,15 @@ const DropdownCustomer: React.FC<DropdownProps> = ({
   handleOpenDeleteModal,
   handleOpenSuspendModal,
 }): JSX.Element => {
+  const profile = getItem<ProfileType>("user");
+
   const items: MenuProps["items"] = [
     {
       label: (
         <div
-          className="flex"
+          className={`flex ${
+            profile?.user?.id === customer.id && "pointer-events-none"
+          }`}
           onClick={() => {
             handleOpenDeleteModal(customer);
           }}

@@ -91,8 +91,8 @@ export const getUsers = async (): Promise<CustomerTypes[]> => {
   return response;
 };
 
-export const getCustomers = async (): Promise<CustomerTypes> => {
-  const response = await getApi<CustomerTypes>({ url: "/users" });
+export const getCustomers = async (param: string): Promise<CustomerTypes> => {
+  const response = await getApi<CustomerTypes>({ url: `/users?user=${param}` }); // query paeram
 
   return response;
 };

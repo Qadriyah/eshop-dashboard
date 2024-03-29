@@ -10,6 +10,9 @@ import CustomerTable from "../CustomerTable";
 import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "@/api/actions/customer";
 import { UserType } from "@/types/entities";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
+import { USER_ROLES } from "@/utils/constants";
 
 const CustomerListing: React.FC<{}> = (): JSX.Element => {
   const [customerName, setCustomerName] = React.useState<string>("");
@@ -18,7 +21,7 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
   // get customers
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["customers"],
-    queryFn: () => getCustomers(),
+    queryFn: () => getCustomers(USER_ROLES.CUSTOMER),
   });
 
   console.log(data?.users, ">>>>>");
@@ -90,7 +93,16 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
               </div> */}
             </div>
           </div>
-          <CustomerTable customers={filteredCustomers} refetch={refetch} />
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center h-52">
+                <Loader color="black" />
+              </div>
+            }
+            loading={isLoading}
+          >
+            <CustomerTable customers={filteredCustomers} refetch={refetch} />
+          </Suspense>
         </Card>
       </div>
     </div>

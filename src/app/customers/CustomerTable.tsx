@@ -98,12 +98,28 @@ const CustomerTable: React.FC<CustomerProps> = ({
       ),
     },
     {
+      key: "roles",
+      title: "Roles",
+      dataIndex: "roles",
+      render: (_, item) => (
+        <div className="flex gap-2">
+          {item?.roles?.map((role) => (
+            <div
+              className={`px-2 bg-blue-200 border text-blue-600 border-blue-600 text-[1.063rem] text-center rounded-md`}
+            >
+              {role}
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
       key: "status",
       title: "Status",
       dataIndex: "status",
       render: (_, item) => (
         <div
-          className={`p-1 opacity-60 text-[1.063rem] font-bold text-center rounded-md ${
+          className={`px-2 text-[1.063rem] text-center rounded-md ${
             item.deleted
               ? "text-red-600 bg-red-200"
               : item.suspended
