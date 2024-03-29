@@ -52,7 +52,7 @@ const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
       return;
     }
     notify(message, "success");
-    router.replace(`/catalog/products/edit/${product.id}`);
+    router.push(`/catalog/products/edit/${product.id}`);
   };
 
   const formik = useFormik({

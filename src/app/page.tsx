@@ -14,12 +14,21 @@ import { formatErrors } from "@/utils/helpers";
 import { loginValidationSchema } from "@/validation/loginSchema";
 import { loginWithCredentials, loginWithGoogle } from "@/api/actions/auth";
 import { LoginCredentials } from "@/types/requests";
+import { useComponentWillMount } from "./hooks";
 
 const SignIn = () => {
   const ref = React.useRef<HTMLParagraphElement>(null);
-  const isAuth = Cookies.get("islogin");
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  useComponentWillMount(() => {
+    const sessionId = Cookies.get("_session-token");
+    if (sessionId) {
+      router.push("/home");
+    }
+    return sessionId;
+  });
+
   const loginMutation = useMutation({
     mutationKey: ["login"],
     mutationFn: (data: LoginCredentials) => loginWithCredentials(data),
@@ -64,16 +73,12 @@ const SignIn = () => {
     onSubmit: handleSubmit,
   });
 
-  if (isAuth === "true") {
-    return router.replace("/home");
-  }
-
   return (
     <div className="flex flex-col md:flex-row max-w-[1700px]">
       <div className="flex-1 justify-center items-center p-10 sm:p-20 md:p-10 lg:p-20 bg-white">
         <div
           className="md:hidden cursor-pointer"
-          onClick={() => router.replace("/")}
+          onClick={() => router.push("/")}
         >
           <Image
             src="/images/dlogo.png"
@@ -155,7 +160,7 @@ const SignIn = () => {
         </div>
       </div>
       <div className="flex-1 hidden md:block bg-[#4081e9] min-h-screen p-10 lg:p-20">
-        <div className="cursor-pointer" onClick={() => router.replace("/")}>
+        <div className="cursor-pointer" onClick={() => router.push("/")}>
           <Image
             src="/assets/images/dlogo.png"
             width={70}

@@ -6,11 +6,15 @@ export type FieldError = {
   message: string;
 };
 
-export const formatCurrency = (amount: string | number) => {
+export const formatCurrency = (amount: string | number, float = false) => {
+  let format = "$0,0";
   if (!amount && amount !== 0) {
     return "";
   }
-  return numeral(amount).format("$0,0.00");
+  if (float) {
+    format = "$0,0.00";
+  }
+  return numeral(amount).format(format);
 };
 
 export const getInitials = (name?: string) => {
@@ -40,4 +44,17 @@ export const notify = (message: string, type?: string) => {
     return toast.success(message);
   }
   return toast(message);
+};
+
+export const generateColor = () => {
+  const randomColor = Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, "0");
+  return `#${randomColor}`;
+};
+
+export const delay = (time: number) => {
+  return new Promise((res) => {
+    setTimeout(res, time);
+  });
 };
