@@ -1,3 +1,4 @@
+"use client";
 export const setItem = (key: string, data: any) => {
   if (typeof data === "string") {
     localStorage.setItem(key, data);

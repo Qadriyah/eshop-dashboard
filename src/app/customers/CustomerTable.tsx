@@ -1,11 +1,8 @@
-"use client";
-
 import React from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import { useRouter } from "next/navigation";
 import moment from "moment";
-import DropdownCustomer from "./Dropdown";
 import ShouldRender from "@/components/ShouldRender";
 import ConfirmationModal from "@/modals/ConfirmationModal";
 import { UserType } from "@/types/entities";
@@ -20,6 +17,7 @@ import {
   suspendCustomer,
 } from "@/api/actions/customer";
 import { notify } from "@/utils/helpers";
+import DropMenu from "./Dropdown";
 
 type CustomerProps = {
   customers: UserType[];
@@ -105,6 +103,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
         <div className="flex gap-2">
           {item?.roles?.map((role) => (
             <div
+              key={role}
               className={`px-2 bg-blue-200 border text-blue-600 border-blue-600 text-[1.063rem] text-center rounded-md`}
             >
               {role}
@@ -121,10 +120,10 @@ const CustomerTable: React.FC<CustomerProps> = ({
         <div
           className={`px-2 text-[1.063rem] text-center rounded-md ${
             item.deleted
-              ? "text-red-600 bg-red-200"
+              ? "text-red-600 bg-red-200 border border-red-600"
               : item.suspended
-              ? "text-blue-600 bg-blue-200"
-              : "text-green-600 bg-green-200"
+              ? "text-orange-600 bg-orange-200 border border-orange-600"
+              : "text-green-600 bg-green-200 border border-green-600"
           }`}
         >
           {item.deleted ? "Banned" : item.suspended ? "Suspended" : "Active"}
@@ -146,7 +145,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
       title: "Actions",
       dataIndex: "actions",
       render: (_, item) => (
-        <DropdownCustomer
+        <DropMenu
           customer={item}
           handleOpenDeleteModal={(customer: UserType) => {
             setCustomer(customer);
@@ -167,7 +166,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
         <div className="min-w-[800px] hide-scrollbar">
           <Table
             columns={columns}
-            dataSource={customers.map((customer, index) => ({
+            dataSource={customers.map((customer) => ({
               ...customer,
               key: customer.id,
             }))}
@@ -177,25 +176,26 @@ const CustomerTable: React.FC<CustomerProps> = ({
           <ConfirmationModal
             title="Delete Customer"
             open={openDeleteModal}
+            message="Are you sure you want to delete this customer?"
+            loading={deleteUserMutation.isPending}
+            handleOk={handleDelete}
             handleClose={() => {
               setCustomer(null);
               setOpenDeleteModal(false);
             }}
-            message="Are you sure you want to delete this customer?"
-            handleOk={handleDelete}
           />
         </ShouldRender>
         <ShouldRender visible={openSuspendModal}>
           <ConfirmationModal
             title="Suspend Customer"
             open={openSuspendModal}
+            message="Are you sure you want to suspend this customer?"
+            loading={suspendUserMutation.isPending}
+            handleOk={handleSuspend}
             handleClose={() => {
               setCustomer(null);
               setOpenSuspendModal(false);
             }}
-            message="Are you sure you want to suspend this customer?"
-            handleOk={handleSuspend}
-            loading={suspendUserMutation.isPending}
           />
         </ShouldRender>
       </div>

@@ -89,7 +89,6 @@ const DailySales = () => {
                 />
                 <YAxis dataKey="sales" />
                 <Tooltip />
-                <Legend />
                 <CartesianGrid strokeDasharray="3 3" />
                 <Bar
                   dataKey="sales"

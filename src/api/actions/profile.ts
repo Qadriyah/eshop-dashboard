@@ -24,7 +24,7 @@ export type UploadProfileImage = {
 };
 
 export const me = async (): Promise<GetProfile> => {
-  const user = getItem("user");
+  const user = getItem<ProfileType>("user");
   if (user) {
     return {
       profile: user,
