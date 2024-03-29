@@ -38,7 +38,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
           <p className="opacity-60 text-sm -mt-1">{expiry}</p>
         </div>
       </summary>
-      <div className="flex justify-between">
+      <div className="flex justify-between flex-col lg:flex-row">
         <div>
           <p className="font-semibold opacity-90">
             <span className="opacity-60">Name: </span>

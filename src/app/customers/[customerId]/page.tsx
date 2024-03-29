@@ -6,7 +6,7 @@ import CustomerDetail from "@/components/CustomerDetail";
 import PaymentMethod from "@/components/PaymentMethod";
 import ProductCard from "@/components/ProductCard";
 import ShouldRender from "@/components/ShouldRender";
-import CustomerTransactionsTable from "@/pages/customer/CustomerTransactionsTable";
+import CustomerTransactionsTable from "../CustomerTransactionsTable";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getCustomer } from "@/api/actions/customer";

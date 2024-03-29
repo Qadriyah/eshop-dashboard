@@ -6,22 +6,28 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
-import CustomerTable from "@/pages/customer/CustomerTable";
+import CustomerTable from "../CustomerTable";
 import { useQuery } from "@tanstack/react-query";
-import { Customers, getCustomers } from "@/api/actions/customer";
+import { getCustomers } from "@/api/actions/customer";
+import { UserType } from "@/types/entities";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
+import { USER_ROLES } from "@/utils/constants";
 
 const CustomerListing: React.FC<{}> = (): JSX.Element => {
   const [customerName, setCustomerName] = React.useState<string>("");
   // const [status, setStatus] = React.useState("All");
 
   // get customers
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["customers"],
-    queryFn: () => getCustomers(),
+    queryFn: () => getCustomers(USER_ROLES.CUSTOMER),
   });
 
-  const [customers, setCustomers] = React.useState<Customers[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = React.useState<Customers[]>(
+  console.log(data?.users, ">>>>>");
+
+  const [customers, setCustomers] = React.useState<UserType[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = React.useState<UserType[]>(
     []
   );
 
@@ -87,7 +93,16 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
               </div> */}
             </div>
           </div>
-          <CustomerTable customers={filteredCustomers} />
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center h-52">
+                <Loader color="black" />
+              </div>
+            }
+            loading={isLoading}
+          >
+            <CustomerTable customers={filteredCustomers} refetch={refetch} />
+          </Suspense>
         </Card>
       </div>
     </div>

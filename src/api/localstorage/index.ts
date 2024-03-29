@@ -6,7 +6,7 @@ export const setItem = (key: string, data: any) => {
   }
 };
 
-export const getItem = (key: string) => {
+export const getItem = <T>(key: string): T | null => {
   const data = localStorage.getItem(key);
   if (!data || data === "undefined") {
     return null;

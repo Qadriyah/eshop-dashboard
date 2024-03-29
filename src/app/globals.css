@@ -184,3 +184,7 @@ body {
   display: grid;
   grid-template-columns: 5rem minmax(100px, 1fr);
 }
+
+.disable-div {
+  pointer-events: none !important;
+}

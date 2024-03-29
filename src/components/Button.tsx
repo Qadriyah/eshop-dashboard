@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({
     <button {...props} disabled={loading} className={`${className}`}>
       <div className="flex justify-center items-center flex-1 px-2">
         {loading && <Loader />}
-        <div className="flex">{children}</div>
+        <div className="flex ml-2">{children}</div>
       </div>
     </button>
   );
