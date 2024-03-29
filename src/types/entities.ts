@@ -99,12 +99,20 @@ export type SaleStatusType =
   | "Refunded";
 
 export type UserType = {
+  id: string;
   email: string;
   avator: string;
   roles: string[];
   refreshToken: string;
   deleted: boolean;
   suspended: boolean;
+  profile: {
+    user: string;
+    createdAt: string;
+    updatedAt: string;
+    fullName: string;
+    id: string;
+  };
 };
 
 export type PaymentMethodType = {

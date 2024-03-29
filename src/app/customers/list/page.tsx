@@ -6,24 +6,25 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
-import CustomerTable from "@/pages/customer/CustomerTable";
+import CustomerTable from "../CustomerTable";
 import { useQuery } from "@tanstack/react-query";
-import { Customers, getCustomers } from "@/api/actions/customer";
+import { getCustomers } from "@/api/actions/customer";
+import { UserType } from "@/types/entities";
 
 const CustomerListing: React.FC<{}> = (): JSX.Element => {
   const [customerName, setCustomerName] = React.useState<string>("");
   // const [status, setStatus] = React.useState("All");
 
   // get customers
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["customers"],
     queryFn: () => getCustomers(),
   });
 
   console.log(data?.users, ">>>>>");
 
-  const [customers, setCustomers] = React.useState<Customers[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = React.useState<Customers[]>(
+  const [customers, setCustomers] = React.useState<UserType[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = React.useState<UserType[]>(
     []
   );
 
@@ -89,7 +90,7 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
               </div> */}
             </div>
           </div>
-          <CustomerTable customers={filteredCustomers} />
+          <CustomerTable customers={filteredCustomers} refetch={refetch} />
         </Card>
       </div>
     </div>

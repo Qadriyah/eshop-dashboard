@@ -27,31 +27,17 @@ export type DeletePaymentMethod = {
   errors?: ErrorType[];
 };
 
-export type GetUsers = {
-  createdAt: string;
-  deleted: boolean;
-  email: string;
-  refreshToken: string;
-  roles: string[];
-  updatedAt: string;
-  id: string;
-  errors?: ErrorType[];
-  status?: string;
-};
-
-export type Customers = GetUsers & {
-  profile: {
-    user: string;
-    createdAt: string;
-    updatedAt: string;
-    fullName: string;
-    id: string;
-  };
-};
-
 export type CustomerTypes = {
   statusCode: number;
-  users: Customers[];
+  users: UserType[];
+  errors?: ErrorType[];
+};
+
+export type CustomerUpdateResponse = {
+  statusCode: number;
+  message: string;
+  user: UserType;
+  errors?: ErrorType[];
 };
 
 export const createPaymentMethod = async (
@@ -99,8 +85,8 @@ export const deletePaymentMethod = async (
   return data;
 };
 
-export const getUsers = async (): Promise<GetUsers[]> => {
-  const response = await getApi<GetUsers[]>({ url: "/users" });
+export const getUsers = async (): Promise<CustomerTypes[]> => {
+  const response = await getApi<CustomerTypes[]>({ url: "/users" });
 
   return response;
 };
@@ -115,12 +101,30 @@ export const getCustomer = async (
   id: string
 ): Promise<{
   statusCode: number;
-  user: Customers;
+  user: CustomerTypes;
 }> => {
   const response = await getApi<{
     statusCode: number;
-    user: Customers;
+    user: CustomerTypes;
   }>({ url: `/users/${id}` });
+
+  return response;
+};
+
+export const suspendCustomer = async (
+  id: string,
+  data: { suspended: boolean }
+): Promise<CustomerUpdateResponse> => {
+  const response = await patchApi<CustomerUpdateResponse>({
+    url: `/users/${id}`,
+    data,
+  });
+
+  return response;
+};
+
+export const deleteCustomer = async (id: string): Promise<CustomerTypes> => {
+  const response = await deleteApi<CustomerTypes>({ url: `/users/${id}` });
 
   return response;
 };
