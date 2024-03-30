@@ -15,6 +15,7 @@ import { GoDotFill } from "react-icons/go";
 import { Space } from "antd";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
+import type { NextPage } from "next";
 import Media from "../../Media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProduct, updateProduct } from "@/api/actions/product";
@@ -40,7 +41,7 @@ type PageParams = {
   };
 };
 
-const EditProduct: React.FC<PageParams> = ({ params }) => {
+const EditProduct: NextPage<PageParams> = ({ params }) => {
   const router = useRouter();
   const [previews, setPreviews] = React.useState<any[]>([]);
   const [showDeleteImageModal, setShowDeleteImageModal] = React.useState(false);

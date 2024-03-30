@@ -5,9 +5,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { HiViewfinderCircle } from "react-icons/hi2";
 import Link from "next/link";
 import { CgMoreVerticalO } from "react-icons/cg";
-import { ProfileType, UserType } from "@/types/entities";
-import { getItem } from "@/api/localstorage";
+import { UserType } from "@/types/entities";
 import { RiUserForbidLine } from "react-icons/ri";
+import Cookies from "js-cookie";
 
 type DropdownProps = {
   customer: UserType;
@@ -20,7 +20,7 @@ const DropMenu: React.FC<DropdownProps> = ({
   handleOpenDeleteModal,
   handleOpenSuspendModal,
 }): JSX.Element => {
-  const profile = getItem<ProfileType>("user");
+  const user = Cookies.get("_session-token");
 
   const items: MenuProps["items"] = [
     {
@@ -38,7 +38,7 @@ const DropMenu: React.FC<DropdownProps> = ({
       label: (
         <div
           className={`flex  gap-2 items-center ${
-            profile?.user?.id === customer.id && "pointer-events-none"
+            user === customer.id && "pointer-events-none"
           }`}
           onClick={() => handleOpenSuspendModal(customer)}
         >
@@ -52,7 +52,7 @@ const DropMenu: React.FC<DropdownProps> = ({
       label: (
         <div
           className={`flex  gap-2 items-center ${
-            profile?.user?.id === customer.id && "pointer-events-none"
+            user === customer.id && "pointer-events-none"
           }`}
           onClick={() => handleOpenDeleteModal(customer)}
         >

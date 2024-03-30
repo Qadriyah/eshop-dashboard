@@ -6,7 +6,7 @@ import { useFormik } from "formik";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import Cookies from "js-cookie";
+import type { NextPage } from "next";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,20 +14,11 @@ import { formatErrors } from "@/utils/helpers";
 import { loginValidationSchema } from "@/validation/loginSchema";
 import { loginWithCredentials, loginWithGoogle } from "@/api/actions/auth";
 import { LoginCredentials } from "@/types/requests";
-import { useComponentWillMount } from "./hooks";
 
-const SignIn = () => {
+const SignIn: NextPage = () => {
   const ref = React.useRef<HTMLParagraphElement>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  useComponentWillMount(() => {
-    const sessionId = Cookies.get("_session-token");
-    if (sessionId) {
-      router.push("/home");
-    }
-    return sessionId;
-  });
 
   const loginMutation = useMutation({
     mutationKey: ["login"],

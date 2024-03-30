@@ -4,9 +4,9 @@ import React from "react";
 import Dropdown from "./Dropdown";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { NextPage } from "next";
 import { notify } from "@/utils/helpers";
 import { logoutUser } from "@/api/actions/auth";
-import withAuth from "@/app/withAuth";
 import { Space } from "antd";
 import { me } from "@/api/actions/profile";
 
@@ -14,14 +14,13 @@ type IProps = {
   isAuthenticated: string;
 };
 
-const UserProfile: React.FC<IProps> = ({ isAuthenticated }): JSX.Element => {
+const UserProfile: NextPage<IProps> = (): JSX.Element => {
   const navigate = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const { data } = useQuery({
     queryKey: ["profile"],
     queryFn: () => me(),
-    enabled: !!isAuthenticated,
   });
 
   const logoutMuutation = useMutation({
@@ -88,4 +87,4 @@ const UserProfile: React.FC<IProps> = ({ isAuthenticated }): JSX.Element => {
   );
 };
 
-export default withAuth(UserProfile);
+export default UserProfile;

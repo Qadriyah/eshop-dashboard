@@ -3,7 +3,7 @@
 import React from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ShouldRender from "../../../components/ShouldRender";
 import { ProductType } from "@/types/entities";
 import { formatCurrency, notify } from "@/utils/helpers";
@@ -28,7 +28,6 @@ const ProductList: React.FC<IProps> = ({
   products,
   refetchProducts,
 }): JSX.Element => {
-  const router = useRouter();
   const [showModal, setShowModal] = React.useState(false);
   const [selectedProduct, setSelecetedProduct] =
     React.useState<ProductType | null>(null);

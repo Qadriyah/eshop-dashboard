@@ -14,7 +14,6 @@ import Loader from "@/components/Loader";
 import Suspense from "@/components/Suspense";
 import { ProductType } from "@/types/entities";
 import { getProducts } from "@/api/actions/product";
-import { Space } from "antd";
 import PageHeader from "@/components/PageHeader";
 
 const Products: React.FC<{}> = (): JSX.Element => {

@@ -4,6 +4,12 @@ import axios from "axios";
 const baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
 axios.defaults.withCredentials = true; // adds cookies to the request
 axios.defaults.baseURL = baseURL;
+axios.interceptors.request.use(
+  async (config) => {
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 axios.interceptors.response.use(
   async function (response) {
     return new Promise((resolve) => {
