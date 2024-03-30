@@ -55,9 +55,3 @@ export const addProduct = async (data: ProductType): Promise<PostProduct> => {
   const response = await postApi<PostProduct>({ url: "/products", data });
   return response;
 };
-
-// export const addProduct = async (data: ProductType): Promise<AddProduct> => {
-//   const response = await postApi<AddProduct>({ url: "/products", data });
-
-//   return response;
-// };

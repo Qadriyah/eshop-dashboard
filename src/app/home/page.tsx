@@ -23,7 +23,7 @@ const Home = () => {
           <MonthlySales />
         </div>
       </div>
-      <div className="flex gap-5 mt-5 flex-col lg:flex-row">
+      <div className="flex gap-5 mt-5 flex-col xl:flex-row">
         <div className="flex-[0.8]">
           <TopSelling />
         </div>

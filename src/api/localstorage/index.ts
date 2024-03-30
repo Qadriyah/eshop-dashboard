@@ -1,25 +1,36 @@
-"use client";
-export const setItem = (key: string, data: any) => {
-  if (typeof data === "string") {
-    localStorage.setItem(key, data);
-  } else {
+export const storeObject = (key: string, data: Record<string, any>): void => {
+  if (typeof window !== "undefined") {
     localStorage.setItem(key, JSON.stringify(data));
   }
 };
 
-export const getItem = <T>(key: string): T | null => {
-  const data = localStorage.getItem(key);
-  if (!data || data === "undefined") {
-    return null;
+export const storeString = (key: string, data: string): void => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(key, data);
   }
-  return JSON.parse(data);
 };
 
-export const getStringItem = (key: string) => {
-  const data = localStorage.getItem(key);
-  return data;
+export const getObectItem = <T>(key: string): T | null => {
+  if (typeof window !== "undefined") {
+    const data = localStorage.getItem(key);
+    if (!data || data === "undefined") {
+      return null;
+    }
+    return JSON.parse(data);
+  }
+  return null;
 };
 
-export const removeItem = (key: string) => {
-  localStorage.removeItem(key);
+export const getStringItem = (key: string): string | null => {
+  if (typeof window !== "undefined") {
+    const data = localStorage.getItem(key);
+    return data;
+  }
+  return null;
+};
+
+export const removeItem = (key: string): void => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(key);
+  }
 };
