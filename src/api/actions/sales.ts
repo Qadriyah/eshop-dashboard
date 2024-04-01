@@ -1,4 +1,4 @@
-import { ErrorType, SaleType } from "@/types/entities";
+import { ErrorType, SaleType, SearchOptions } from "@/types/entities";
 import { getApi, patchApi } from "..";
 
 export type GetSales = {
@@ -25,9 +25,15 @@ export const getCustomerSales = async (): Promise<GetSales> => {
   return response;
 };
 
-export const getSales = async (): Promise<GetSales> => {
-  const response = await getApi<GetSales>({ url: "/sales" });
+export const getSales = async (options: SearchOptions): Promise<GetSales> => {
+  const { page, limit, from, to } = options;
+  let url = "/sales";
+  url += `?page=${page ? page : 1}`;
+  if (limit) url += `&limit=${limit}`;
+  if (from) url += `&from=${from}`;
+  if (to) url += `&to=${to}`;
 
+  const response = await getApi<GetSales>({ url });
   return response;
 };
 

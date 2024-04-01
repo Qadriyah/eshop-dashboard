@@ -21,11 +21,11 @@ const Orders: React.FC<{}> = (): JSX.Element => {
   const [filteredSales, setFilteredSales] = React.useState<SaleType[]>([]);
   const [openStatusModal, setOpenStatusModal] = React.useState(false);
   const [selectedOrder, setSelectedOrder] = React.useState<SaleType>();
+
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["sales"],
-    queryFn: () => getSales(),
+    queryFn: () => getSales({}),
   });
-  console.log(data?.sales, ";;;;;;;");
 
   const handleChange = (event: SelectChangeEvent<any>) => {
     const { value } = event.target;

@@ -78,6 +78,7 @@ export type SaleType = {
 };
 
 export type SaleItemType = {
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -191,4 +192,12 @@ export type ProductReport = {
   name: string;
   sold: number;
   total: number;
+};
+
+export type SearchOptions = {
+  page?: number;
+  limit?: number;
+  user?: string;
+  from?: string;
+  to?: string;
 };
