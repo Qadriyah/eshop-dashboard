@@ -144,3 +144,13 @@ export const getTransactions = async (
 
   return response;
 };
+
+export const getCustomerPaymentMethods = async (
+  customerId: string
+): Promise<GetPaymentMethods> => {
+  const response = await getApi<GetPaymentMethods>({
+    url: `/customers/payment-methods/${customerId}/cards`,
+  });
+
+  return response;
+};

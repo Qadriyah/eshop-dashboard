@@ -115,6 +115,7 @@ export type UserType = {
     firstName: string;
     lastName: string;
     phone: string;
+    customer: string;
   };
 };
 

@@ -1,82 +1,65 @@
-import React, { DetailsHTMLAttributes } from "react";
+import React from "react";
+import { PaymentMethodType } from "@/types/entities";
+import { FaCheckCircle } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
-type PaymentMethodProps = DetailsHTMLAttributes<HTMLDetailsElement> & {
+type PaymentMethodProps = {
   image: string;
-  paymentName: string;
-  expiry: string;
-  customerName: string;
-  number: number | string;
-  expireType: string;
-  phoneNumber: number | string;
-  issureID: string;
-  billingAddress: string;
-  email: string;
-  origin: string;
-  passed: any;
+  card: PaymentMethodType;
 };
 
 const PaymentMethod: React.FC<PaymentMethodProps> = ({
   image,
-  paymentName,
-  expiry,
-  customerName,
-  number,
-  expireType,
-  phoneNumber,
-  issureID,
-  billingAddress,
-  email,
-  origin,
-  passed,
+  card,
 }): JSX.Element => {
   return (
     <details className="mt-5 outline-none pb-1 mb-4 border-b border-dashed border-[#d8d2d2]">
       <summary className="flex hover:font-bold cursor-pointer">
         <img src={image} alt="" className="[w-23px] h-[12px] mr-3" />
         <div className="-translate-y-4">
-          <p className="font-semibold opacity-80">{paymentName}</p>
-          <p className="opacity-60 text-sm -mt-1">{expiry}</p>
+          <p className="opacity-80">{card.brand}</p>
+          <p className="opacity-60 text-sm -mt-1">{card.expiry}</p>
         </div>
       </summary>
       <div className="flex justify-between flex-col lg:flex-row">
         <div>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90">
             <span className="opacity-60">Name: </span>
-            {customerName}
+            {card.billing_address.name}
           </p>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90">
             <span className="opacity-60">Number: </span>
-            {number}
+            ******{card.last4}
           </p>
-          <p className="font-semibold opacity-90">
-            <span className="opacity-60">Expires type: </span>
-            {expireType}
-          </p>
-          <p className="font-semibold opacity-90">
-            <span className="opacity-60">Issuer ID: </span>
-            {issureID}
+          <p className="opacity-90">
+            <span className="opacity-60">Brand: </span>
+            {card.brand}
           </p>
         </div>
         <div>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90">
             <span className="opacity-60">Billing Address: </span>
-            {billingAddress}
+            {card.billing_address.address.line1}
           </p>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90">
             <span className="opacity-60">Phone: </span>
-            {phoneNumber}
+            {card.billing_address.phone}
           </p>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90">
             <span className="opacity-60">Email: </span>
-            {email}
+            {card.billing_address.email}
           </p>
-          <p className="font-semibold opacity-90">
-            <span className="opacity-60">Origin: </span>
-            {origin}
+          <p className="opacity-90">
+            <span className="opacity-60">Country: </span>
+            {card.country}
           </p>
-          <p className="font-semibold opacity-90">
+          <p className="opacity-90 flex gap-2 items-center">
             <span className="opacity-60">Passed: </span>
-            {passed}
+            {card.checks?.cvc_check === "pass" ? (
+              <FaCheckCircle fill="#0f0" />
+            ) : (
+              <MdCancel fill="#f00" />
+            )}
           </p>
         </div>
       </div>

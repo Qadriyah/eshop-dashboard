@@ -67,8 +67,8 @@ const CustomerTransactionsTable: React.FC<SalesProps> = ({
   ];
 
   return (
-    <div className="overflow-x-scroll hide-scrollbar w-full">
-      <div className="min-w-[600px] hide-scrollbar">
+    <div className="flex">
+      <div className="hide-scrollbar min-w-[600px]">
         <Table
           columns={columns}
           dataSource={sales?.map((sale) => ({
