@@ -113,6 +113,10 @@ export type UserType = {
     updatedAt: string;
     fullName: string;
     id: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    customer: string;
   };
 };
 

@@ -9,20 +9,40 @@ import ShouldRender from "@/components/ShouldRender";
 import CustomerTransactionsTable from "../CustomerTransactionsTable";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { getCustomer } from "@/api/actions/customer";
+import {
+  getCustomer,
+  getCustomerPaymentMethods,
+  getTransactions,
+} from "@/api/actions/customer";
 import { IoArrowBackSharp } from "react-icons/io5";
+import Image from "next/image";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
+import PageHeader from "@/components/PageHeader";
+
+const cardIcons: Record<string, string> = {
+  visa: "/assets/images/visa.svg",
+  mastercard: "/assets/images/mastercard.svg",
+  americanexpress: "/assets/images/american-express.svg",
+};
 
 const CustomerDetails: React.FC<{}> = (): JSX.Element => {
-  const params = useParams<{ customerId: any }>();
+  const params = useParams<{ customerId: string }>();
   const id = params?.customerId;
-  const router = useRouter();
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["customer", id],
     queryFn: () => getCustomer(id),
   });
 
   const customer = data?.user;
+  const customerCard = customer?.profile?.customer;
+
+  const transactions = useQuery({
+    queryKey: ["customer-transactions"],
+    queryFn: () => getTransactions(id),
+  });
+  const sales = transactions?.data?.sales;
 
   type stateProps = {
     mytab: string;
@@ -35,53 +55,62 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
   const onTabChange = (tab: string, value: string) =>
     setTab((prevState) => ({ ...prevState, [tab]: value }));
 
+  const paymentMethods = useQuery({
+    queryKey: ["payment-methods", customerCard],
+    queryFn: () => getCustomerPaymentMethods(customerCard!),
+  });
+
+  console.log(paymentMethods.data?.paymentMethods, ">>>>>");
+
   return (
     <div>
-      <div className="flex">
-        <IoArrowBackSharp
-          size={25}
-          className="mt-1 mr-3 cursor-pointer"
-          onClick={() => router.back()}
-        />
-        <h2 className="text-2xl font-bold mb-4 opacity-90 text-[#152238]">
-          Customer Details
-        </h2>
-      </div>
-      <div className="md:flex w-full">
-        <div className="w-full mr-5 md:w-1/4 sm:min-w-[250px]">
+      <PageHeader title="Customer details" params={params} />
+      <div className="flex flex-col lg:flex-row gap-5">
+        <div className="min-w-[300px]">
           <Card>
             <div className="w-full">
-              <img
-                src={customer?.id}
-                alt=""
+              <div
                 className="w-[100px] h-[100px] mx-auto rounded-full sm:w-[150px] sm:h-[150px]"
+                style={{
+                  backgroundImage: `url(${
+                    customer?.avator || "/assets/images/user.svg"
+                  })`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                }}
               />
+
               <span>
-                <h2 className="font-bold mt-5 opacity-80 text-lg text-center">
+                <h2 className="mt-5 opacity-80 text-lg text-center">
                   {customer?.profile?.fullName}
                 </h2>
-                <p className="font-semibold opacity-55 text-center">
-                  {customer?.email}
-                </p>
+                <p className="opacity-55 text-center">{customer?.email}</p>
               </span>
-              <p className="opacity-90 font-bold mt-3 mb-4">Details</p>
+              <p className="opacity-90 mt-3 mb-4">Details</p>
               <div className="border-t border-dashed border-[#b6b3b3] pt-3">
-                <CustomerDetail label="Account ID" value="ID-3434578" />
+                {/* <CustomerDetail label="Account ID" value="ID-3434578" /> */}
                 <CustomerDetail
                   label="Billing Email"
-                  value="info@company.com"
+                  value={customer?.email!}
                 />
-                <CustomerDetail label="Phone number" value="+256 785679034" />
+                <CustomerDetail
+                  label="Phone number"
+                  value={customer?.profile?.phone!}
+                />
                 <CustomerDetail
                   label="Delivery Address"
-                  value="Kawempe, Kampala"
+                  value={
+                    paymentMethods.data?.paymentMethods[0]?.billing_address
+                      ?.address?.line1!
+                  }
                 />
                 <CustomerDetail label="Latest Transaction" value="#145674" />
               </div>
             </div>
           </Card>
         </div>
-        <div className="mt-7 md:mt-0 w-full flex flex-col flex-wrap">
+        <div className="flex-1">
           <ul className="flex mb-8">
             <li
               className={`font-semibold opacity-60 text-lg p-2 mr-1 pb-2 sm:p-b-4 hover:text-[dodgerblue] cursor-pointer ${
@@ -100,43 +129,27 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
               Advanced Settings
             </li>
           </ul>
-          <div className="md:pr-5 md:w-[55%] lg:w-3/4 xl:w-full">
+          <div className="overflow-x-scroll">
             <ShouldRender visible={tab.mytab === "overview"}>
-              <ProductCard title="Transaction history">
-                <CustomerTransactionsTable />
+              <ProductCard title="Transaction history" showStatus={true}>
+                <Suspense
+                  loading={transactions.isLoading}
+                  fallback={
+                    <div className="flex justify-center items-center h-44">
+                      <Loader color="black" />
+                    </div>
+                  }
+                >
+                  <CustomerTransactionsTable sales={sales!} />
+                </Suspense>
               </ProductCard>
             </ShouldRender>
           </div>
           <ShouldRender visible={tab.mytab === "advanced"}>
-            <ProductCard title="Payment Methods">
-              <PaymentMethod
-                image={`/assets/images/Visa_Brandmark_Blue_RGB.webp`}
-                paymentName="Visa"
-                expiry="Expires Feb 2024"
-                customerName="Henry Garner"
-                number="****639"
-                expireType="Master Card Credit card"
-                phoneNumber="no phone provided"
-                issureID="VICBANK_id_jsjh89kksa"
-                billingAddress="Au"
-                email="kante@email.com"
-                origin="Australia"
-                passed="True"
-              />
-              <PaymentMethod
-                image={`/assets/images/Visa_Brandmark_Blue_RGB.webp`}
-                paymentName="Visa"
-                expiry="Expires Feb 2024"
-                customerName="Henry Garner"
-                number="****639"
-                expireType="Master Card Credit card"
-                phoneNumber="no phone provided"
-                issureID="VICBANK_id_jsjh89kksa"
-                billingAddress="Au"
-                email="kante@email.com"
-                origin="Australia"
-                passed="True"
-              />
+            <ProductCard title="Payment Methods" showStatus={true}>
+              {paymentMethods?.data?.paymentMethods?.map((method) => (
+                <PaymentMethod image={cardIcons[method.brand]} card={method} />
+              ))}
             </ProductCard>
           </ShouldRender>
         </div>
