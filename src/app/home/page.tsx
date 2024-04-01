@@ -49,7 +49,7 @@ const Home = () => {
             currentSales={currentSales?.sales || []}
             prevSales={prevSales?.sales || []}
           />
-          <ProductEarnings />
+          <ProductEarnings currentSales={currentSales?.sales || []} />
           <NewCustomers />
           <DailySales />
         </div>

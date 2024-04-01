@@ -42,3 +42,27 @@ export const calProgress = (
 
   return +Number((currentSales.length / prevSales.length) * 100).toFixed(1);
 };
+
+export const getProductEarnings = (currentSales: SaleType[]) => {
+  let total = 0;
+  const map: Record<string, any> = {};
+  currentSales.forEach((sale) => {
+    sale.lineItems.forEach((product) => {
+      const lineTotal = product.quantity * product.price;
+      total += lineTotal;
+      if (map[product.id]) {
+        map[product.id].total = map[product.id].total + lineTotal;
+      } else {
+        map[product.id] = {
+          name: product.name,
+          total: lineTotal,
+        };
+      }
+    });
+  });
+
+  return {
+    total,
+    earnings: Object.values(map),
+  };
+};
