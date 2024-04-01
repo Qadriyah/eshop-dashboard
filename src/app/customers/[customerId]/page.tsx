@@ -9,20 +9,29 @@ import ShouldRender from "@/components/ShouldRender";
 import CustomerTransactionsTable from "../CustomerTransactionsTable";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { getCustomer } from "@/api/actions/customer";
+import { getCustomer, getTransactions } from "@/api/actions/customer";
 import { IoArrowBackSharp } from "react-icons/io5";
+import Image from "next/image";
+import Suspense from "@/components/Suspense";
+import Loader from "@/components/Loader";
 
 const CustomerDetails: React.FC<{}> = (): JSX.Element => {
   const params = useParams<{ customerId: any }>();
   const id = params?.customerId;
   const router = useRouter();
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["customer", id],
     queryFn: () => getCustomer(id),
   });
 
   const customer = data?.user;
+
+  const transactions = useQuery({
+    queryKey: ["customer-transactions"],
+    queryFn: () => getTransactions(id),
+  });
+  const sales = transactions?.data?.sales;
 
   type stateProps = {
     mytab: string;
@@ -51,9 +60,11 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
         <div className="w-full mr-5 md:w-1/4 sm:min-w-[250px]">
           <Card>
             <div className="w-full">
-              <img
-                src={customer?.id}
+              <Image
+                src={customer?.avator!}
                 alt=""
+                width={100}
+                height={100}
                 className="w-[100px] h-[100px] mx-auto rounded-full sm:w-[150px] sm:h-[150px]"
               />
               <span>
@@ -66,12 +77,15 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
               </span>
               <p className="opacity-90 font-bold mt-3 mb-4">Details</p>
               <div className="border-t border-dashed border-[#b6b3b3] pt-3">
-                <CustomerDetail label="Account ID" value="ID-3434578" />
+                {/* <CustomerDetail label="Account ID" value="ID-3434578" /> */}
                 <CustomerDetail
                   label="Billing Email"
-                  value="info@company.com"
+                  value={customer?.email!}
                 />
-                <CustomerDetail label="Phone number" value="+256 785679034" />
+                <CustomerDetail
+                  label="Phone number"
+                  value={customer?.profile?.phone!}
+                />
                 <CustomerDetail
                   label="Delivery Address"
                   value="Kawempe, Kampala"
@@ -102,8 +116,17 @@ const CustomerDetails: React.FC<{}> = (): JSX.Element => {
           </ul>
           <div className="md:pr-5 md:w-[55%] lg:w-3/4 xl:w-full">
             <ShouldRender visible={tab.mytab === "overview"}>
-              <ProductCard title="Transaction history">
-                <CustomerTransactionsTable />
+              <ProductCard title="Transaction history" showStatus={true}>
+                <Suspense
+                  loading={transactions.isLoading}
+                  fallback={
+                    <div className="flex justify-center items-center h-44">
+                      <Loader color="black" />
+                    </div>
+                  }
+                >
+                  <CustomerTransactionsTable sales={sales!} />
+                </Suspense>
               </ProductCard>
             </ShouldRender>
           </div>

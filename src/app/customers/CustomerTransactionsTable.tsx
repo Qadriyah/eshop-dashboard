@@ -1,19 +1,18 @@
 import React from "react";
 import { NumericFormat } from "react-number-format";
-import { transactions } from "../../components/Dummy/transactions";
 import { Table } from "antd";
 import type { TableProps } from "antd";
+import { SaleType } from "@/types/entities";
+import moment from "moment";
 
-const CustomerTransactionsTable: React.FC<{}> = (): JSX.Element => {
-  // ant
-  interface transactionsProps {
-    key: string;
-    orderNumber: string | number;
-    status: string;
-    amount: number;
-    date: string;
-  }
-  const columns: TableProps<transactionsProps>["columns"] = [
+interface SalesProps {
+  sales: SaleType[];
+}
+
+const CustomerTransactionsTable: React.FC<SalesProps> = ({
+  sales,
+}): JSX.Element => {
+  const columns: TableProps<SaleType>["columns"] = [
     {
       key: "order_no",
       title: "Order no.",
@@ -29,9 +28,9 @@ const CustomerTransactionsTable: React.FC<{}> = (): JSX.Element => {
       render: (_, item) => (
         <div
           className={`font-bold opacity-70 text-center text-xs p-1 rounded-lg ${
-            item.status === "Rejected"
+            item.status === "Cancelled"
               ? "text-[#f18d9d] bg-red-50"
-              : item.status === "Successful"
+              : item.status === "Completed"
               ? "text-[#5ced73] bg-green-50"
               : "text-[#75bfec] bg-blue-50"
           }`}
@@ -47,7 +46,7 @@ const CustomerTransactionsTable: React.FC<{}> = (): JSX.Element => {
       render: (_, item) => (
         <div className="font-semibold text-black opacity-60">
           <NumericFormat
-            value={item.amount}
+            value={item.totalAmount}
             prefix={"$"}
             thousandSeparator=","
             displayType="text"
@@ -60,7 +59,9 @@ const CustomerTransactionsTable: React.FC<{}> = (): JSX.Element => {
       title: "Date",
       dataIndex: "date",
       render: (_, item) => (
-        <div className="font-semibold text-black opacity-60">{item.date}</div>
+        <div className="font-semibold text-black opacity-60">
+          {moment(item.createdAt).format("MM/DD/YYYY")}
+        </div>
       ),
     },
   ];
@@ -68,13 +69,16 @@ const CustomerTransactionsTable: React.FC<{}> = (): JSX.Element => {
   return (
     <div className="overflow-x-scroll hide-scrollbar w-full">
       <div className="min-w-[600px] hide-scrollbar">
-        <Table columns={columns} dataSource={transactions} />
+        <Table
+          columns={columns}
+          dataSource={sales?.map((sale) => ({
+            ...sale,
+            key: Math.round(Math.random() * 1000000),
+          }))}
+        />
       </div>
     </div>
   );
 };
 
 export default CustomerTransactionsTable;
-
-// "test": "react-scripts test",
-//     "eject": "react-scripts eject"

@@ -5,6 +5,7 @@ import {
   ErrorType,
   PaymentMethodType,
   UserType,
+  SaleType,
 } from "@/types/entities";
 
 export type CreatePaymentMethod = {
@@ -38,6 +39,11 @@ export type CustomerUpdateResponse = {
   message: string;
   user: UserType;
   errors?: ErrorType[];
+};
+
+export type TransactionsResponse = {
+  statusCode: number;
+  sales: SaleType[];
 };
 
 export const createPaymentMethod = async (
@@ -101,11 +107,11 @@ export const getCustomer = async (
   id: string
 ): Promise<{
   statusCode: number;
-  user: CustomerTypes;
+  user: UserType;
 }> => {
   const response = await getApi<{
     statusCode: number;
-    user: CustomerTypes;
+    user: UserType;
   }>({ url: `/users/${id}` });
 
   return response;
@@ -125,6 +131,16 @@ export const suspendCustomer = async (
 
 export const deleteCustomer = async (id: string): Promise<CustomerTypes> => {
   const response = await deleteApi<CustomerTypes>({ url: `/users/${id}` });
+
+  return response;
+};
+
+export const getTransactions = async (
+  id: string
+): Promise<TransactionsResponse> => {
+  const response = await getApi<TransactionsResponse>({
+    url: `/sales/customer/${id}`,
+  });
 
   return response;
 };
