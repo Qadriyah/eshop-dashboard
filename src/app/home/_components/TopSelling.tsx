@@ -5,7 +5,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   Bar,
   ComposedChart,
 } from "recharts";
@@ -30,6 +29,27 @@ const data = [
 ];
 
 const TopSelling = () => {
+  const [isLarge, setIsLarge] = React.useState(true);
+
+  React.useEffect(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < 1280) {
+        setIsLarge(false);
+      } else {
+        setIsLarge(true);
+      }
+    });
+    return () => window.removeEventListener("resize", () => {});
+  }, []);
+
+  React.useEffect(() => {
+    if (window.innerWidth < 1280) {
+      setIsLarge(false);
+    } else {
+      setIsLarge(true);
+    }
+  }, []);
+
   return (
     <Card>
       <div className="h-[458px] flex flex-col gap-3 justify-between">
@@ -38,10 +58,10 @@ const TopSelling = () => {
           <div className="text-sm opacity-45">8k Customers</div>
         </div>
         <div className="w-full">
-          <ResponsiveContainer width="100%" height={300}>
+          {isLarge ? (
             <ComposedChart
               layout="vertical"
-              width={500}
+              width={300}
               height={400}
               data={data}
               margin={{
@@ -61,7 +81,32 @@ const TopSelling = () => {
               <Tooltip />
               <Bar dataKey="sales" barSize={20} fill="#413ea0" />
             </ComposedChart>
-          </ResponsiveContainer>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <ComposedChart
+                layout="vertical"
+                width={300}
+                height={400}
+                data={data}
+                margin={{
+                  top: 0,
+                  right: 20,
+                  bottom: 0,
+                  left: 0,
+                }}
+              >
+                <XAxis type="number" />
+                <YAxis
+                  dataKey="product"
+                  type="category"
+                  scale="auto"
+                  width={200}
+                />
+                <Tooltip />
+                <Bar dataKey="sales" barSize={20} fill="#413ea0" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </Card>
