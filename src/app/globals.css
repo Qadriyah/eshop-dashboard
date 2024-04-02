@@ -188,3 +188,14 @@ body {
 .disable-div {
   pointer-events: none !important;
 }
+
+.rotate-90d {
+  transition: transform 0.3s ease;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+details[open] .rotate-90d {
+  transform: rotateZ(90deg);
+  transition: transform 0.3s ease;
+}

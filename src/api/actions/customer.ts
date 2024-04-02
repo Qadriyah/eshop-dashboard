@@ -6,6 +6,7 @@ import {
   PaymentMethodType,
   UserType,
   SaleType,
+  SearchOptions,
 } from "@/types/entities";
 
 export type CreatePaymentMethod = {
@@ -136,12 +137,15 @@ export const deleteCustomer = async (id: string): Promise<CustomerTypes> => {
 };
 
 export const getTransactions = async (
-  id: string
+  id: string,
+  options: SearchOptions
 ): Promise<TransactionsResponse> => {
-  const response = await getApi<TransactionsResponse>({
-    url: `/sales/customer/${id}`,
-  });
+  const { page, limit } = options;
+  let url = `/sales/customer/${id}`;
+  url += `?page=${page ? page : 1}`;
+  if (limit) url += `&limit=${limit}`;
 
+  const response = await getApi<TransactionsResponse>({ url });
   return response;
 };
 

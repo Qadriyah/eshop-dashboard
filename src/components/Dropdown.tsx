@@ -29,7 +29,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     <div className={classname}>
       {showImage ? (
         <div
-          className="h-[40px] w-[40px] rounded-full cursor-pointer"
+          className="h-[40px] w-[40px] rounded-full cursor-pointer border border-gray-300"
           style={{
             backgroundImage: `url(${image})`,
             backgroundRepeat: "no-repeat",

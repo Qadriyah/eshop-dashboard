@@ -2,26 +2,24 @@
 
 import React from "react";
 import Dropdown from "./Dropdown";
-import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { notify } from "@/utils/helpers";
 import { logoutUser } from "@/api/actions/auth";
 import { Space } from "antd";
-import { me } from "@/api/actions/profile";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { getUser } from "@/lib/features/user";
 
 type IProps = {
   isAuthenticated: string;
 };
 
 const UserProfile: NextPage<IProps> = (): JSX.Element => {
-  const navigate = useRouter();
+  const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const { data } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => me(),
-  });
+  const data = useAppSelector((state) => state.user.user);
 
   const logoutMuutation = useMutation({
     mutationFn: () => logoutUser(),
@@ -41,14 +39,20 @@ const UserProfile: NextPage<IProps> = (): JSX.Element => {
       notify("Something went wrong", "error");
       return;
     }
-    navigate.replace("/");
+    redirect("/");
   };
+
+  React.useEffect(() => {
+    (async () => {
+      await dispatch(getUser());
+    })();
+  }, [dispatch]);
 
   return (
     <Dropdown
       id="image"
       showImage={true}
-      image={data?.profile?.user?.avator || "/assets/images/user.svg"}
+      image={data?.user?.avator || "/assets/images/user.svg"}
       anchorEl={anchorEl}
       handleClick={handleClick}
       handleClose={handleClose}
@@ -61,7 +65,7 @@ const UserProfile: NextPage<IProps> = (): JSX.Element => {
               className="h-[40px] w-[40px] rounded-full"
               style={{
                 backgroundImage: `url(${
-                  data?.profile?.user?.avator || "/assets/images/user.svg"
+                  data?.user?.avator || "/assets/images/user.svg"
                 })`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
@@ -69,9 +73,9 @@ const UserProfile: NextPage<IProps> = (): JSX.Element => {
               }}
             />
             <div>
-              <h2 className="font-bold">{data?.profile?.fullName}</h2>
+              <h2 className="font-bold">{data?.fullName}</h2>
               <div className="text-sm text-black opacity-50">
-                {data?.profile?.user?.email}
+                {data?.user?.email}
               </div>
             </div>
           </Space>

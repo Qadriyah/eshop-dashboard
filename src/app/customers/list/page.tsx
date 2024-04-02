@@ -3,7 +3,7 @@
 import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import Card from "@/components/Card";
-import CustomerTable from "../CustomerTable";
+import CustomerTable from "../_components/CustomerTable";
 import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "@/api/actions/customer";
 import { UserType } from "@/types/entities";
