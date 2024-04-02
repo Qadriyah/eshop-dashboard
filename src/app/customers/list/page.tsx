@@ -5,7 +5,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import Card from "@/components/Card";
 import CustomerTable from "../_components/CustomerTable";
 import { useQuery } from "@tanstack/react-query";
-import { getCustomers } from "@/api/actions/customer";
+import { getCustomers, getUsers } from "@/api/actions/customer";
 import { UserType } from "@/types/entities";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
@@ -21,7 +21,7 @@ const CustomerListing: React.FC<{}> = (): JSX.Element => {
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["customers"],
-    queryFn: () => getCustomers(USER_ROLES.CUSTOMER),
+    queryFn: () => getUsers({ user: USER_ROLES.CUSTOMER }),
   });
 
   const onSearchCustomer = (event: React.ChangeEvent<HTMLInputElement>) => {

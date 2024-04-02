@@ -92,15 +92,16 @@ export const deletePaymentMethod = async (
   return data;
 };
 
-export const getUsers = async (): Promise<CustomerTypes[]> => {
-  const response = await getApi<CustomerTypes[]>({ url: "/users" });
+export const getUsers = async (
+  options: SearchOptions
+): Promise<CustomerTypes> => {
+  const { user, page, limit } = options;
+  let url = "/users";
+  url += `?page=${page ? page : 1}`;
+  if (limit) url += `&limit=${limit}`;
+  if (user) url += `&user=${user}`;
 
-  return response;
-};
-
-export const getCustomers = async (param: string): Promise<CustomerTypes> => {
-  const response = await getApi<CustomerTypes>({ url: `/users?user=${param}` }); // query paeram
-
+  const response = await getApi<CustomerTypes>({ url });
   return response;
 };
 
