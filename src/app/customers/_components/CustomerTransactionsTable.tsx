@@ -4,6 +4,7 @@ import { Table } from "antd";
 import type { TableProps } from "antd";
 import { SaleType } from "@/types/entities";
 import moment from "moment";
+import { SALE_STATUS } from "@/utils/constants";
 
 interface SalesProps {
   sales: SaleType[];
@@ -17,22 +18,22 @@ const CustomerTransactionsTable: React.FC<SalesProps> = ({
       key: "order_no",
       title: "Order no.",
       dataIndex: "order_no",
-      render: (_, item) => (
-        <div className="font-semibold opacity-60 ">{item.orderNumber}</div>
-      ),
+      className: "text-[1.063rem]",
+      render: (_, item) => <div>{item.orderNumber}</div>,
     },
     {
       key: "status",
       title: "Status",
       dataIndex: "status",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className={`font-bold opacity-70 text-center text-xs p-1 rounded-lg ${
-            item.status === "Cancelled"
-              ? "text-[#f18d9d] bg-red-50"
-              : item.status === "Completed"
-              ? "text-[#5ced73] bg-green-50"
-              : "text-[#75bfec] bg-blue-50"
+          className={`px-1 rounded-lg flex justify-center items-center max-w-[120px] ${
+            item.status === SALE_STATUS.cancelled
+              ? "bg-red-200 text-red-600 border border-red-600"
+              : item.status === SALE_STATUS.completed
+              ? "bg-green-200 text-green-600 border border-green-600"
+              : "bg-blue-200 text-blue-600 border border-blue-600"
           }`}
         >
           {item.status}
@@ -43,8 +44,10 @@ const CustomerTransactionsTable: React.FC<SalesProps> = ({
       key: "amount",
       title: "Amount",
       dataIndex: "amount",
+      className: "text-[1.063rem]",
+      align: "right",
       render: (_, item) => (
-        <div className="font-semibold text-black opacity-60">
+        <div>
           <NumericFormat
             value={item.totalAmount}
             prefix={"$"}
@@ -58,25 +61,22 @@ const CustomerTransactionsTable: React.FC<SalesProps> = ({
       key: "date",
       title: "Date",
       dataIndex: "date",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div className="font-semibold text-black opacity-60">
-          {moment(item.createdAt).format("MM/DD/YYYY")}
-        </div>
+        <div>{moment(item.createdAt).format("MM/DD/YYYY")}</div>
       ),
     },
   ];
 
   return (
-    <div className="flex">
-      <div className="hide-scrollbar min-w-[600px]">
-        <Table
-          columns={columns}
-          dataSource={sales?.map((sale) => ({
-            ...sale,
-            key: Math.round(Math.random() * 1000000),
-          }))}
-        />
-      </div>
+    <div className="min-w-[500px]">
+      <Table
+        columns={columns}
+        dataSource={sales?.map((sale) => ({
+          ...sale,
+          key: Math.round(Math.random() * 1000000),
+        }))}
+      />
     </div>
   );
 };

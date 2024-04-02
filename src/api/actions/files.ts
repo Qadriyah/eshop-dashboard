@@ -44,3 +44,17 @@ export const deleteProductImage = async (
   });
   return response;
 };
+
+export const uploadProfileImage = async (
+  userId: string,
+  data: FormData
+): Promise<UploadFile> => {
+  const response = await postApi<UploadFile>({
+    url: `/files/upload/user/${userId}/avatar`,
+    data,
+    customHeaders: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response;
+};
