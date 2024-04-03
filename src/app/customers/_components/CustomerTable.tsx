@@ -166,7 +166,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
         <div className="min-w-[800px] hide-scrollbar">
           <Table
             columns={columns}
-            dataSource={customers.map((customer) => ({
+            dataSource={customers?.map((customer) => ({
               ...customer,
               key: customer.id,
             }))}

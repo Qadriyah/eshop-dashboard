@@ -90,9 +90,13 @@ const menuItems = [
         link: "/settings/profile",
       },
       {
-        title: "Invoices",
-        link: "/settings/invoices",
+        title: "Users",
+        link: "/settings/users",
       },
+      // {
+      //   title: "Invoices",
+      //   link: "/settings/invoices",
+      // },
     ],
   },
 ];
