@@ -66,7 +66,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
       notify(errors[0].message, "error");
       return;
     }
-    notify("User has been suspended successfully.", "Success");
+    notify("User has been suspended successfully.", "success");
     refetch();
     setOpenSuspendModal(false);
   };

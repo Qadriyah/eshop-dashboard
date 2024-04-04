@@ -1,26 +1,38 @@
 "use client";
 
-import { getUsers } from "@/api/actions/customer";
+import {
+  deleteCustomer,
+  getUsers,
+  suspendCustomer,
+} from "@/api/actions/customer";
 import Card from "@/components/Card";
 import Loader from "@/components/Loader";
 import PageHeader from "@/components/PageHeader";
 import Suspense from "@/components/Suspense";
 import { UserType } from "@/types/entities";
 import { USER_ROLES } from "@/utils/constants";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Table, TableProps } from "antd";
 import moment from "moment";
 import React from "react";
 import { IoSearchOutline } from "react-icons/io5";
+import DropMenu from "./DropMenu";
+import ShouldRender from "@/components/ShouldRender";
+import ConfirmationModal from "@/modals/ConfirmationModal";
+import { notify } from "@/utils/helpers";
 
 const Users: React.FC = (): JSX.Element => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsers({ user: USER_ROLES.ADMIN }),
   });
   const [users, setUsers] = React.useState<UserType[]>([]);
   const [queryName, setQueryName] = React.useState<string>("");
   const [filteredUsers, setFilteredUsers] = React.useState<UserType[]>([]);
+  const [user, setUser] = React.useState<UserType | null>();
+  const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
+  const [openSuspendModal, setOpenSuspendModal] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     setUsers(data?.users!);
@@ -42,16 +54,46 @@ const Users: React.FC = (): JSX.Element => {
     );
   };
 
+  const suspendUserMutation = useMutation({
+    mutationKey: ["suspend-user"],
+    mutationFn: (data: { suspended: boolean }) =>
+      suspendCustomer(user?.id!, data),
+  });
+
+  const handleUserSuspension = async () => {
+    const { errors } = await suspendUserMutation.mutateAsync({
+      suspended: true,
+    });
+    if (errors) {
+      notify(errors[0].message, "error");
+    }
+    notify("Admin successfully suspended", "success");
+    refetch();
+    setOpenSuspendModal(false);
+  };
+
+  const deleteUserMutation = useMutation({
+    mutationKey: ["delete-user"],
+    mutationFn: () => deleteCustomer(user?.id!),
+  });
+
+  const handleUserDelete = async () => {
+    const { errors } = await deleteUserMutation.mutateAsync();
+    if (errors) {
+      notify(errors[0].message, "error");
+    }
+    notify("Admin successfully deleted", "success");
+    refetch();
+    setOpenDeleteModal(false);
+  };
+
   const columns: TableProps<UserType>["columns"] = [
     {
       key: "customer_name",
       title: "Customer name",
       dataIndex: "customer_name",
       render: (_, item) => (
-        <div
-          className="text-[1.063rem] opacity-90 mb-0 cursor-pointer hover:text-blue-400"
-          // onClick={() => navigate.push(`/customers/${item.id}`)}
-        >
+        <div className="text-[1.063rem] opacity-90 mb-0 cursor-pointer hover:text-blue-400">
           {item.profile.fullName}
         </div>
       ),
@@ -111,24 +153,24 @@ const Users: React.FC = (): JSX.Element => {
         </div>
       ),
     },
-    // {
-    //   key: "actions",
-    //   title: "Actions",
-    //   dataIndex: "actions",
-    //   render: (_, item) => (
-    //     <DropMenu
-    //       customer={item}
-    //       handleOpenDeleteModal={(customer: UserType) => {
-    //         setCustomer(customer);
-    //         setOpenDeleteModal(true);
-    //       }}
-    //       handleOpenSuspendModal={(customer: UserType) => {
-    //         setCustomer(customer);
-    //         setOpenSuspendModal(true);
-    //       }}
-    //     />
-    //   ),
-    // },
+    {
+      key: "actions",
+      title: "Actions",
+      dataIndex: "actions",
+      render: (_, item) => (
+        <DropMenu
+          user={item}
+          handleOpenDeleteModal={(user: UserType) => {
+            setUser(user);
+            setOpenDeleteModal(true);
+          }}
+          handleOpenSuspendModal={(user: UserType) => {
+            setUser(user);
+            setOpenSuspendModal(true);
+          }}
+        />
+      ),
+    },
   ];
   return (
     <>
@@ -174,6 +216,32 @@ const Users: React.FC = (): JSX.Element => {
           </div>
         </Suspense>
       </Card>
+      <ShouldRender visible={openDeleteModal}>
+        <ConfirmationModal
+          title="Delete User"
+          open={openDeleteModal}
+          message="Are you sure you want to delete this customer?"
+          loading={deleteUserMutation.isPending}
+          handleOk={handleUserDelete}
+          handleClose={() => {
+            setOpenDeleteModal(false);
+            setUser(null);
+          }}
+        />
+      </ShouldRender>
+      <ShouldRender visible={openSuspendModal}>
+        <ConfirmationModal
+          title="Suspend User"
+          open={openSuspendModal}
+          message="Are you sure you want to suspend this customer?"
+          loading={suspendUserMutation.isPending}
+          handleOk={handleUserSuspension}
+          handleClose={() => {
+            setOpenSuspendModal(false);
+            setUser(null);
+          }}
+        />
+      </ShouldRender>
     </>
   );
 };
