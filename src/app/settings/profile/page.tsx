@@ -14,7 +14,7 @@ import ChangePasswordModal from "../ChangePasswordModal";
 import UpdateProfile from "../UpdateProfile";
 // import { me } from "@/api/actions/profile";
 
-const Profile = () => {
+const Profile: React.FC = (): JSX.Element => {
   const loggedinUserId = Cookies.get("_session-token");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = React.useState<string>(
@@ -48,8 +48,6 @@ const Profile = () => {
     const formData = new FormData();
     formData.append("image", files[0]);
     await uploadMutation.mutateAsync(formData);
-    console.log(uploadMutation?.data, "ddddd");
-    console.log(uploadMutation?.error, "eeeeee");
   };
 
   const closeChangePasswordModalFn = (): void =>
@@ -133,7 +131,7 @@ const Profile = () => {
         </div>
         <ShouldRender visible={openChangePasswordModal}>
           <ChangePasswordModal
-            title="Create new Admin"
+            title="Change password"
             open={openChangePasswordModal}
             handleClose={closeChangePasswordModalFn}
             closeModal={closeChangePasswordModalFn}
@@ -142,7 +140,7 @@ const Profile = () => {
         <ShouldRender visible={openUpdateProfileModal}>
           <UpdateProfile
             open={openUpdateProfileModal}
-            title="Update your email"
+            title="Change Profile"
             handleClose={closeUpdateProfileModal}
             closeModel={closeUpdateProfileModal}
           />
