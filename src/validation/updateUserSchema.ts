@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 
 export const updateSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Please enter a valid email")
-    .required("Please enter your email"),
+  firstName: Yup.string().required("Please enter your First name"),
+  lastName: Yup.string().required("Please enter your Last name"),
+  phone: Yup.string().required("Please enter your phone number"),
 });

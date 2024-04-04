@@ -31,13 +31,13 @@ export type ProductType = {
 };
 
 export type ProfileType = {
-  id: string;
-  user: UserType;
+  id?: string;
+  user?: UserType;
   firstName: string;
   lastName: string;
   phone: string;
-  customer: string;
-  fullName: string;
+  customer?: string;
+  fullName?: string;
 };
 
 export type CustomerTypes = {

@@ -2,7 +2,7 @@ import React from "react";
 
 type UserProps = {
   label: string;
-  value: string;
+  value: any;
   icon?: JSX.Element;
   onEdit?: () => void;
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { getCustomers } from "@/api/actions/customer";
+import { getUsers } from "@/api/actions/customer";
 import Card from "@/components/Card";
 import Loader from "@/components/Loader";
 import PageHeader from "@/components/PageHeader";
@@ -16,11 +16,12 @@ import { IoSearchOutline } from "react-icons/io5";
 const Users: React.FC = (): JSX.Element => {
   const { data, isLoading } = useQuery({
     queryKey: ["users"],
-    queryFn: () => getCustomers(USER_ROLES.CUSTOMER),
+    queryFn: () => getUsers({ user: USER_ROLES.ADMIN }),
   });
   const [users, setUsers] = React.useState<UserType[]>([]);
   const [queryName, setQueryName] = React.useState<string>("");
   const [filteredUsers, setFilteredUsers] = React.useState<UserType[]>([]);
+
   React.useEffect(() => {
     setUsers(data?.users!);
     setFilteredUsers(data?.users!);
@@ -34,9 +35,9 @@ const Users: React.FC = (): JSX.Element => {
     }
     setFilteredUsers(() =>
       users?.filter((user) =>
-        user.profile.fullName
-          .toLocaleLowerCase()
-          .includes(value.toLocaleLowerCase())
+        user?.profile?.fullName
+          ?.toLocaleLowerCase()
+          ?.includes(value.toLocaleLowerCase())
       )
     );
   };
@@ -82,24 +83,24 @@ const Users: React.FC = (): JSX.Element => {
         </div>
       ),
     },
-    // {
-    //   key: "status",
-    //   title: "Status",
-    //   dataIndex: "status",
-    //   render: (_, item) => (
-    //     <div
-    //       className={`px-2 text-[1.063rem] text-center rounded-md ${
-    //         item.deleted
-    //           ? "text-red-600 bg-red-200 border border-red-600"
-    //           : item.suspended
-    //           ? "text-orange-600 bg-orange-200 border border-orange-600"
-    //           : "text-green-600 bg-green-200 border border-green-600"
-    //       }`}
-    //     >
-    //       {item.deleted ? "Banned" : item.suspended ? "Suspended" : "Active"}
-    //     </div>
-    //   ),
-    // },
+    {
+      key: "status",
+      title: "Status",
+      dataIndex: "status",
+      render: (_, item) => (
+        <div
+          className={`px-2 text-[1.063rem] text-center rounded-md ${
+            item.deleted
+              ? "text-red-600 bg-red-200 border border-red-600"
+              : item.suspended
+              ? "text-orange-600 bg-orange-200 border border-orange-600"
+              : "text-green-600 bg-green-200 border border-green-600"
+          }`}
+        >
+          {item.deleted ? "Banned" : item.suspended ? "Suspended" : "Active"}
+        </div>
+      ),
+    },
     {
       key: "created_date",
       title: "Created date",

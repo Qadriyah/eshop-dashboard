@@ -5,14 +5,13 @@ import UserDetail from "../UserDetail";
 import { CiEdit } from "react-icons/ci";
 import Card from "@/components/Card";
 import { IoCamera, IoImagesSharp } from "react-icons/io5";
-import Button from "@/components/Button";
 import Cookies from "js-cookie";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUser, uploadUserImage } from "@/api/actions/customer";
 import ShouldRender from "@/components/ShouldRender";
 import Loader from "@/components/Loader";
 import ChangePasswordModal from "../ChangePasswordModal";
-import UpdateEmail from "../UpdateEmail";
+import UpdateProfile from "../UpdateProfile";
 // import { me } from "@/api/actions/profile";
 
 const Profile = () => {
@@ -23,7 +22,7 @@ const Profile = () => {
   );
   const [openChangePasswordModal, setOpenChangePasswordModal] =
     React.useState<boolean>(false);
-  const [openUpdateEmailModal, setOpenUpdateEmailModal] =
+  const [openUpdateProfileModal, setOpenUpdateProfileModal] =
     React.useState<boolean>(false);
 
   const loggedinUser = useQuery({
@@ -41,7 +40,6 @@ const Profile = () => {
   });
 
   const user = loggedinUser.data?.user;
-  // console.log(user, ">>>>>");
 
   const handleImageChange = async () => {
     const files = fileInputRef?.current?.files as FileList;
@@ -54,11 +52,9 @@ const Profile = () => {
     console.log(uploadMutation?.error, "eeeeee");
   };
 
-  const openChangePasswordModalFn = (): void =>
-    setOpenChangePasswordModal(true);
   const closeChangePasswordModalFn = (): void =>
     setOpenChangePasswordModal(false);
-  const closeUpdateEmailModal = (): void => setOpenUpdateEmailModal(false);
+  const closeUpdateProfileModal = (): void => setOpenUpdateProfileModal(false);
 
   return (
     <div className="p-5 sm:pr-10 sm:pl-10 lg:pr-24 lg:pl-24">
@@ -110,22 +106,31 @@ const Profile = () => {
                   label="Email"
                   value={user?.email!}
                   icon={<CiEdit />}
-                  onEdit={() => setOpenUpdateEmailModal(true)}
+                  onEdit={() => setOpenUpdateProfileModal(true)}
                 />
                 <UserDetail
                   label="Phone number"
                   value={user?.profile?.phone!}
                 />
+                <UserDetail
+                  label="Password"
+                  value={
+                    <div className="flex gap-2 mt-2">
+                      {[1, 2, 3, 4].map((item) => (
+                        <div
+                          className="w-2 h-2 bg-black rounded-full"
+                          key={item}
+                        ></div>
+                      ))}
+                    </div>
+                  }
+                  icon={<CiEdit />}
+                  onEdit={() => setOpenChangePasswordModal(true)}
+                />
               </div>
             </div>
           </Card>
         </div>
-        <Button
-          className="p-2 outline-none bg-[dodgerblue] text-white font-semibold hover:opacity-80 w-[200px] rounded-md"
-          onClick={openChangePasswordModalFn}
-        >
-          change password
-        </Button>
         <ShouldRender visible={openChangePasswordModal}>
           <ChangePasswordModal
             title="Create new Admin"
@@ -134,11 +139,12 @@ const Profile = () => {
             closeModal={closeChangePasswordModalFn}
           />
         </ShouldRender>
-        <ShouldRender visible={openUpdateEmailModal}>
-          <UpdateEmail
-            open={openUpdateEmailModal}
+        <ShouldRender visible={openUpdateProfileModal}>
+          <UpdateProfile
+            open={openUpdateProfileModal}
             title="Update your email"
-            handleClose={closeUpdateEmailModal}
+            handleClose={closeUpdateProfileModal}
+            closeModel={closeUpdateProfileModal}
           />
         </ShouldRender>
       </div>

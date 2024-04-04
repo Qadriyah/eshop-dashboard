@@ -7,6 +7,7 @@ import {
   UserType,
   SaleType,
   SearchOptions,
+  ProfileType,
 } from "@/types/entities";
 
 export type CreatePaymentMethod = {
@@ -59,7 +60,11 @@ export type uploadResponse = {
   errors?: ErrorType[];
 };
 
-export type UpdateUserResponse = SingleCustomerResponse & { message: string };
+export type UpdateUserResponse = {
+  statusCode: number;
+  profile: ProfileType;
+  errors?: ErrorType[];
+};
 
 export const createPaymentMethod = async (
   token: any
@@ -197,10 +202,10 @@ export const uploadUserImage = async (
 
 export const updateUser = async (
   userId: string,
-  data: { email: string }
+  data: ProfileType
 ): Promise<UpdateUserResponse> => {
   const response = await patchApi<UpdateUserResponse>({
-    url: `/users/${userId}`,
+    url: `/profile/${userId}`,
     data,
   });
 
