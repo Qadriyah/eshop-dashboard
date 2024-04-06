@@ -11,8 +11,10 @@ import TopSelling from "./_components/TopSelling";
 import ProductOrders from "./_components/ProductOrders";
 import { useQuery } from "@tanstack/react-query";
 import { getCompletedSalesReport } from "@/api/actions/reports";
+import { NextPage } from "next";
+import { PageProps } from "@/types/pageProps";
 
-const Home = () => {
+const Home: NextPage<PageProps> = () => {
   const [currentMonth] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
@@ -51,7 +53,10 @@ const Home = () => {
           />
           <ProductEarnings currentSales={currentSales?.sales || []} />
           <NewCustomers />
-          <DailySales />
+          <DailySales
+            currentSales={currentSales?.sales || []}
+            date={currentMonth[0]}
+          />
         </div>
         <div className="">
           <MonthlySales />
@@ -59,7 +64,7 @@ const Home = () => {
       </div>
       <div className="flex gap-5 mt-5 flex-col xl:flex-row">
         <div className="flex-[0.5]">
-          <TopSelling />
+          <TopSelling currentSales={currentSales?.sales || []} />
         </div>
         <div className="flex-1 overflow-x-scroll">
           <ProductOrders />

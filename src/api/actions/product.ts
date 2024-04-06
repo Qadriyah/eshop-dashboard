@@ -1,5 +1,5 @@
 import { deleteApi, getApi, patchApi, postApi } from "..";
-import { ErrorType, ProductType } from "@/types/entities";
+import { ErrorType, ProductType, SearchOptions } from "@/types/entities";
 
 export type GetProduct = {
   statusCode: number;
@@ -25,8 +25,15 @@ export type AddProduct = {
   errors?: ErrorType[];
 };
 
-export const getProducts = async (): Promise<GetProducts> => {
-  const response = await getApi<GetProducts>({ url: "/products" });
+export const getProducts = async (
+  options: SearchOptions
+): Promise<GetProducts> => {
+  const { page, limit, status } = options;
+  let url = "/products";
+  url += `?page=${page ? page : 1}`;
+  if (limit) url += `&limit=${limit}`;
+  if (status) url += `&status=${status}`;
+  const response = await getApi<GetProducts>({ url });
   return response;
 };
 

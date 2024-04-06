@@ -137,7 +137,7 @@ const ProductOrders = () => {
     moment().endOf("M").format("YYYY-MM-DD"),
   ]);
 
-  const onChangeDate: DatePickerProps["onChange"] = (date, dateString) => {
+  const onChangeDate: DatePickerProps["onChange"] = (date) => {
     setDateRange(() => [
       date.startOf("M").format("YYYY-MM-DD"),
       date.endOf("M").format("YYYY-MM-DD"),

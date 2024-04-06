@@ -19,12 +19,7 @@ import { NextPage } from "next";
 import CustomerInfo from "../_components/CustomerInfo";
 import AddressCard from "../_components/Address";
 import TabHeader from "../_components/TabHeader";
-
-type PageProps = {
-  params: {
-    customerId: string;
-  };
-};
+import { PageProps } from "@/types/pageProps";
 
 const CustomerDetails: NextPage<PageProps> = ({ params }): JSX.Element => {
   const [tab, setTab] = React.useState({

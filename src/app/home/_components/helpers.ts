@@ -1,8 +1,15 @@
-import { SaleType } from "@/types/entities";
+import { ProductType, SaleType } from "@/types/entities";
+import moment from "moment";
 
 type PercentageType = {
   increase: boolean;
   value: number;
+};
+
+export type WeeklySaleType = {
+  day: string;
+  sales: number;
+  total: number;
 };
 
 export const calPercentageIncrease = (
@@ -65,4 +72,69 @@ export const getProductEarnings = (currentSales: SaleType[]) => {
     total,
     earnings: Object.values(map),
   };
+};
+
+export const getDailySales = (
+  currentSales: SaleType[],
+  date: string
+): { sales: WeeklySaleType[]; total: number } => {
+  const weeks: Record<string, WeeklySaleType> = {};
+  let total = 0;
+  const key = moment(date).format("MMM");
+  for (let i = 1; i < moment(date).daysInMonth() + 1; i++) {
+    weeks[`${key}-${i}`] = {
+      day: `${key} ${i}`,
+      sales: 0,
+      total: 0,
+    };
+  }
+
+  currentSales.forEach((sale) => {
+    const key = moment(sale.createdAt).format("MMM-D");
+    sale.lineItems.forEach((product) => {
+      const lineTotal = product.quantity * product.price;
+      weeks[key].total = weeks[key].total + lineTotal;
+      weeks[key].sales = weeks[key].sales + product.quantity;
+      total += lineTotal;
+    });
+  });
+  return {
+    total,
+    sales: Object.values(weeks),
+  };
+};
+
+export const getAverageDailySales = (
+  dailySales: number,
+  weeklySales: WeeklySaleType[]
+): string => {
+  const weeklyTotal = weeklySales.reduce(
+    (total, sale) => total + sale.sales,
+    0
+  );
+  return Number((dailySales / weeklyTotal) * 100).toFixed(1);
+};
+
+export const topSellingProduct = (
+  products: ProductType[],
+  sales: SaleType[]
+) => {
+  const productList = Object.assign(
+    {},
+    ...products?.map((product) => ({
+      [product.id]: {
+        name: product.name,
+        sales: 0,
+        total: 0,
+      },
+    }))
+  );
+
+  sales.forEach((sale) => {
+    sale.lineItems.forEach((product) => {
+      productList[product.id].sales += product.quantity;
+      productList[product.id].total += product.quantity * product.price;
+    });
+  });
+  return Object.values(productList);
 };

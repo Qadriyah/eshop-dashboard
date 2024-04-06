@@ -1,5 +1,6 @@
 import { HttpRequestHeader } from "antd/es/upload/interface";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
 axios.defaults.withCredentials = true; // adds cookies to the request
@@ -10,6 +11,7 @@ axios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
 axios.interceptors.response.use(
   async function (response) {
     return new Promise((resolve) => {
@@ -23,7 +25,9 @@ axios.interceptors.response.use(
       });
     }
     if (error.response.status === 401) {
-      window.location.href = "/";
+      if (typeof window !== "undefined") {
+        // window.location.href = "/";
+      }
       return new Promise((_, reject) => {
         reject(error);
       });
