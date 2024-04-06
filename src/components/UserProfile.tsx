@@ -2,21 +2,17 @@
 
 import React from "react";
 import Dropdown from "./Dropdown";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import type { NextPage } from "next";
 import { notify } from "@/utils/helpers";
 import { logoutUser } from "@/api/actions/auth";
 import { Space } from "antd";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getUser } from "@/lib/features/user";
 
-type IProps = {
-  isAuthenticated: string;
-};
-
-const UserProfile: NextPage<IProps> = (): JSX.Element => {
+const UserProfile = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const data = useAppSelector((state) => state.user.user);
@@ -39,7 +35,7 @@ const UserProfile: NextPage<IProps> = (): JSX.Element => {
       notify("Something went wrong", "error");
       return;
     }
-    redirect("/");
+    router.push("/");
   };
 
   React.useEffect(() => {

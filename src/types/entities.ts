@@ -204,4 +204,5 @@ export type SearchOptions = {
   user?: string;
   from?: string;
   to?: string;
+  status?: string;
 };

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import moment from "moment";
-import { DatePicker, Space } from "antd";
+import { DatePicker, DatePickerProps } from "antd";
 import dayjs from "dayjs";
 import {
   AreaChart,
@@ -11,23 +11,59 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import Card from "@/components/Card";
-import { randomNumber } from "@/utils/helpers";
+import { useQuery } from "@tanstack/react-query";
+import { getCompletedSalesReport } from "@/api/actions/reports";
+import { getDailySales } from "./helpers";
+import { GoDotFill } from "react-icons/go";
+import { formatCurrency } from "@/utils/helpers";
+import { NumericFormat } from "react-number-format";
 
-const { RangePicker } = DatePicker;
-const data = Array.from({ length: 30 }, (_, index) => ({
-  name: `Mar ${index + 1}`,
-  uv: randomNumber(100, 2000),
-  pv: randomNumber(100, 2000),
-  amt: randomNumber(100, 2000),
-}));
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="bg-white rounded-sm border border-gray-300 p-2 text-sm">
+        <p className="mb-2">{payload[0].payload.day}</p>
+        <div className="flex items-center">
+          <GoDotFill size={24} color={payload[0].fill} />
+          <p className="mr-3">Sales:</p>
+          <p>{`${formatCurrency(payload[0].payload.total)}`}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const MonthlySales = () => {
   const [dateValue, setDateValue] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
   ]);
+
+  const onChangeDate: DatePickerProps["onChange"] = (date) => {
+    setDateValue(() => [
+      date.startOf("M").format("YYYY-MM-DD"),
+      date.endOf("M").format("YYYY-MM-DD"),
+    ]);
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["monthly-sales", dateValue],
+    queryFn: () =>
+      getCompletedSalesReport({
+        from: dateValue[0],
+        to: dateValue[1],
+      }),
+  });
+
+  const { sales, total } = React.useMemo(
+    () => getDailySales(data?.sales || [], dateValue[0]),
+    [data?.sales, dateValue]
+  );
 
   return (
     <Card>
@@ -40,21 +76,27 @@ const MonthlySales = () => {
             </div>
           </div>
           <div>
-            <RangePicker
-              defaultValue={[dayjs(dateValue[0]), dayjs(dateValue[1])]}
-              onChange={(_, dates) => setDateValue(dates)}
-              className="p-2 text-[1.063rem]"
+            <DatePicker
+              defaultValue={dayjs(dateValue[0])}
+              onChange={onChangeDate}
+              picker="month"
+              className="p-2 text-[0.875rem]"
             />
           </div>
         </div>
         <div className="my-5">
           <div className="flex items-center gap-5">
             <div className="text-4xl">
-              <sup className="opacity-45 text-xl">$</sup> 2,400
+              <sup className="opacity-45 text-xl">$</sup>{" "}
+              <NumericFormat
+                value={total}
+                thousandSeparator=","
+                displayType="text"
+              />
             </div>
             <div className="flex items-center text-sm px-1 bg-green-200 text-green-600 rounded-md"></div>
           </div>
-          <div className="text-sm opacity-45">Average Daily Sales</div>
+          <div className="text-sm opacity-45">Monthly Sales value</div>
         </div>
         <div className="flex items-center">
           <div className="h-[140px] w-full">
@@ -62,7 +104,7 @@ const MonthlySales = () => {
               <AreaChart
                 width={500}
                 height={200}
-                data={data}
+                data={sales}
                 syncId="anyId"
                 margin={{
                   top: 10,
@@ -72,12 +114,12 @@ const MonthlySales = () => {
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="day" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
-                  dataKey="pv"
+                  dataKey="total"
                   stroke="#82ca9d"
                   fill="#82ca9d"
                 />

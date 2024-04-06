@@ -27,7 +27,7 @@ const Products: React.FC<{}> = (): JSX.Element => {
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["products"],
-    queryFn: () => getProducts(),
+    queryFn: () => getProducts({}),
   });
 
   const handleChange = (event: SelectChangeEvent<any>): void => {

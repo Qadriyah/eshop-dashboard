@@ -9,27 +9,28 @@ import {
   ComposedChart,
 } from "recharts";
 import Card from "@/components/Card";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "@/api/actions/product";
+import { SaleType } from "@/types/entities";
+import { topSellingProduct } from "./helpers";
+import { PRODUCT_STATUS } from "@/utils/constants";
 
-const data = [
-  {
-    product: "Turmeric Soap",
-    sales: 1000,
-    amt: 2400,
-  },
-  {
-    product: "Turmeric Cleanser",
-    sales: 650,
-    amt: 2210,
-  },
-  {
-    product: "Slim Sip Detox",
-    sales: 400,
-    amt: 2290,
-  },
-];
+type IProps = {
+  currentSales: SaleType[];
+};
 
-const TopSelling = () => {
+const TopSelling: React.FC<IProps> = ({ currentSales }) => {
   const [isLarge, setIsLarge] = React.useState(true);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => getProducts({ status: PRODUCT_STATUS.active }),
+  });
+
+  const productSales = React.useMemo(
+    () => topSellingProduct(data?.products || [], currentSales),
+    [currentSales, data?.products]
+  );
 
   React.useEffect(() => {
     window.addEventListener("resize", () => {
@@ -62,8 +63,8 @@ const TopSelling = () => {
             <ComposedChart
               layout="vertical"
               width={300}
-              height={400}
-              data={data}
+              height={350}
+              data={productSales}
               margin={{
                 top: 0,
                 right: 20,
@@ -72,22 +73,17 @@ const TopSelling = () => {
               }}
             >
               <XAxis type="number" />
-              <YAxis
-                dataKey="product"
-                type="category"
-                scale="auto"
-                width={200}
-              />
+              <YAxis dataKey="name" type="category" scale="auto" width={200} />
               <Tooltip />
               <Bar dataKey="sales" barSize={20} fill="#413ea0" />
             </ComposedChart>
           ) : (
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
               <ComposedChart
                 layout="vertical"
                 width={300}
                 height={400}
-                data={data}
+                data={productSales}
                 margin={{
                   top: 0,
                   right: 20,
@@ -97,7 +93,7 @@ const TopSelling = () => {
               >
                 <XAxis type="number" />
                 <YAxis
-                  dataKey="product"
+                  dataKey="name"
                   type="category"
                   scale="auto"
                   width={200}

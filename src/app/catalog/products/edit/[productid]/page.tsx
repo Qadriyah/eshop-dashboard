@@ -34,14 +34,9 @@ import ConfirmationModal from "@/modals/ConfirmationModal";
 import ProductIcon from "../../ProductIcon";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
+import { PageProps } from "@/types/pageProps";
 
-type PageParams = {
-  params: {
-    productid: string;
-  };
-};
-
-const EditProduct: NextPage<PageParams> = ({ params }) => {
+const EditProduct: NextPage<PageProps> = ({ params }) => {
   const router = useRouter();
   const [previews, setPreviews] = React.useState<any[]>([]);
   const [showDeleteImageModal, setShowDeleteImageModal] = React.useState(false);

@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
-import { FaArrowUp } from "react-icons/fa";
+import {
+  FaArrowAltCircleLeft,
+  FaArrowAltCircleRight,
+  FaArrowUp,
+} from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -8,61 +12,89 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+import { GoDotFill } from "react-icons/go";
 import Card from "@/components/Card";
+import { SaleType } from "@/types/entities";
+import { getAverageDailySales, getDailySales } from "./helpers";
+import { formatCurrency } from "@/utils/helpers";
 
-const data = [
-  {
-    day: "Feb 1",
-    sales: 10,
-    amt: 2400,
-  },
-  {
-    day: "Feb 2",
-    sales: 15,
-    amt: 2210,
-  },
-  {
-    day: "Feb 3",
-    sales: 70,
-    amt: 2290,
-  },
-  {
-    day: "Feb 4",
-    sales: 20,
-    amt: 2000,
-  },
-  {
-    day: "Feb 5",
-    sales: 9,
-    amt: 2181,
-  },
-  {
-    day: "Feb 6",
-    sales: 30,
-    amt: 2500,
-  },
-  {
-    day: "Feb 7",
-    sales: 50,
-    amt: 2100,
-  },
-];
+type IProps = {
+  currentSales: SaleType[];
+  date: string;
+};
 
-const DailySales = () => {
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="bg-white rounded-sm border border-gray-300 p-2 text-sm">
+        <p className="mb-2">{payload[0].payload.day}</p>
+        <div className="flex items-center">
+          <GoDotFill size={24} color={payload[0].fill} />
+          <p className="mr-3">Sales:</p>
+          <p>{`${payload[0].payload.average}%`}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const DailySales: React.FC<IProps> = ({ currentSales, date }) => {
+  const [startIndex, setStartIndex] = React.useState(0);
+  const [stopIndex, setStopIndex] = React.useState(7);
+  const [week, setWeek] = React.useState(1);
+  const { sales } = getDailySales(currentSales, date);
+
+  const onNext = () => {
+    setStartIndex((prevState) => prevState + 7);
+    setStopIndex((prevState) => prevState + 7);
+    setWeek((prevState) => prevState + 1);
+  };
+
+  const onPrev = () => {
+    setStartIndex((prevState) => prevState - 7);
+    setStopIndex((prevState) => prevState - 7);
+    setWeek((prevState) => prevState - 1);
+  };
+
+  const weeklySales = sales.slice(startIndex, stopIndex);
+  const weeklyTotal = weeklySales.reduce(
+    (total, sale) => total + sale.total,
+    0
+  );
+
   return (
     <Card>
       <div className="h-[200px] flex flex-col gap-3 justify-between">
         <div>
           <div className="flex items-center gap-5">
             <div className="text-4xl">
-              <sup className="opacity-45 text-xl">$</sup> 2,400
+              <sup className="opacity-45 text-xl">$</sup>{" "}
+              {formatCurrency(weeklyTotal)}
             </div>
             <div className="flex items-center text-sm px-1 bg-green-200 text-green-600 rounded-md">
               <FaArrowUp />
               <span>2.7%</span>
+            </div>
+            <div className="flex items-center gap-3 flex-1 justify-end">
+              <FaArrowAltCircleLeft
+                size={24}
+                className={`cursor-pointer hover:text-blue-500 ${
+                  startIndex === 0 && "pointer-events-none"
+                }`}
+                onClick={onPrev}
+              />
+              <div>{`Week ${week}`}</div>
+              <FaArrowAltCircleRight
+                size={24}
+                className={`cursor-pointer hover:text-blue-500 ${
+                  startIndex >= 28 && "pointer-events-none"
+                }`}
+                onClick={onNext}
+              />
             </div>
           </div>
           <div className="text-sm opacity-45">Average Daily Sales</div>
@@ -73,7 +105,10 @@ const DailySales = () => {
               <BarChart
                 width={700}
                 height={300}
-                data={data}
+                data={weeklySales.map((sale) => ({
+                  ...sale,
+                  average: getAverageDailySales(sale.sales, weeklySales),
+                }))}
                 margin={{
                   top: 5,
                   right: 0,
@@ -88,7 +123,7 @@ const DailySales = () => {
                   padding={{ left: 10, right: 10 }}
                 />
                 <YAxis dataKey="sales" />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <CartesianGrid strokeDasharray="3 3" />
                 <Bar
                   dataKey="sales"
