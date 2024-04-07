@@ -33,6 +33,8 @@ const Users: React.FC = (): JSX.Element => {
   const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
   const [openSuspendModal, setOpenSuspendModal] =
     React.useState<boolean>(false);
+  const [openUnsuspendModal, setOpenUnsuspendModal] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     setUsers(data?.users!);
@@ -70,6 +72,17 @@ const Users: React.FC = (): JSX.Element => {
     notify("Admin successfully suspended", "success");
     refetch();
     setOpenSuspendModal(false);
+  };
+  const handleUserUnsuspension = async () => {
+    const { errors } = await suspendUserMutation.mutateAsync({
+      suspended: false,
+    });
+    if (errors) {
+      notify(errors[0].message, "error");
+    }
+    notify("Admin successfully unsuspended", "success");
+    refetch();
+    setOpenUnsuspendModal(false);
   };
 
   const deleteUserMutation = useMutation({
@@ -168,6 +181,10 @@ const Users: React.FC = (): JSX.Element => {
             setUser(user);
             setOpenSuspendModal(true);
           }}
+          handleOpenUnsuspendModal={(user: UserType) => {
+            setUser(user);
+            setOpenUnsuspendModal(true);
+          }}
         />
       ),
     },
@@ -238,6 +255,19 @@ const Users: React.FC = (): JSX.Element => {
           handleOk={handleUserSuspension}
           handleClose={() => {
             setOpenSuspendModal(false);
+            setUser(null);
+          }}
+        />
+      </ShouldRender>
+      <ShouldRender visible={openUnsuspendModal}>
+        <ConfirmationModal
+          title="Restore User"
+          open={openUnsuspendModal}
+          message="Are you sure you want to restore this customer?"
+          loading={suspendUserMutation.isPending}
+          handleOk={handleUserUnsuspension}
+          handleClose={() => {
+            setOpenUnsuspendModal(false);
             setUser(null);
           }}
         />

@@ -17,7 +17,7 @@ const Profile: React.FC = (): JSX.Element => {
   }).data?.user;
 
   return (
-    <div className="p-5 sm:pr-10 sm:pl-10 lg:pr-24 lg:pl-24">
+    <div className="">
       <PageHeader title="User Details" />
       <div className="flex gap-5 flex-col">
         <div className="flex-1">

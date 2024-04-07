@@ -12,6 +12,7 @@ import ShouldRender from "@/components/ShouldRender";
 import Loader from "@/components/Loader";
 import ChangePasswordModal from "../ChangePasswordModal";
 import UpdateProfile from "../UpdateProfile";
+import PageHeader from "@/components/PageHeader";
 // import { me } from "@/api/actions/profile";
 
 const Profile: React.FC = (): JSX.Element => {
@@ -55,8 +56,8 @@ const Profile: React.FC = (): JSX.Element => {
   const closeUpdateProfileModal = (): void => setOpenUpdateProfileModal(false);
 
   return (
-    <div className="p-5 sm:pr-10 sm:pl-10 lg:pr-24 lg:pl-24">
-      <h2 className="text-2xl  mb-4 opacity-90 text-[#152238]">User Details</h2>
+    <div>
+      <PageHeader title="User Details" />
       <div className="flex gap-5 flex-col">
         <div className="flex-1">
           <Card>
