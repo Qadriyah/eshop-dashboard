@@ -1,5 +1,5 @@
-import { ProductType, SaleType } from "@/types/entities";
 import moment from "moment";
+import { ProductType, SaleType } from "@/types/entities";
 
 type PercentageType = {
   increase: boolean;
@@ -8,6 +8,12 @@ type PercentageType = {
 
 export type WeeklySaleType = {
   day: string;
+  sales: number;
+  total: number;
+};
+
+export type TopSaleType = {
+  name: string;
   sales: number;
   total: number;
 };
@@ -130,11 +136,13 @@ export const topSellingProduct = (
     }))
   );
 
-  sales.forEach((sale) => {
-    sale.lineItems.forEach((product) => {
-      productList[product.id].sales += product.quantity;
-      productList[product.id].total += product.quantity * product.price;
+  if (Object.keys(productList).length > 0) {
+    sales.forEach((sale) => {
+      sale.lineItems.forEach((product) => {
+        productList[product.id].sales += product.quantity;
+        productList[product.id].total += product.quantity * product.price;
+      });
     });
-  });
+  }
   return Object.values(productList);
 };

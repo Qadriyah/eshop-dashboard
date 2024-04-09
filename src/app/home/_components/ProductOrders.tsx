@@ -10,6 +10,8 @@ import { SaleType } from "@/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { getSales } from "@/api/actions/sales";
 import ExpandableRow from "./ExpandableRow";
+import Suspense from "@/components/Suspense";
+import ProductOrdersLoader from "./_loaders/ProductOrdersLoader";
 
 export type LineItem = {
   key: string;
@@ -38,14 +40,14 @@ const columns: TableProps<DataType>["columns"] = [
     key: "orderNumber",
     dataIndex: "orderNumber",
     title: "Order#",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     render: (_, item) => <div>{item.orderNumber}</div>,
   },
   {
     key: "createdAt",
     dataIndex: "createdAt",
     title: "Created",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     render: (_, item) => (
       <div>{moment(item.createdAt).format("MM/DD/YYYY")}</div>
     ),
@@ -54,7 +56,7 @@ const columns: TableProps<DataType>["columns"] = [
     key: "customer",
     dataIndex: "customer",
     title: "Customer",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     render: (_, item) => (
       <div className="mt-[10px]">
         <div>{item.customer?.name}</div>
@@ -66,7 +68,7 @@ const columns: TableProps<DataType>["columns"] = [
     key: "tax",
     dataIndex: "tax",
     title: "Tax",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     align: "right",
     render: (_, item) => <div>{formatCurrency(item.tax)}</div>,
   },
@@ -74,7 +76,7 @@ const columns: TableProps<DataType>["columns"] = [
     key: "shipping",
     dataIndex: "shipping",
     title: "Shipping",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     align: "right",
     render: (_, item) => <div>{formatCurrency(item.shipping)}</div>,
   },
@@ -82,7 +84,7 @@ const columns: TableProps<DataType>["columns"] = [
     key: "total",
     dataIndex: "total",
     title: "Total",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     align: "right",
     render: (_, item) => <div>{formatCurrency(item.totalAmount)}</div>,
   },
@@ -90,7 +92,7 @@ const columns: TableProps<DataType>["columns"] = [
     key: "status",
     dataIndex: "status",
     title: "Status",
-    className: "text-[0.875rem]",
+    className: "text-[1.063rem]",
     render: (_, item) => (
       <div
         className={`px-1 rounded-md text-center ${
@@ -160,39 +162,41 @@ const ProductOrders = () => {
   );
 
   return (
-    <Card>
-      <div className="h-[458px] flex flex-col gap-3">
-        <div className="flex gap-5">
-          <div className="flex-1">
-            <div className="text-xl">Product Orders</div>
-            <div className="text-sm opacity-45">Avg. 52 orders per day</div>
+    <Suspense fallback={<ProductOrdersLoader />} loading={isLoading}>
+      <Card>
+        <div className="h-[458px] flex flex-col gap-3">
+          <div className="flex gap-5">
+            <div className="flex-1">
+              <div className="text-xl">Product Orders</div>
+              <div className="text-sm opacity-45">Avg. 52 orders per day</div>
+            </div>
+            <div>
+              <DatePicker
+                defaultValue={dayjs(dateRange[0])}
+                onChange={onChangeDate}
+                picker="month"
+                className="p-2 pl-5"
+              />
+            </div>
           </div>
-          <div>
-            <DatePicker
-              defaultValue={dayjs(dateRange[0])}
-              onChange={onChangeDate}
-              picker="month"
-              className="p-2 text-[0.875rem]"
-            />
+          <div className="overflow-scroll">
+            <div className="min-w-[700px]">
+              <Table
+                columns={columns}
+                dataSource={sales}
+                pagination={false}
+                expandable={{
+                  expandedRowRender: (record) => (
+                    <ExpandableRow products={record?.children || []} />
+                  ),
+                  rowExpandable: () => true,
+                }}
+              />
+            </div>
           </div>
         </div>
-        <div className="overflow-scroll">
-          <div className="min-w-[700px]">
-            <Table
-              columns={columns}
-              dataSource={sales}
-              pagination={false}
-              expandable={{
-                expandedRowRender: (record) => (
-                  <ExpandableRow products={record?.children || []} />
-                ),
-                rowExpandable: () => true,
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    </Card>
+      </Card>
+    </Suspense>
   );
 };
 

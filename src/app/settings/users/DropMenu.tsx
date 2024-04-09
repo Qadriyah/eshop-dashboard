@@ -21,7 +21,7 @@ const DropMenu: React.FC<DropdownProps> = ({
   handleOpenDeleteModal,
   handleOpenSuspendModal,
   handleOpenUnsuspendModal,
-}): JSX.Element => {
+}) => {
   const userId = Cookies.get("_session-token");
 
   const items: MenuProps["items"] = [
@@ -79,6 +79,9 @@ const DropMenu: React.FC<DropdownProps> = ({
       key: "3",
     },
   ];
+
+  if (user?.id === userId) items.splice(1, 2);
+  if (user?.deleted) items.pop();
 
   return (
     <Dropdown

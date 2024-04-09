@@ -7,12 +7,7 @@ type UserProps = {
   onEdit?: () => void;
 };
 
-const UserDetail: React.FC<UserProps> = ({
-  label,
-  value,
-  icon,
-  onEdit,
-}): JSX.Element => {
+const UserDetail: React.FC<UserProps> = ({ label, value, icon, onEdit }) => {
   return (
     <>
       <div className="opacity-90 mb-0 flex">
