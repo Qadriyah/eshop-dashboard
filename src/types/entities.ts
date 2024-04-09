@@ -31,13 +31,13 @@ export type ProductType = {
 };
 
 export type ProfileType = {
-  id: string;
+  id?: string;
   user: UserType;
   firstName: string;
   lastName: string;
-  phone: string;
-  customer: string;
-  fullName: string;
+  phone?: string;
+  customer?: string;
+  fullName?: string;
 };
 
 export type CustomerTypes = {
@@ -205,4 +205,9 @@ export type SearchOptions = {
   from?: string;
   to?: string;
   status?: string;
+};
+export type ChangePasswordProps = {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 };

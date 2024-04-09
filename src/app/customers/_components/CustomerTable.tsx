@@ -66,7 +66,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
       notify(errors[0].message, "error");
       return;
     }
-    notify("User has been suspended successfully.", "Success");
+    notify("User has been suspended successfully.", "success");
     refetch();
     setOpenSuspendModal(false);
   };
@@ -166,7 +166,7 @@ const CustomerTable: React.FC<CustomerProps> = ({
         <div className="min-w-[800px] hide-scrollbar">
           <Table
             columns={columns}
-            dataSource={customers.map((customer) => ({
+            dataSource={customers?.map((customer) => ({
               ...customer,
               key: customer.id,
             }))}

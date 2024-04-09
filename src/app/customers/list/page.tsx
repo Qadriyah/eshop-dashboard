@@ -5,14 +5,14 @@ import { IoSearchOutline } from "react-icons/io5";
 import Card from "@/components/Card";
 import CustomerTable from "../_components/CustomerTable";
 import { useQuery } from "@tanstack/react-query";
-import { getCustomers, getUsers } from "@/api/actions/customer";
+import { getUsers } from "@/api/actions/customer";
 import { UserType } from "@/types/entities";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import { USER_ROLES } from "@/utils/constants";
 import PageHeader from "@/components/PageHeader";
 
-const CustomerListing: React.FC<{}> = (): JSX.Element => {
+const CustomerListing: React.FC = (): JSX.Element => {
   const [query, setQuery] = React.useState<string>("");
   const [customers, setCustomers] = React.useState<UserType[]>([]);
   const [filteredCustomers, setFilteredCustomers] = React.useState<UserType[]>(

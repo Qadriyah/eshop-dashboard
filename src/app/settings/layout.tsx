@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import SideNavBar from "@/components/SideNavBar";
 import TopNavBar from "@/components/TopNavBar";
+import "react-phone-number-input/style.css";
 
 const RootLayout: React.FC<PropsWithChildren> = ({ children }): JSX.Element => {
   return (

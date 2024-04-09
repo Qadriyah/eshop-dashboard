@@ -7,6 +7,7 @@ import {
   UserType,
   SaleType,
   SearchOptions,
+  ProfileType,
 } from "@/types/entities";
 
 export type CreatePaymentMethod = {
@@ -45,6 +46,24 @@ export type CustomerUpdateResponse = {
 export type TransactionsResponse = {
   statusCode: number;
   sales: SaleType[];
+};
+
+export type SingleCustomerResponse = {
+  statusCode: number;
+  user: UserType;
+  errors?: ErrorType[];
+};
+
+export type uploadResponse = {
+  statusCode: number;
+  filePath: string;
+  errors?: ErrorType[];
+};
+
+export type UpdateUserResponse = {
+  statusCode: number;
+  profile: ProfileType;
+  errors?: ErrorType[];
 };
 
 export const createPaymentMethod = async (
@@ -155,6 +174,39 @@ export const getCustomerPaymentMethods = async (
 ): Promise<GetPaymentMethods> => {
   const response = await getApi<GetPaymentMethods>({
     url: `/customers/payment-methods/${customerId}/cards`,
+  });
+
+  return response;
+};
+
+export const getUser = async (id: string): Promise<SingleCustomerResponse> => {
+  const response = await getApi<SingleCustomerResponse>({
+    url: `/users/${id}`,
+  });
+
+  return response;
+};
+
+export const uploadUserImage = async (
+  userId: string,
+  data: any
+): Promise<uploadResponse> => {
+  const response = await postApi<uploadResponse>({
+    url: `/files/upload/user/${userId}/avatar`,
+    data,
+    customHeaders: { "Content-Type": "multipart/form-data" },
+  });
+
+  return response;
+};
+
+export const updateUser = async (
+  userId: string,
+  data: ProfileType
+): Promise<UpdateUserResponse> => {
+  const response = await patchApi<UpdateUserResponse>({
+    url: `/profile/${userId}`,
+    data,
   });
 
   return response;

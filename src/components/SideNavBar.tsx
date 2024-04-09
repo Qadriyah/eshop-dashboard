@@ -86,12 +86,12 @@ const menuItems = [
     icon: <FiSettings />,
     children: [
       {
-        title: "Profile",
+        title: "My Profile",
         link: "/settings/profile",
       },
       {
-        title: "Invoices",
-        link: "/settings/invoices",
+        title: "Users",
+        link: "/settings/users",
       },
     ],
   },
