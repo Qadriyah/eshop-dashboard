@@ -13,6 +13,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getCompletedSalesReport } from "@/api/actions/reports";
 import { NextPage } from "next";
 import { PageProps } from "@/types/pageProps";
+import Suspense from "@/components/Suspense";
+import OrdersThisMonthLoader from "./_components/_loaders/OrdersThisMonthLoader";
+import ProductOrdersLoader from "./_components/_loaders/ProductOrdersLoader";
+import DailySalesLoader from "./_components/_loaders/DailySalesLoader";
+import TopSellingLoader from "./_components/_loaders/TopSellingLoader";
 
 const Home: NextPage<PageProps> = () => {
   const [currentMonth] = React.useState<string[]>([
@@ -46,26 +51,32 @@ const Home: NextPage<PageProps> = () => {
     <div>
       <PageHeader title="Dashboard" />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <div className="grid grid-cols-1 gap-5 md:min-[1024px]:grid-cols-2">
-          <OrdersThisMonth
-            currentSales={currentSales?.sales || []}
-            prevSales={prevSales?.sales || []}
-          />
-          <ProductEarnings currentSales={currentSales?.sales || []} />
+        <div className="grid grid-cols-1 gap-5">
+          <Suspense fallback={<OrdersThisMonthLoader />} loading={isLoading}>
+            <OrdersThisMonth
+              currentSales={currentSales?.sales || []}
+              prevSales={prevSales?.sales || []}
+            />
+          </Suspense>
+          <Suspense fallback={<ProductOrdersLoader />} loading={isLoading}>
+            <ProductEarnings currentSales={currentSales?.sales || []} />
+          </Suspense>
           <NewCustomers />
-          <DailySales
-            currentSales={currentSales?.sales || []}
-            date={currentMonth[0]}
-          />
+          <Suspense fallback={<DailySalesLoader />} loading={isLoading}>
+            <DailySales
+              currentSales={currentSales?.sales || []}
+              date={currentMonth[0]}
+            />
+          </Suspense>
         </div>
-        <div className="">
+        <div className="flex flex-col gap-5">
           <MonthlySales />
+          <Suspense fallback={<TopSellingLoader />} loading={isLoading}>
+            <TopSelling currentSales={currentSales?.sales || []} />
+          </Suspense>
         </div>
       </div>
       <div className="flex gap-5 mt-5 flex-col xl:flex-row">
-        <div className="flex-[0.5]">
-          <TopSelling currentSales={currentSales?.sales || []} />
-        </div>
         <div className="flex-1 overflow-x-scroll">
           <ProductOrders />
         </div>

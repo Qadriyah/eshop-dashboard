@@ -60,14 +60,14 @@ const ProductEarnings: React.FC<IProps> = ({ currentSales }) => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div>
+          <div className="flex-1">
             {pieData.map((item, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div>
                   <GoDotFill color={item.color} />
                 </div>
-                <div className="text-xs opacity-45 flex-1">{item.name}</div>
-                <div className="text-sm">{formatCurrency(item.value)}</div>
+                <div className="opacity-45 flex-1">{item.name}</div>
+                <div className="">{formatCurrency(item.value)}</div>
               </div>
             ))}
           </div>

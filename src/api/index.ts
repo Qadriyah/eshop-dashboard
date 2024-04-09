@@ -26,7 +26,7 @@ axios.interceptors.response.use(
     }
     if (error.response.status === 401) {
       if (typeof window !== "undefined") {
-        // window.location.href = "/";
+        window.location.href = "/";
       }
       return new Promise((_, reject) => {
         reject(error);

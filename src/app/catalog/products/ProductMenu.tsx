@@ -4,7 +4,6 @@ import Link from "next/link";
 import React from "react";
 import { CgMoreVerticalO } from "react-icons/cg";
 import { FiEdit3 } from "react-icons/fi";
-import { HiViewfinderCircle } from "react-icons/hi2";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
 type IProps = {

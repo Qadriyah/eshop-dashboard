@@ -4,10 +4,10 @@ import React from "react";
 import UserDetail from "../UserDetail";
 import { CiEdit } from "react-icons/ci";
 import Card from "@/components/Card";
-import { IoCamera, IoImagesSharp } from "react-icons/io5";
+import { IoCamera } from "react-icons/io5";
 import Cookies from "js-cookie";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getUser, uploadUserImage } from "@/api/actions/customer";
+import { useMutation } from "@tanstack/react-query";
+import { uploadUserImage } from "@/api/actions/customer";
 import ShouldRender from "@/components/ShouldRender";
 import Loader from "@/components/Loader";
 import ChangePasswordModal from "../ChangePasswordModal";
@@ -17,8 +17,8 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateUserAvator } from "@/lib/features/user";
 
 const Profile: React.FC = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   const loggedinUserId = Cookies.get("_session-token");
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = React.useState<string>(
     "/assets/images/user.svg"
   );
@@ -27,15 +27,20 @@ const Profile: React.FC = (): JSX.Element => {
   const [openUpdateProfileModal, setOpenUpdateProfileModal] =
     React.useState<boolean>(false);
   const user = useAppSelector((state) => state.user.user);
-  const dispatch = useAppDispatch();
 
   const uploadMutation = useMutation({
     mutationKey: ["upload-image"],
     mutationFn: (data: any) => uploadUserImage(loggedinUserId!, data),
   });
 
-  const handleImageChange = async () => {
-    const files = fileInputRef?.current?.files as FileList;
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { files } = event.target;
+    if (!files) {
+      return;
+    }
+
     const imagePath = URL.createObjectURL(files[0]);
     setSelectedImage(imagePath);
     const formData = new FormData();
@@ -43,10 +48,6 @@ const Profile: React.FC = (): JSX.Element => {
     const { filePath } = await uploadMutation.mutateAsync(formData);
     dispatch(updateUserAvator(filePath));
   };
-
-  const closeChangePasswordModalFn = (): void =>
-    setOpenChangePasswordModal(false);
-  const closeUpdateProfileModal = (): void => setOpenUpdateProfileModal(false);
 
   return (
     <div>
@@ -66,25 +67,26 @@ const Profile: React.FC = (): JSX.Element => {
                   backgroundSize: "cover",
                 }}
               >
-                <ShouldRender visible={!(user?.user?.avator || selectedImage)}>
-                  <IoImagesSharp fill="#ccc" size={60} />
-                </ShouldRender>
-                <ShouldRender visible={false}>
-                  <Loader />
-                </ShouldRender>
-                <div
-                  className="relative cursor-pointer text-gray-400 hover:text-gray-600 -top-[50px] left-[55px]"
-                  onClick={() => fileInputRef?.current?.click()}
+                <label
+                  htmlFor="file"
+                  className={`relative cursor-pointer text-gray-400 hover:text-gray-600 ${
+                    uploadMutation.isPending
+                      ? "-top-[50px] left-[70px]"
+                      : "-top-[50px] left-[55px]"
+                  }`}
                 >
                   <IoCamera size={40} />
                   <input
+                    id="file"
                     type="file"
                     className="hidden"
-                    ref={fileInputRef}
                     accept=".png, .jpg, .jpeg, .webp"
                     onChange={handleImageChange}
                   />
-                </div>
+                </label>
+                <ShouldRender visible={uploadMutation.isPending}>
+                  <Loader />
+                </ShouldRender>
               </div>
               <span>
                 <h2 className=" mt-5 opacity-80 text-lg text-center">
@@ -105,16 +107,7 @@ const Profile: React.FC = (): JSX.Element => {
                 <UserDetail label="Phone number" value={user?.phone} />
                 <UserDetail
                   label="Password"
-                  value={
-                    <div className="flex gap-2 mt-2">
-                      {[1, 2, 3, 4].map((item) => (
-                        <div
-                          className="w-2 h-2 bg-black rounded-full"
-                          key={item}
-                        ></div>
-                      ))}
-                    </div>
-                  }
+                  value="**********"
                   icon={<CiEdit />}
                   onEdit={() => setOpenChangePasswordModal(true)}
                 />
@@ -126,14 +119,14 @@ const Profile: React.FC = (): JSX.Element => {
           <ChangePasswordModal
             title="Change password"
             open={openChangePasswordModal}
-            handleClose={closeChangePasswordModalFn}
+            handleClose={() => setOpenChangePasswordModal(false)}
           />
         </ShouldRender>
         <ShouldRender visible={openUpdateProfileModal}>
           <UpdateProfile
             open={openUpdateProfileModal}
             title="Change Profile"
-            handleClose={closeUpdateProfileModal}
+            handleClose={() => setOpenUpdateProfileModal(false)}
           />
         </ShouldRender>
       </div>

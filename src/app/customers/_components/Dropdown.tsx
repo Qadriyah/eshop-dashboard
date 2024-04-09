@@ -64,6 +64,9 @@ const DropMenu: React.FC<DropdownProps> = ({
     },
   ];
 
+  if (user === customer?.id) items.splice(1, 2);
+  if (customer?.deleted) items.pop();
+
   return (
     <Dropdown
       menu={{ items }}

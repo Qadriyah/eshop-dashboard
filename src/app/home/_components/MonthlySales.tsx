@@ -20,6 +20,8 @@ import { getDailySales } from "./helpers";
 import { GoDotFill } from "react-icons/go";
 import { formatCurrency } from "@/utils/helpers";
 import { NumericFormat } from "react-number-format";
+import Suspense from "@/components/Suspense";
+import MonthlySalesLoader from "./_loaders/MonthlySalesLoader";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload?.length) {
@@ -66,69 +68,71 @@ const MonthlySales = () => {
   );
 
   return (
-    <Card>
-      <div className="h-[458px] flex flex-col gap-3">
-        <div className="flex gap-5">
-          <div className="flex-1">
-            <div className="text-xl">Monthly Sales</div>
-            <div className="text-sm opacity-45">
-              Customers from all channels
+    <Suspense fallback={<MonthlySalesLoader />} loading={isLoading}>
+      <Card>
+        <div className="h-[458px] flex flex-col gap-3">
+          <div className="flex gap-5">
+            <div className="flex-1">
+              <div className="text-xl">Monthly Sales</div>
+              <div className="text-sm opacity-45">
+                Customers from all channels
+              </div>
             </div>
-          </div>
-          <div>
-            <DatePicker
-              defaultValue={dayjs(dateValue[0])}
-              onChange={onChangeDate}
-              picker="month"
-              className="p-2 text-[0.875rem]"
-            />
-          </div>
-        </div>
-        <div className="my-5">
-          <div className="flex items-center gap-5">
-            <div className="text-4xl">
-              <sup className="opacity-45 text-xl">$</sup>{" "}
-              <NumericFormat
-                value={total}
-                thousandSeparator=","
-                displayType="text"
+            <div>
+              <DatePicker
+                defaultValue={dayjs(dateValue[0])}
+                onChange={onChangeDate}
+                picker="month"
+                className="p-2 pl-5"
               />
             </div>
-            <div className="flex items-center text-sm px-1 bg-green-200 text-green-600 rounded-md"></div>
           </div>
-          <div className="text-sm opacity-45">Monthly Sales value</div>
-        </div>
-        <div className="flex items-center">
-          <div className="h-[140px] w-full">
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart
-                width={500}
-                height={200}
-                data={sales}
-                syncId="anyId"
-                margin={{
-                  top: 10,
-                  right: 30,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="total"
-                  stroke="#82ca9d"
-                  fill="#82ca9d"
+          <div className="my-5">
+            <div className="flex items-center gap-5">
+              <div className="text-4xl">
+                <sup className="opacity-45 text-xl">$</sup>{" "}
+                <NumericFormat
+                  value={total}
+                  thousandSeparator=","
+                  displayType="text"
                 />
-              </AreaChart>
-            </ResponsiveContainer>
+              </div>
+              <div className="flex items-center text-sm px-1 bg-green-200 text-green-600 rounded-md"></div>
+            </div>
+            <div className="text-sm opacity-45">Monthly Sales value</div>
+          </div>
+          <div className="flex items-center">
+            <div className="h-[140px] w-full">
+              <ResponsiveContainer width="100%" height={280}>
+                <AreaChart
+                  width={500}
+                  height={200}
+                  data={sales}
+                  syncId="anyId"
+                  margin={{
+                    top: 10,
+                    right: 30,
+                    left: 0,
+                    bottom: 0,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </Suspense>
   );
 };
 

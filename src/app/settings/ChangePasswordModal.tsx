@@ -7,9 +7,7 @@ import { FormikValues, useFormik } from "formik";
 import Button from "@/components/Button";
 import { ChangePasswordProps } from "@/types/entities";
 
-const ChangePasswordModal: React.FC<ModalProps> = ({
-  handleClose,
-}): JSX.Element => {
+const ChangePasswordModal: React.FC<ModalProps> = ({ handleClose }) => {
   const [password] = React.useState<ChangePasswordProps>({
     oldPassword: "",
     confirmPassword: "",

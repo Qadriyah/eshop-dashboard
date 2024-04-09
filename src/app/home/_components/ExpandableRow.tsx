@@ -8,7 +8,7 @@ type IProps = {
 
 const ExpandableRow: React.FC<IProps> = ({ products }) => {
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-2 text-[1.063rem] px-[50px]">
       <div className="font-bold">Product Name</div>
       <div className="text-center font-bold">Quantity</div>
       <div className="text-right font-bold">Price</div>
