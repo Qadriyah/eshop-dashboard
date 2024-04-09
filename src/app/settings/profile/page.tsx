@@ -135,7 +135,6 @@ const Profile: React.FC = (): JSX.Element => {
             title="Change password"
             open={openChangePasswordModal}
             handleClose={closeChangePasswordModalFn}
-            closeModal={closeChangePasswordModalFn}
           />
         </ShouldRender>
         <ShouldRender visible={openUpdateProfileModal}>
@@ -143,7 +142,7 @@ const Profile: React.FC = (): JSX.Element => {
             open={openUpdateProfileModal}
             title="Change Profile"
             handleClose={closeUpdateProfileModal}
-            closeModel={closeUpdateProfileModal}
+            refetch={loggedinUser.refetch}
           />
         </ShouldRender>
       </div>

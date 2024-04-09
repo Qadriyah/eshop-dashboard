@@ -2,42 +2,72 @@
 
 import React from "react";
 import Input from "@/components/Input";
-import withModal from "@/modals/withModal";
+import withModal, { ModalProps } from "@/modals/withModal";
 import { FormikValues, useFormik } from "formik";
-import { useMutation } from "@tanstack/react-query";
-import { updateUser } from "@/api/actions/customer";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+} from "@tanstack/react-query";
+import { SingleCustomerResponse, updateUser } from "@/api/actions/customer";
 import Button from "@/components/Button";
 import { updateSchema } from "@/validation/updateUserSchema";
 import { formatErrors, notify } from "@/utils/helpers";
-import { useAppSelector } from "@/lib/hooks";
-import { ProfileType } from "@/types/entities";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import TelInput from "@/components/TelInput";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { updateUserProfile } from "@/lib/features/user";
 
-const UpdateProfile: React.FC<{ closeModel: () => void }> = ({
-  closeModel,
+type IProps = ModalProps & {
+  refetch: (
+    options?: RefetchOptions | undefined
+  ) => Promise<QueryObserverResult<SingleCustomerResponse, Error>>;
+};
+
+const UpdateProfile: React.FC<IProps> = ({
+  handleClose,
+  refetch,
 }): JSX.Element => {
   const loggedinUser = useAppSelector((state) => state.user.user);
-  const [user] = React.useState<ProfileType>({
-    firstName: `${loggedinUser?.firstName || ""}`,
-    lastName: `${loggedinUser?.lastName || ""}`,
-    phone: `${loggedinUser?.phone || ""}`,
-  });
+  const dispatch = useAppDispatch();
+
+  const [phone, setPhone] = React.useState<string | null>(
+    `${loggedinUser?.phone || ""}`
+  );
+  const [error, setError] = React.useState<string>("");
   const updateMutation = useMutation({
     mutationKey: ["update-user"],
     mutationFn: (data: any) => updateUser(loggedinUser?.user?.id!, data),
   });
 
   const handleSubmit = async (values: FormikValues) => {
-    const { errors } = await updateMutation.mutateAsync(values);
-    if (errors) {
-      formik.setErrors(formatErrors(errors));
+    const data = { ...values };
+    if (!values.firstName) delete data.firstName;
+    if (!values.lastName) delete data.lastName;
+    if (phone && isValidPhoneNumber(phone)) {
+      data.phone = phone;
+    }
+
+    console.log(data, ">>>>>");
+
+    const { errors, profile } = await updateMutation.mutateAsync(data);
+
+    if ((phone && !isValidPhoneNumber(phone)) || errors) {
+      setError("Invalid phone number");
+      formik.setErrors(formatErrors(errors!));
     } else {
-      closeModel();
+      refetch();
       notify("Profile Successfully updated", "success");
+      dispatch(updateUserProfile(profile));
+      handleClose();
     }
   };
 
   const formik = useFormik({
-    initialValues: user,
+    initialValues: {
+      firstName: `${loggedinUser?.firstName || ""}`,
+      lastName: `${loggedinUser?.lastName || ""}`,
+    },
     onSubmit: handleSubmit,
     validationSchema: updateSchema,
     validateOnBlur: true,
@@ -52,7 +82,6 @@ const UpdateProfile: React.FC<{ closeModel: () => void }> = ({
         value={formik.values.firstName}
         onChange={formik.handleChange}
         type="text"
-        required
         error={formik.touched && formik.errors.firstName}
       />
       <Input
@@ -62,21 +91,21 @@ const UpdateProfile: React.FC<{ closeModel: () => void }> = ({
         value={formik.values.lastName}
         onChange={formik.handleChange}
         type="text"
-        required
         error={formik.touched && formik.errors.lastName}
       />
-      <Input
-        label="Phone number"
-        placeholder="Phone number"
-        name="phone"
-        value={formik.values.phone}
-        onChange={formik.handleChange}
-        type="text"
-        required
-        error={formik.touched && formik.errors.phone}
-      />
+      <div className="w-full">
+        <TelInput
+          value={phone}
+          onChange={(value) => {
+            setError("");
+            setPhone(value);
+          }}
+          label="Phone Number"
+          error={error}
+        />
+      </div>
       <Button
-        className="bg-black p-3 w-20 text-white rounded-md"
+        className="bg-black p-3 text-white rounded-md"
         type="submit"
         loading={updateMutation.isPending}
         disabled={updateMutation.isPending}
@@ -87,4 +116,4 @@ const UpdateProfile: React.FC<{ closeModel: () => void }> = ({
   );
 };
 
-export default withModal<{ closeModel: () => void }>(UpdateProfile);
+export default withModal<IProps>(UpdateProfile);

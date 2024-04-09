@@ -1,17 +1,15 @@
 "use client";
 
 import React from "react";
-import withModal from "@/modals/withModal";
+import withModal, { ModalProps } from "@/modals/withModal";
 import Input from "@/components/Input";
 import { FormikValues, useFormik } from "formik";
 import Button from "@/components/Button";
 import { ChangePasswordProps } from "@/types/entities";
 
-type IProps = {
-  closeModal: () => void;
-};
-
-const ChangePasswordModal: React.FC<IProps> = ({ closeModal }): JSX.Element => {
+const ChangePasswordModal: React.FC<ModalProps> = ({
+  handleClose,
+}): JSX.Element => {
   const [password] = React.useState<ChangePasswordProps>({
     oldPassword: "",
     confirmPassword: "",
@@ -20,7 +18,7 @@ const ChangePasswordModal: React.FC<IProps> = ({ closeModal }): JSX.Element => {
 
   const handleSubmit = (values: FormikValues) => {
     console.log(values, ">>>>>>");
-    closeModal();
+    handleClose();
   };
 
   const formik = useFormik({
@@ -73,4 +71,4 @@ const ChangePasswordModal: React.FC<IProps> = ({ closeModal }): JSX.Element => {
   );
 };
 
-export default withModal<IProps>(ChangePasswordModal);
+export default withModal<ModalProps>(ChangePasswordModal);

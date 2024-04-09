@@ -2,7 +2,7 @@
 
 import { me } from "@/api/actions/profile";
 import { ProfileType } from "@/types/entities";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export interface UserState {
   loading: "idle" | "pending" | "fulfilled" | "failed";
@@ -40,7 +40,11 @@ export const getUser = createAsyncThunk(
 const userSlice = createSlice({
   name: namespace,
   initialState,
-  reducers: {},
+  reducers: {
+    updateUserProfile(state, action: PayloadAction<ProfileType>) {
+      state.user = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getUser.pending, (state) => {
@@ -56,5 +60,7 @@ const userSlice = createSlice({
       });
   },
 });
+
+export const { updateUserProfile } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -30,7 +30,7 @@ const DropMenu: React.FC<DropdownProps> = ({
         <Link href={`/settings/profile/${user?.id}`} className="flex">
           <div className="flex gap-2 items-center">
             <HiViewfinderCircle />
-            <div className="text-sm -mt-[3px] ml-1">View</div>
+            <div className="text-sm -mt-[3px] ml-1">User details</div>
           </div>
         </Link>
       ),

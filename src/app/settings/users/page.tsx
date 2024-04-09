@@ -22,10 +22,6 @@ import ConfirmationModal from "@/modals/ConfirmationModal";
 import { notify } from "@/utils/helpers";
 
 const Users: React.FC = (): JSX.Element => {
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => getUsers({ user: USER_ROLES.ADMIN }),
-  });
   const [users, setUsers] = React.useState<UserType[]>([]);
   const [queryName, setQueryName] = React.useState<string>("");
   const [filteredUsers, setFilteredUsers] = React.useState<UserType[]>([]);
@@ -35,6 +31,11 @@ const Users: React.FC = (): JSX.Element => {
     React.useState<boolean>(false);
   const [openUnsuspendModal, setOpenUnsuspendModal] =
     React.useState<boolean>(false);
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getUsers({ user: USER_ROLES.ADMIN }),
+  });
 
   React.useEffect(() => {
     setUsers(data?.users!);

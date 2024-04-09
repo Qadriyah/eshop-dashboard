@@ -35,7 +35,7 @@ export type ProfileType = {
   user?: UserType;
   firstName: string;
   lastName: string;
-  phone: string;
+  phone?: string;
   customer?: string;
   fullName?: string;
 };
