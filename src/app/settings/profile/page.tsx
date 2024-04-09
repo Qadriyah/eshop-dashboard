@@ -13,7 +13,8 @@ import Loader from "@/components/Loader";
 import ChangePasswordModal from "../ChangePasswordModal";
 import UpdateProfile from "../UpdateProfile";
 import PageHeader from "@/components/PageHeader";
-// import { me } from "@/api/actions/profile";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { updateUserAvator } from "@/lib/features/user";
 
 const Profile: React.FC = (): JSX.Element => {
   const loggedinUserId = Cookies.get("_session-token");
@@ -25,22 +26,13 @@ const Profile: React.FC = (): JSX.Element => {
     React.useState<boolean>(false);
   const [openUpdateProfileModal, setOpenUpdateProfileModal] =
     React.useState<boolean>(false);
-
-  const loggedinUser = useQuery({
-    queryKey: ["loggedinUser"],
-    queryFn: () => getUser(loggedinUserId!),
-  });
-  // const loggedInUserProfile = useQuery({
-  //   queryKey: ["me"],
-  //   queryFn: () => me(),
-  // }).data?.profile;
+  const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
 
   const uploadMutation = useMutation({
     mutationKey: ["upload-image"],
     mutationFn: (data: any) => uploadUserImage(loggedinUserId!, data),
   });
-
-  const user = loggedinUser.data?.user;
 
   const handleImageChange = async () => {
     const files = fileInputRef?.current?.files as FileList;
@@ -48,7 +40,8 @@ const Profile: React.FC = (): JSX.Element => {
     setSelectedImage(imagePath);
     const formData = new FormData();
     formData.append("image", files[0]);
-    await uploadMutation.mutateAsync(formData);
+    const { filePath } = await uploadMutation.mutateAsync(formData);
+    dispatch(updateUserAvator(filePath));
   };
 
   const closeChangePasswordModalFn = (): void =>
@@ -65,13 +58,15 @@ const Profile: React.FC = (): JSX.Element => {
               <div
                 className="w-[150px] h-[150px] rounded-full border flex justify-center items-center mx-auto"
                 style={{
-                  backgroundImage: `url(${user?.avator || selectedImage})`,
+                  backgroundImage: `url(${
+                    user?.user?.avator || selectedImage
+                  })`,
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                 }}
               >
-                <ShouldRender visible={!(user?.avator || selectedImage)}>
+                <ShouldRender visible={!(user?.user?.avator || selectedImage)}>
                   <IoImagesSharp fill="#ccc" size={60} />
                 </ShouldRender>
                 <ShouldRender visible={false}>
@@ -93,24 +88,21 @@ const Profile: React.FC = (): JSX.Element => {
               </div>
               <span>
                 <h2 className=" mt-5 opacity-80 text-lg text-center">
-                  {user?.profile?.fullName}
+                  {user?.fullName}
                 </h2>
                 <div className="font-semibold opacity-55 text-center">
-                  {user?.email}
+                  {user?.user?.email}
                 </div>
               </span>
               <div className="opacity-90 mt-3 mb-4">Details</div>
               <div className="border-t border-dashed border-[#b6b3b3] pt-3">
                 <UserDetail
                   label="Email"
-                  value={user?.email!}
+                  value={user?.user?.email}
                   icon={<CiEdit />}
                   onEdit={() => setOpenUpdateProfileModal(true)}
                 />
-                <UserDetail
-                  label="Phone number"
-                  value={user?.profile?.phone!}
-                />
+                <UserDetail label="Phone number" value={user?.phone} />
                 <UserDetail
                   label="Password"
                   value={
@@ -142,7 +134,6 @@ const Profile: React.FC = (): JSX.Element => {
             open={openUpdateProfileModal}
             title="Change Profile"
             handleClose={closeUpdateProfileModal}
-            refetch={loggedinUser.refetch}
           />
         </ShouldRender>
       </div>

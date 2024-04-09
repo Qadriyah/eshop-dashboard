@@ -32,7 +32,7 @@ export type ProductType = {
 
 export type ProfileType = {
   id?: string;
-  user?: UserType;
+  user: UserType;
   firstName: string;
   lastName: string;
   phone?: string;

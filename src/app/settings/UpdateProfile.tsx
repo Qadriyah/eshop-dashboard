@@ -4,12 +4,8 @@ import React from "react";
 import Input from "@/components/Input";
 import withModal, { ModalProps } from "@/modals/withModal";
 import { FormikValues, useFormik } from "formik";
-import {
-  QueryObserverResult,
-  RefetchOptions,
-  useMutation,
-} from "@tanstack/react-query";
-import { SingleCustomerResponse, updateUser } from "@/api/actions/customer";
+import { useMutation } from "@tanstack/react-query";
+import { updateUser } from "@/api/actions/customer";
 import Button from "@/components/Button";
 import { updateSchema } from "@/validation/updateUserSchema";
 import { formatErrors, notify } from "@/utils/helpers";
@@ -18,16 +14,7 @@ import TelInput from "@/components/TelInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { updateUserProfile } from "@/lib/features/user";
 
-type IProps = ModalProps & {
-  refetch: (
-    options?: RefetchOptions | undefined
-  ) => Promise<QueryObserverResult<SingleCustomerResponse, Error>>;
-};
-
-const UpdateProfile: React.FC<IProps> = ({
-  handleClose,
-  refetch,
-}): JSX.Element => {
+const UpdateProfile: React.FC<ModalProps> = ({ handleClose }): JSX.Element => {
   const loggedinUser = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
@@ -48,15 +35,12 @@ const UpdateProfile: React.FC<IProps> = ({
       data.phone = phone;
     }
 
-    console.log(data, ">>>>>");
-
     const { errors, profile } = await updateMutation.mutateAsync(data);
 
     if ((phone && !isValidPhoneNumber(phone)) || errors) {
       setError("Invalid phone number");
       formik.setErrors(formatErrors(errors!));
     } else {
-      refetch();
       notify("Profile Successfully updated", "success");
       dispatch(updateUserProfile(profile));
       handleClose();
@@ -116,4 +100,4 @@ const UpdateProfile: React.FC<IProps> = ({
   );
 };
 
-export default withModal<IProps>(UpdateProfile);
+export default withModal<ModalProps>(UpdateProfile);

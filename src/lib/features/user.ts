@@ -44,6 +44,11 @@ const userSlice = createSlice({
     updateUserProfile(state, action: PayloadAction<ProfileType>) {
       state.user = action.payload;
     },
+    updateUserAvator(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.user.avator = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -61,6 +66,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateUserProfile } = userSlice.actions;
+export const { updateUserProfile, updateUserAvator } = userSlice.actions;
 
 export default userSlice.reducer;
