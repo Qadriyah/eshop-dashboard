@@ -23,14 +23,9 @@ import { DISCOUNT_TYPES, PRODUCT_STATUS } from "@/utils/constants";
 import { Space } from "antd";
 import { createProductValidationSchema } from "@/validation/productSchemas";
 import { formatErrors, notify } from "@/utils/helpers";
+import { PageProps } from "@/types/pageProps";
 
-type PageParams = {
-  params: {
-    productid: string;
-  };
-};
-
-const AddProduct: React.FC<PageParams> = ({ params }): JSX.Element => {
+const AddProduct: React.FC<PageProps> = ({ params }): JSX.Element => {
   const router = useRouter();
   const queryCient = useQueryClient();
 

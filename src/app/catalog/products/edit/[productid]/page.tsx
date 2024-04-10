@@ -16,7 +16,7 @@ import { Space } from "antd";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import type { NextPage } from "next";
-import Media from "../../Media";
+import Media from "../../../_components/Media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProduct, updateProduct } from "@/api/actions/product";
 import { ProductType } from "@/types/entities";
@@ -31,7 +31,7 @@ import { useFormik } from "formik";
 import { updateProductValidationSchema } from "@/validation/productSchemas";
 import TextArea from "@/components/TextArea";
 import ConfirmationModal from "@/modals/ConfirmationModal";
-import ProductIcon from "../../ProductIcon";
+import ProductIcon from "../../../_components/ProductIcon";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import { PageProps } from "@/types/pageProps";
@@ -65,7 +65,7 @@ const EditProduct: NextPage<PageProps> = ({ params }) => {
   });
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["get-products"],
+    queryKey: ["get-product"],
     queryFn: () => getProduct(params.productid),
   });
 

@@ -7,7 +7,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
 import Button from "@/components/Button";
-import ProductsTable from "@/app/catalog/products/ProductList";
+import ProductsTable from "@/app/catalog/_components/ProductList";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
@@ -15,6 +15,7 @@ import Suspense from "@/components/Suspense";
 import { ProductType } from "@/types/entities";
 import { getProducts } from "@/api/actions/product";
 import PageHeader from "@/components/PageHeader";
+import SearchBar from "@/components/SearchBar";
 
 const Products: React.FC<{}> = (): JSX.Element => {
   const navigate = useRouter();
@@ -78,24 +79,11 @@ const Products: React.FC<{}> = (): JSX.Element => {
       <Card>
         <div className="flex flex-col gap-5 mb-8 lg:flex-row w-full">
           <div className="flex-1">
-            <form onSubmit={handleSearch}>
-              <div className="h-[40px] flex">
-                <input
-                  type="text"
-                  name="product"
-                  value={searchQuery}
-                  onChange={onSearch}
-                  className="bg-[#f1f0f0] h-[40px] px-4 outline-none rounded-tl-md rounded-bl-md w-full"
-                  placeholder="Search Product"
-                />
-                <button
-                  className="h-[40px] px-4 bg-[#f1f0f0] rounded-tr-md rounded-br-md flex items-center justify-center hover:bg-gray-200"
-                  type="submit"
-                >
-                  <IoSearchOutline fill="gray" />
-                </button>
-              </div>
-            </form>
+            <SearchBar
+              searchQuery={searchQuery}
+              handleSearch={handleSearch}
+              onChange={onSearch}
+            />
           </div>
           <div className="flex-1 hidden xl:block" />
           <div className="flex gap-5 flex-1">

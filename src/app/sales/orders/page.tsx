@@ -6,16 +6,17 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
 import SelectComponent from "@/components/SelectComponent";
-import OrdersTable from "@/app/sales/OrdersTable";
+import OrdersTable from "@/app/sales/_components/OrdersTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSales } from "@/api/actions/sales";
 import { SaleType } from "@/types/entities";
 import { SALE_STATUS } from "@/utils/constants";
 import ShouldRender from "@/components/ShouldRender";
 import UpdateStatusModal from "@/modals/UpdateStatusModal";
+import SearchBar from "@/components/SearchBar";
 
-const Orders: React.FC<{}> = (): JSX.Element => {
-  const [sale, setSale] = React.useState<string>("");
+const Orders: React.FC<{}> = () => {
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [status, setStatus] = React.useState("all");
   const [sales, setSales] = React.useState<SaleType[]>([]);
   const [filteredSales, setFilteredSales] = React.useState<SaleType[]>([]);
@@ -37,9 +38,9 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     }
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-    setSale(value);
+    setSearchQuery(value);
     if (!value) {
       setFilteredSales(sales);
     } else {
@@ -58,6 +59,11 @@ const Orders: React.FC<{}> = (): JSX.Element => {
     setOpenStatusModal(true);
   };
 
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(searchQuery, ":::::");
+  };
+
   React.useEffect(() => {
     setFilteredSales(data?.sales as SaleType[]);
     setSales(data?.sales as SaleType[]);
@@ -71,23 +77,16 @@ const Orders: React.FC<{}> = (): JSX.Element => {
         </h2>
         <Card>
           <div className="w-full hide-scrollbar">
-            <div className="products flex justify-between mb-8">
-              <span className="-mt-5">
-                <IoSearchOutline
-                  size={20}
-                  fill="#d3d3d3"
-                  className="translate-y-8 translate-x-1"
+            <div className="flex gap-5 mb-5">
+              <div className="flex-1">
+                <SearchBar
+                  searchQuery={searchQuery}
+                  onChange={onChange}
+                  handleSearch={handleSearch}
                 />
-                <input
-                  type="text"
-                  name="order"
-                  value={sale}
-                  onChange={handleSearch}
-                  className="bg-[#f1f0f0] placeholder:font-senibold p-2 pl-8 outline-none rounded-md w-1/2 max-w-[400px] min-w-[200px]"
-                  placeholder="Search Order"
-                />
-              </span>
-              <div className="flex status-add-product">
+              </div>
+              <div className="flex-1 hidden xl:block" />
+              <div className="flex-1">
                 <SelectComponent
                   onChange={handleChange}
                   variant="outlined"

@@ -76,9 +76,10 @@ const CustomerTable: React.FC<CustomerProps> = ({
       key: "customer_name",
       title: "Customer name",
       dataIndex: "customer_name",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className="text-[1.063rem] opacity-90 mb-0 cursor-pointer hover:text-blue-400"
+          className="cursor-pointer hover:text-blue-400"
           onClick={() => navigate.push(`/customers/${item.id}`)}
         >
           {item.profile.fullName}
@@ -89,22 +90,22 @@ const CustomerTable: React.FC<CustomerProps> = ({
       key: "email",
       title: "Email",
       dataIndex: "email",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div className="text-black text-[1.063rem] opacity-60 hover:text-[#3875d7]">
-          {item.email}
-        </div>
+        <div className="text-black hover:text-[#3875d7]">{item.email}</div>
       ),
     },
     {
       key: "roles",
       title: "Roles",
       dataIndex: "roles",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div className="flex gap-2">
           {item?.roles?.map((role) => (
             <div
               key={role}
-              className={`px-2 bg-blue-200 border text-blue-600 border-blue-600 text-[1.063rem] text-center rounded-md`}
+              className={`px-2 bg-blue-200 border text-blue-600 border-blue-600 text-center rounded-md`}
             >
               {role}
             </div>
@@ -116,9 +117,10 @@ const CustomerTable: React.FC<CustomerProps> = ({
       key: "status",
       title: "Status",
       dataIndex: "status",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <div
-          className={`px-2 text-[1.063rem] text-center rounded-md ${
+          className={`px-2 text-center rounded-md ${
             item.deleted
               ? "text-red-600 bg-red-200 border border-red-600"
               : item.suspended
@@ -132,18 +134,18 @@ const CustomerTable: React.FC<CustomerProps> = ({
     },
     {
       key: "created_date",
-      title: "Created date",
+      title: "Date created",
       dataIndex: "created_date",
+      className: "text-[1.063rem]",
       render: (_, item) => (
-        <div className="text-black text-[1.063rem] opacity-60">
-          {moment(item.profile.createdAt).format("MM/DD/YYYY")}
-        </div>
+        <div>{moment(item.profile.createdAt).format("MM/DD/YYYY")}</div>
       ),
     },
     {
       key: "actions",
       title: "Actions",
       dataIndex: "actions",
+      className: "text-[1.063rem]",
       render: (_, item) => (
         <DropMenu
           customer={item}

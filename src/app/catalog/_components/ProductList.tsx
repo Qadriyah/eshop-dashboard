@@ -3,7 +3,6 @@
 import React from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
-import { usePathname, useRouter } from "next/navigation";
 import ShouldRender from "../../../components/ShouldRender";
 import { ProductType } from "@/types/entities";
 import { formatCurrency, notify } from "@/utils/helpers";
@@ -15,7 +14,7 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import { deleteProduct } from "@/api/actions/product";
-import { DISCOUNT_TYPES } from "@/utils/constants";
+import { DISCOUNT_TYPES, PRODUCT_STATUS } from "@/utils/constants";
 
 type IProps = {
   products: ProductType[];
@@ -31,6 +30,7 @@ const ProductList: React.FC<IProps> = ({
   const [showModal, setShowModal] = React.useState(false);
   const [selectedProduct, setSelecetedProduct] =
     React.useState<ProductType | null>(null);
+
   const deleteProductMutation = useMutation({
     mutationKey: ["delete-product"],
     mutationFn: (productId: string) => deleteProduct(productId),
@@ -59,7 +59,7 @@ const ProductList: React.FC<IProps> = ({
     setShowModal(false);
   };
 
-  const columns: TableProps["columns"] = [
+  const columns: TableProps<ProductType>["columns"] = [
     {
       title: "Product",
       key: "product",
@@ -91,36 +91,59 @@ const ProductList: React.FC<IProps> = ({
       key: "price",
       dataIndex: "price",
       className: "text-[1.063rem]",
-      render: (_, item) => <div>{formatCurrency(item.price)}</div>,
+      align: "right",
+      render: (_, item) => {
+        let price = item.price;
+        if (item.discountType === DISCOUNT_TYPES.fixed) {
+          price = item.price + item.fixedDiscount;
+        }
+        if (item.discountType === DISCOUNT_TYPES.percentage) {
+          price = item.price + (item.percentDiscount / 100) * item.price;
+        }
+        return <div>{formatCurrency(price, true)}</div>;
+      },
     },
     {
       title: "Discount",
       key: "discount",
       dataIndex: "discount",
       className: "text-[1.063rem]",
-      render: (_, item) => (
-        <div>
-          {item.discountType === DISCOUNT_TYPES.fixed
-            ? formatCurrency(item.fixedDiscount)
-            : item.discountType === DISCOUNT_TYPES.percentage
-            ? `${item.percentDiscount}%`
-            : "-"}
-        </div>
-      ),
+      align: "right",
+      render: (_, item) => {
+        const discount =
+          item.discountType === DISCOUNT_TYPES.percentage
+            ? (item.percentDiscount * item.price) / 100
+            : item.discountType === DISCOUNT_TYPES.fixed
+            ? item.fixedDiscount
+            : 0;
+        return (
+          <div>
+            {item.discountType === DISCOUNT_TYPES.percentage ? (
+              <div className="flex gap-2 justify-end">
+                <p className="opacity-45">{`(${item.percentDiscount}%)`}</p>
+                <p>{formatCurrency(discount, true)}</p>
+              </div>
+            ) : (
+              formatCurrency(discount, true)
+            )}
+          </div>
+        );
+      },
     },
     {
       title: "Status",
       key: "status",
       dataIndex: "status",
-      className: "text-[1.063rem]",
+      className: "text-[1.063rem] flex justify-center",
+      align: "center",
       render: (_, item) => (
         <div
-          className={`opacity-70 text-center px-1 rounded-lg font-semibold ${
-            item.status === "Inactive"
-              ? "text-red-500 bg-[#f7d0d6]"
-              : item.status === "Published"
-              ? "text-[#5ced73] bg-[#abf7b1]"
-              : "text-[#75bfec] bg-[#dff2ff]"
+          className={`text-center px-1 rounded-lg w-[100px] ${
+            item.status === PRODUCT_STATUS.inactive
+              ? "text-red-600 bg-red-200 border border-red-600"
+              : item.status === PRODUCT_STATUS.active
+              ? "text-green-600 bg-green-200 border border-green-600"
+              : "text-blue-600 bg-blue-200 border border-blue-600"
           }`}
         >
           {item.status}
