@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { IoSearchOutline } from "react-icons/io5";
 import Card from "@/components/Card";
 import CustomerTable from "../_components/CustomerTable";
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import { USER_ROLES } from "@/utils/constants";
 import PageHeader from "@/components/PageHeader";
+import SearchBar from "@/components/SearchBar";
 
 const CustomerListing: React.FC = (): JSX.Element => {
   const [query, setQuery] = React.useState<string>("");
@@ -33,15 +33,20 @@ const CustomerListing: React.FC = (): JSX.Element => {
       setFilteredCustomers(() =>
         filteredCustomers.filter(
           (customer) =>
-            customer.profile.fullName
-              .toLocaleLowerCase()
-              .includes(query.toLocaleLowerCase()) ||
+            customer.profile?.fullName
+              ?.toLocaleLowerCase()
+              ?.includes(query.toLocaleLowerCase()) ||
             customer.email
               .toLocaleLowerCase()
               .includes(query.toLocaleLowerCase())
         )
       );
     }
+  };
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(query, ":::::");
   };
 
   React.useEffect(() => {
@@ -53,23 +58,13 @@ const CustomerListing: React.FC = (): JSX.Element => {
     <div>
       <PageHeader title="Customers" />
       <Card>
-        <div className="w-full">
-          <div className="products flex justify-between mb-8 w-full">
-            <span className="-mt-5 w-full">
-              <IoSearchOutline
-                size={20}
-                fill="gray"
-                className="translate-y-8 translate-x-2 opacity-50"
-              />
-              <input
-                type="text"
-                name="product"
-                value={query}
-                onChange={onSearchCustomer}
-                className="bg-[#f1f0f0] p-2 pl-8 outline-none rounded-md w-full"
-                placeholder="Search Customers"
-              />
-            </span>
+        <div className="flex gap-5 mb-5">
+          <div className="">
+            <SearchBar
+              searchQuery={query}
+              handleSearch={handleSearch}
+              onChange={onSearchCustomer}
+            />
           </div>
         </div>
         <Suspense

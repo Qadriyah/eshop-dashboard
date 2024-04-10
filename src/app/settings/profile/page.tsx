@@ -11,12 +11,12 @@ import { uploadUserImage } from "@/api/actions/customer";
 import ShouldRender from "@/components/ShouldRender";
 import Loader from "@/components/Loader";
 import ChangePasswordModal from "../ChangePasswordModal";
-import UpdateProfile from "../UpdateProfile";
+import UpdateProfile from "../../../modals/UpdateProfileModal";
 import PageHeader from "@/components/PageHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateUserAvator } from "@/lib/features/user";
 
-const Profile: React.FC = (): JSX.Element => {
+const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
   const loggedinUserId = Cookies.get("_session-token");
   const [selectedImage, setSelectedImage] = React.useState<string>(

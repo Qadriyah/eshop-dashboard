@@ -14,7 +14,7 @@ import TelInput from "@/components/TelInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { updateUserProfile } from "@/lib/features/user";
 
-const UpdateProfile: React.FC<ModalProps> = ({ handleClose }): JSX.Element => {
+const UpdateProfileModal: React.FC<ModalProps> = ({ handleClose }) => {
   const loggedinUser = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
@@ -36,15 +36,18 @@ const UpdateProfile: React.FC<ModalProps> = ({ handleClose }): JSX.Element => {
     }
 
     const { errors, profile } = await updateMutation.mutateAsync(data);
-
-    if ((phone && !isValidPhoneNumber(phone)) || errors) {
+    if (phone && !isValidPhoneNumber(phone)) {
       setError("Invalid phone number");
-      formik.setErrors(formatErrors(errors!));
-    } else {
-      notify("Profile Successfully updated", "success");
-      dispatch(updateUserProfile(profile));
-      handleClose();
+      return;
     }
+
+    if (errors) {
+      formik.setErrors(formatErrors(errors!));
+      return;
+    }
+    notify("Profile updated successfully", "success");
+    dispatch(updateUserProfile(profile));
+    handleClose();
   };
 
   const formik = useFormik({
@@ -100,4 +103,4 @@ const UpdateProfile: React.FC<ModalProps> = ({ handleClose }): JSX.Element => {
   );
 };
 
-export default withModal<ModalProps>(UpdateProfile);
+export default withModal<ModalProps>(UpdateProfileModal);

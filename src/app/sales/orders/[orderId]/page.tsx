@@ -14,9 +14,9 @@ import {
 import { GiWantedReward } from "react-icons/gi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import ProductCard from "@/components/ProductCard";
-import OrderDetail from "@/app/sales/OrderDetail";
+import OrderDetail from "@/app/sales/_components/OrderDetail";
 import Address from "@/components/Address";
-import OrderDetailsTable from "@/app/sales/OrderDetailsTable";
+import OrderDetailsTable from "@/app/sales/_components/OrderDetailsTable";
 import { useQuery } from "@tanstack/react-query";
 import { getSale } from "@/api/actions/sales";
 import PageHeader from "@/components/PageHeader";

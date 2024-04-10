@@ -8,9 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getUser } from "@/api/actions/customer";
 import UserDetail from "../../UserDetail";
 
-const Profile: React.FC = (): JSX.Element => {
-  const params = useParams<{ userId: string }>();
-  const { userId } = params;
+const Profile: React.FC = () => {
+  const { userId } = useParams<{ userId: string }>();
   const user = useQuery({
     queryKey: ["user"],
     queryFn: () => getUser(userId),
@@ -33,7 +32,7 @@ const Profile: React.FC = (): JSX.Element => {
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                 }}
-              ></div>
+              />
               <span>
                 <h2 className=" mt-5 opacity-80 text-lg text-center">
                   {user?.profile?.fullName}
