@@ -5,14 +5,12 @@ import withModal, { ModalProps } from "@/modals/withModal";
 import Input from "@/components/Input";
 import { FormikValues, useFormik } from "formik";
 import Button from "@/components/Button";
-import { ChangePasswordProps } from "@/types/entities";
+import { confirmPasswordSchema } from "@/validation/confirmPasswordSchema";
 
-const ChangePasswordModal: React.FC<ModalProps> = ({ handleClose }) => {
-  const [password] = React.useState<ChangePasswordProps>({
-    oldPassword: "",
-    confirmPassword: "",
-    newPassword: "",
-  });
+const ChangePasswordModal: React.FC<ModalProps> = ({
+  handleClose,
+}): JSX.Element => {
+  const [matchError, setMatchError] = React.useState<string>("");
 
   const handleSubmit = (values: FormikValues) => {
     console.log(values, ">>>>>>");
@@ -20,10 +18,23 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ handleClose }) => {
   };
 
   const formik = useFormik({
-    initialValues: password,
+    initialValues: {
+      oldPassword: "",
+      confirmPassword: "",
+      newPassword: "",
+    },
     onSubmit: handleSubmit,
     validateOnBlur: true,
+    validationSchema: confirmPasswordSchema,
   });
+
+  React.useEffect(() => {
+    if (formik.values.newPassword !== formik.values.confirmPassword) {
+      setMatchError("Passwords do not match");
+    } else {
+      setMatchError("");
+    }
+  }, [matchError, formik.values.confirmPassword, formik.values.newPassword]);
 
   return (
     <>
@@ -56,7 +67,11 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ handleClose }) => {
           value={formik.values.confirmPassword}
           onChange={formik.handleChange}
           type="password"
-          error={formik.touched && formik.errors.confirmPassword}
+          error={
+            formik.touched && formik.errors.confirmPassword
+              ? formik.errors.confirmPassword
+              : matchError
+          }
         />
         <Button
           type="submit"
@@ -70,3 +85,10 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ handleClose }) => {
 };
 
 export default withModal<ModalProps>(ChangePasswordModal);
+
+// we have 3 APIs for reset password
+// 1. Is for the logged in user ie :id/reset-password
+// Add a password policy
+// 2. not loggedinin: auth controller reset-password-requst
+// reset-password route
+// Show a success screen
