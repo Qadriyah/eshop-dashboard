@@ -35,7 +35,7 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
     } else {
       notify(message, "success");
       handleClose();
-      navigate.push("/");
+      navigate.replace("/");
     }
   };
 
