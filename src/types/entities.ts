@@ -209,5 +209,5 @@ export type SearchOptions = {
 export type ChangePasswordProps = {
   oldPassword: string;
   newPassword: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
