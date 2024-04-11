@@ -207,7 +207,7 @@ export type SearchOptions = {
   status?: string;
 };
 export type ChangePasswordProps = {
-  oldPassword: string;
+  oldPassword?: string;
   newPassword: string;
   confirmPassword?: string;
 };
