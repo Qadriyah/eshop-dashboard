@@ -15,13 +15,14 @@ import {
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
 import PageHeader from "@/components/PageHeader";
-import { NextPage } from "next";
 import CustomerInfo from "../_components/CustomerInfo";
 import AddressCard from "../_components/Address";
 import TabHeader from "../_components/TabHeader";
-import { PageProps } from "@/types/pageProps";
+import { useParams } from "next/navigation";
+import { PageParams } from "@/types/pageProps";
 
-const CustomerDetails: NextPage<PageProps> = ({ params }): JSX.Element => {
+const CustomerDetails = () => {
+  const params = useParams<PageParams>();
   const [tab, setTab] = React.useState({
     activeTtab: "overview",
   });

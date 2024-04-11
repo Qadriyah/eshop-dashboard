@@ -1,8 +1,5 @@
-export type PageProps = {
-  sessionId: string;
-  params: {
-    productid: string;
-    customerId: string;
-    orderId: string;
-  };
+export type PageParams = {
+  productid: string;
+  customerId: string;
+  orderId: string;
 };

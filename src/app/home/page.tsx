@@ -11,15 +11,13 @@ import TopSelling from "./_components/TopSelling";
 import ProductOrders from "./_components/ProductOrders";
 import { useQuery } from "@tanstack/react-query";
 import { getCompletedSalesReport } from "@/api/actions/reports";
-import { NextPage } from "next";
-import { PageProps } from "@/types/pageProps";
 import Suspense from "@/components/Suspense";
 import OrdersThisMonthLoader from "./_components/_loaders/OrdersThisMonthLoader";
 import ProductOrdersLoader from "./_components/_loaders/ProductOrdersLoader";
 import DailySalesLoader from "./_components/_loaders/DailySalesLoader";
 import TopSellingLoader from "./_components/_loaders/TopSellingLoader";
 
-const Home: NextPage<PageProps> = () => {
+const Home = () => {
   const [currentMonth] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),

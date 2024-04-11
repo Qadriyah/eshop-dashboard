@@ -14,7 +14,7 @@ const SelectComponent: React.FC<IProps> = ({
   label,
   boxWidth = "100%",
   ...props
-}): JSX.Element => {
+}) => {
   return (
     <Box sx={{ width: boxWidth }}>
       <FormControl fullWidth size="small">
