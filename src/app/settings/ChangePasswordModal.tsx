@@ -3,18 +3,40 @@
 import React from "react";
 import withModal, { ModalProps } from "@/modals/withModal";
 import Input from "@/components/Input";
-import { FormikValues, useFormik } from "formik";
+import { useFormik } from "formik";
 import Button from "@/components/Button";
 import { confirmPasswordSchema } from "@/validation/confirmPasswordSchema";
+import { useMutation } from "@tanstack/react-query";
+import { ChangePasswordProps } from "@/types/entities";
+import { changeForLoggedin } from "@/api/actions/customer";
+import { useAppSelector } from "@/lib/hooks";
+import { notify } from "@/utils/helpers";
+import { useRouter } from "next/navigation";
 
 const ChangePasswordModal: React.FC<ModalProps> = ({
   handleClose,
 }): JSX.Element => {
   const [matchError, setMatchError] = React.useState<string>("");
+  const loggedinUserId = useAppSelector((state) => state.user?.user?.user?.id);
+  const navigate = useRouter();
 
-  const handleSubmit = (values: FormikValues) => {
-    console.log(values, ">>>>>>");
-    handleClose();
+  const changeForLoggedInMutation = useMutation({
+    mutationKey: ["change-for-loggedin"],
+    mutationFn: (data: ChangePasswordProps) =>
+      changeForLoggedin(loggedinUserId!, data),
+  });
+
+  const handleSubmit = async (values: ChangePasswordProps) => {
+    const { errors, message } = await changeForLoggedInMutation.mutateAsync(
+      values
+    );
+    if (errors) {
+      notify(errors[0].message, "error");
+    } else {
+      notify(message, "success");
+      handleClose();
+      navigate.push("/");
+    }
   };
 
   const formik = useFormik({
@@ -75,7 +97,9 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
         />
         <Button
           type="submit"
-          className="bg-black text-white font-semibold p-3 hover:opacity-80 w-[100px] rounded-md"
+          loading={changeForLoggedInMutation.isPending}
+          disabled={changeForLoggedInMutation.isPending}
+          className="bg-black text-white font-semibold p-3 hover:opacity-80 w-[150px] rounded-md"
         >
           Save
         </Button>
