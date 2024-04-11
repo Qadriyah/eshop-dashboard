@@ -13,6 +13,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/disclaimer",
-    "/((?!public|static|assets|_next/public|_next/static|_next/assets).*)",
+    "/((?!public|static|assets|_next/public|_next/static|_next/assets|forgot-password|_next/forgot-password).*)",
   ],
 };
