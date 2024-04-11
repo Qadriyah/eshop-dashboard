@@ -5,10 +5,23 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
+import { useFormik } from "formik";
+import { emailSchema } from "@/validation/loginSchema";
 
 const ResetEmail = () => {
   const [email, setEmail] = React.useState<string>("");
   const router = useRouter();
+
+  const handleSubmit = (values: { email: string }) => {
+    console.log(values, ">>>>");
+  };
+
+  const formik = useFormik({
+    initialValues: { email: "" },
+    onSubmit: handleSubmit,
+    validationSchema: emailSchema,
+    validateOnBlur: true,
+  });
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2">
@@ -36,15 +49,19 @@ const ResetEmail = () => {
             Enter your email to reset your password
           </p>
         </div>
-        <form className="p-5 -mt-5 sm:w-[450px] sm:mx-auto">
+        <form
+          className="p-5 -mt-5 sm:w-[450px] sm:mx-auto"
+          onSubmit={formik.handleSubmit}
+        >
           <Input
             name="email"
             type="email"
-            value={email}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(event.target.value)
-            }
+            value={formik.values.email}
+            onChange={formik.handleChange}
             placeholder="Email"
+            error={
+              formik.touched && formik.errors?.email && formik.errors?.email
+            }
           />
           <div className="flex gap-3 mt-5">
             <Button
@@ -56,6 +73,7 @@ const ResetEmail = () => {
             <Button
               type="submit"
               className="p-[10px] bg-blue-100 hover:bg-[#4081e9] hover:text-white text-bg-[#4081e9] rounded-lg"
+              onClick={() => router.replace("/")}
             >
               Cancel
             </Button>
