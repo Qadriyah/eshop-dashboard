@@ -15,10 +15,10 @@ import Loader from "@/components/Loader";
 import DownloadCsv from "@/components/DownloadCsv";
 import { CustomerSalesReport } from "@/types/entities";
 import { useReactToPrint } from "react-to-print";
-import ReportHeader from "../ReportHeader";
+import ReportHeader from "../_components/ReportHeader";
 import Button from "@/components/Button";
 import { FiPrinter } from "react-icons/fi";
-import ReportSummary from "./ReportSummary";
+import CustomerOrdersSummary from "../_components/CustomerOrdersSummary";
 
 const { RangePicker } = DatePicker;
 const columns: TableProps<CustomerSalesReport>["columns"] = [
@@ -223,7 +223,7 @@ const CustomerOrders: React.FC<{}> = (): JSX.Element => {
                   dataSource={data?.report}
                   pagination={false}
                   summary={() => (
-                    <ReportSummary
+                    <CustomerOrdersSummary
                       totalSales={totalSales || 0}
                       totalOrders={totalOrders || 0}
                       totalProducts={totalProducts || 0}

@@ -3,22 +3,24 @@ import { Table } from "antd";
 import { formatCurrency } from "@/utils/helpers";
 
 type IProps = {
+  totalSales: number;
   totalOrders: number;
   totalProducts: number;
-  totalTax: number;
-  totalAmount: number;
 };
 
-const ReportSummary: React.FC<IProps> = ({
+const CustomerOrdersSummary: React.FC<IProps> = ({
   totalOrders,
   totalProducts,
-  totalTax,
-  totalAmount,
+  totalSales,
 }) => {
   return (
     <Table.Summary fixed>
       <Table.Summary.Row>
-        <Table.Summary.Cell index={0} className="text-[1.063rem] font-bold">
+        <Table.Summary.Cell
+          index={0}
+          colSpan={4}
+          className="text-[1.063rem] font-bold"
+        >
           Totals
         </Table.Summary.Cell>
         <Table.Summary.Cell
@@ -40,18 +42,11 @@ const ReportSummary: React.FC<IProps> = ({
           align="right"
           className="text-[1.063rem] font-bold"
         >
-          {formatCurrency(totalTax)}
-        </Table.Summary.Cell>
-        <Table.Summary.Cell
-          index={4}
-          align="right"
-          className="text-[1.063rem] font-bold"
-        >
-          {formatCurrency(totalAmount)}
+          {formatCurrency(totalSales)}
         </Table.Summary.Cell>
       </Table.Summary.Row>
     </Table.Summary>
   );
 };
 
-export default ReportSummary;
+export default CustomerOrdersSummary;

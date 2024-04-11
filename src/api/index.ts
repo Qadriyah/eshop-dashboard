@@ -1,6 +1,5 @@
-import { HttpRequestHeader } from "antd/es/upload/interface";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { HttpRequestHeader } from "antd/es/upload/interface";
 
 const baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
 axios.defaults.withCredentials = true; // adds cookies to the request

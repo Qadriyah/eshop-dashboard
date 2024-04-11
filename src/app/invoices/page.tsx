@@ -9,16 +9,21 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useRouter } from "next/navigation";
-import { invoices } from "@/components/Dummy/invoices";
 import InvoicePara from "@/components/InvoicePara";
 import Card from "@/components/Card";
 import { NumericFormat } from "react-number-format";
 import Button from "@/components/Button";
+import Image from "next/image";
+
+const invoices: any[] = [];
 
 const Invoice: React.FC<{}> = (): JSX.Element => {
   const shippingRate = 5;
   const totals = invoices.map((invoice) => invoice.total);
-  const subTotal = totals.reduce((total, currentValue) => total + currentValue);
+  const subTotal = totals.reduce(
+    (total, currentValue) => total + currentValue,
+    0
+  );
   const navigate = useRouter();
 
   const handlePrint = (): void => {};
@@ -89,11 +94,7 @@ const Invoice: React.FC<{}> = (): JSX.Element => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell className="min-w-[300px]">
-                      <img
-                        src={row.image}
-                        alt=""
-                        className="w-[45px] h-[45px] rounded-md translate-y-3 mr-0"
-                      />
+                      <Image src={row.image} width={45} height={45} alt="" />
                       <div className="mb-0 -translate-y-7 ml-14">
                         <p className="font-bold text-base opacity-90 -mb-1">
                           {row.title}

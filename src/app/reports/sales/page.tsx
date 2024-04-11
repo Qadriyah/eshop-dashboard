@@ -17,8 +17,8 @@ import { SaleReport } from "@/types/entities";
 import { useReactToPrint } from "react-to-print";
 import Button from "@/components/Button";
 import { FiPrinter } from "react-icons/fi";
-import ReportHeader from "../ReportHeader";
-import ReportSummary from "./ReportSummary";
+import ReportHeader from "../_components/ReportHeader";
+import SalesSummary from "../_components/SalesSummary";
 
 const { RangePicker } = DatePicker;
 const columns: TableProps<SaleReport>["columns"] = [
@@ -191,7 +191,7 @@ const Sales: React.FC<{}> = (): JSX.Element => {
                   dataSource={data?.report}
                   pagination={false}
                   summary={() => (
-                    <ReportSummary
+                    <SalesSummary
                       totalOrders={totalOrders || 0}
                       totalAmount={totalAmount || 0}
                       totalProducts={totalProducts || 0}

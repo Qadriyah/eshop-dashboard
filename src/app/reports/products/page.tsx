@@ -15,10 +15,10 @@ import Loader from "@/components/Loader";
 import DownloadCsv from "@/components/DownloadCsv";
 import { ProductReport } from "@/types/entities";
 import { useReactToPrint } from "react-to-print";
-import ReportHeader from "../ReportHeader";
+import ReportHeader from "../_components/ReportHeader";
 import Button from "@/components/Button";
 import { FiPrinter } from "react-icons/fi";
-import ReportSummary from "./ReportSummary";
+import ProductsSummary from "../_components/ProductsSummary";
 
 const { RangePicker } = DatePicker;
 const columns: TableProps<ProductReport>["columns"] = [
@@ -156,7 +156,7 @@ const ProductsReport: React.FC<{}> = (): JSX.Element => {
                   dataSource={data?.report}
                   pagination={false}
                   summary={() => (
-                    <ReportSummary
+                    <ProductsSummary
                       totalSold={totalSold || 0}
                       totalAmount={totalAmount || 0}
                     />

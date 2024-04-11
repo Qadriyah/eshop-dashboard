@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";

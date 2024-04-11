@@ -13,9 +13,8 @@ import { MenuItem, Radio, Slider } from "@mui/material";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { GoDotFill } from "react-icons/go";
 import { Space } from "antd";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
-import type { NextPage } from "next";
 import Media from "../../../_components/Media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProduct, updateProduct } from "@/api/actions/product";
@@ -34,10 +33,11 @@ import ConfirmationModal from "@/modals/ConfirmationModal";
 import ProductIcon from "../../../_components/ProductIcon";
 import Suspense from "@/components/Suspense";
 import Loader from "@/components/Loader";
-import { PageProps } from "@/types/pageProps";
+import { PageParams } from "@/types/pageProps";
 
-const EditProduct: NextPage<PageProps> = ({ params }) => {
+const EditProduct = () => {
   const router = useRouter();
+  const params = useParams<PageParams>();
   const [previews, setPreviews] = React.useState<any[]>([]);
   const [showDeleteImageModal, setShowDeleteImageModal] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState("");

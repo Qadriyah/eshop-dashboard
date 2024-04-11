@@ -4,7 +4,7 @@ import React from "react";
 import { MenuItem } from "@mui/material";
 import Slider from "@mui/material/Slider";
 import Radio from "@mui/material/Radio";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SelectComponent from "@/components/SelectComponent";
 import Input from "@/components/Input";
 import RadioComponent from "@/components/Radio";
@@ -23,11 +23,12 @@ import { DISCOUNT_TYPES, PRODUCT_STATUS } from "@/utils/constants";
 import { Space } from "antd";
 import { createProductValidationSchema } from "@/validation/productSchemas";
 import { formatErrors, notify } from "@/utils/helpers";
-import { PageProps } from "@/types/pageProps";
+import { PageParams } from "@/types/pageProps";
 
-const AddProduct: React.FC<PageProps> = ({ params }): JSX.Element => {
+const AddProduct = () => {
   const router = useRouter();
   const queryCient = useQueryClient();
+  const params = useParams<PageParams>();
 
   const addProductMutation = useMutation({
     mutationKey: ["add-product"],
