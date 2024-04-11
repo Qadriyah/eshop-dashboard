@@ -13,7 +13,7 @@ export default function withAuth(WrappedComponent: any) {
     useComponentWillMount(() => {
       dispatch(getUser()).then((action) => {
         const payload = action.payload as GetProfile;
-        session.current = payload.profile?.id;
+        session.current = payload.profile?.id!;
       });
       return session.current!;
     });

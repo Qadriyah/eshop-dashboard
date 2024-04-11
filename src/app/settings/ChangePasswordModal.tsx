@@ -59,52 +59,50 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
   }, [matchError, formik.values.confirmPassword, formik.values.newPassword]);
 
   return (
-    <>
-      <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
-        <Input
-          label="Enter old password"
-          placeholder="Enter old password"
-          required
-          name="oldPassword"
-          value={formik.values.oldPassword}
-          onChange={formik.handleChange}
-          type="password"
-          error={formik.touched && formik.errors.oldPassword}
-        />
-        <Input
-          label="Enter new password"
-          placeholder="Enter new password"
-          required
-          name="newPassword"
-          value={formik.values.newPassword}
-          onChange={formik.handleChange}
-          type="password"
-          error={formik.touched && formik.errors.newPassword}
-        />
-        <Input
-          label="Confirm new password"
-          placeholder="Confirm new password"
-          required
-          name="confirmPassword"
-          value={formik.values.confirmPassword}
-          onChange={formik.handleChange}
-          type="password"
-          error={
-            formik.touched && formik.errors.confirmPassword
-              ? formik.errors.confirmPassword
-              : matchError
-          }
-        />
-        <Button
-          type="submit"
-          loading={changeForLoggedInMutation.isPending}
-          disabled={changeForLoggedInMutation.isPending}
-          className="bg-black text-white font-semibold p-3 hover:opacity-80 w-[150px] rounded-md"
-        >
-          Save
-        </Button>
-      </form>
-    </>
+    <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
+      <Input
+        label="Enter old password"
+        placeholder="Enter old password"
+        required
+        name="oldPassword"
+        value={formik.values.oldPassword}
+        onChange={formik.handleChange}
+        type="password"
+        error={formik.touched && formik.errors.oldPassword}
+      />
+      <Input
+        label="Enter new password"
+        placeholder="Enter new password"
+        required
+        name="newPassword"
+        value={formik.values.newPassword}
+        onChange={formik.handleChange}
+        type="password"
+        error={formik.touched && formik.errors.newPassword}
+      />
+      <Input
+        label="Confirm new password"
+        placeholder="Confirm new password"
+        required
+        name="confirmPassword"
+        value={formik.values.confirmPassword}
+        onChange={formik.handleChange}
+        type="password"
+        error={
+          formik.touched && formik.errors.confirmPassword
+            ? formik.errors.confirmPassword
+            : matchError
+        }
+      />
+      <Button
+        type="submit"
+        loading={changeForLoggedInMutation.isPending}
+        disabled={changeForLoggedInMutation.isPending}
+        className="bg-black text-white font-semibold p-3 hover:opacity-80 w-[150px] rounded-md"
+      >
+        Save
+      </Button>
+    </form>
   );
 };
 
