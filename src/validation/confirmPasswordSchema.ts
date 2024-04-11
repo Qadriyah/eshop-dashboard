@@ -10,3 +10,10 @@ export const confirmPasswordSchema = Yup.object().shape({
     .password(),
   confirmPassword: Yup.string().required("Please confirm your password"),
 });
+
+export const confirmNotLoggedinSchema = Yup.object().shape({
+  newPassword: Yup.string()
+    .required("Please enter the new password")
+    .password(),
+  confirmPassword: Yup.string().required("Please confirm your password"),
+});
