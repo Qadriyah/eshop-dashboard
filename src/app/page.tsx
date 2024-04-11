@@ -14,6 +14,7 @@ import { formatErrors } from "@/utils/helpers";
 import { loginValidationSchema } from "@/validation/loginSchema";
 import { loginWithCredentials, loginWithGoogle } from "@/api/actions/auth";
 import { LoginCredentials } from "@/types/requests";
+import Link from "next/link";
 
 const SignIn: NextPage = () => {
   const ref = React.useRef<HTMLParagraphElement>(null);
@@ -135,8 +136,14 @@ const SignIn: NextPage = () => {
                     : ""
                 }
               />
-              <div className="text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer hover:underline">
-                Forgot Password?
+              <div className="flex justify-between">
+                <div></div>
+                <Link
+                  href="/reset-password/email"
+                  className="text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer"
+                >
+                  Forgot Password?
+                </Link>
               </div>
               <Button
                 type="submit"

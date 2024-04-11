@@ -16,7 +16,7 @@ import PageHeader from "@/components/PageHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateUserAvator } from "@/lib/features/user";
 
-const Profile: React.FC = () => {
+const Profile: React.FC = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const loggedinUserId = Cookies.get("_session-token");
   const [selectedImage, setSelectedImage] = React.useState<string>(
@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       <PageHeader title="User Details" />
       <div className="flex gap-5 flex-col">
         <div className="flex-1">
@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
           />
         </ShouldRender>
       </div>
-    </div>
+    </>
   );
 };
 
