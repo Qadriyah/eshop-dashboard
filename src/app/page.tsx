@@ -139,7 +139,7 @@ const SignIn: NextPage = () => {
               <div className="flex justify-between">
                 <div></div>
                 <Link
-                  href="/reset-password/email"
+                  href="/forgot-password"
                   className="text-[#3875d7] opacity-80 text-right mt-1 mb-5 font-semibold cursor-pointer"
                 >
                   Forgot Password?
