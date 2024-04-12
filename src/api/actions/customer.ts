@@ -67,9 +67,16 @@ export type UpdateUserResponse = {
   errors?: ErrorType[];
 };
 
-export type ChangePasswordTypes = {
+export type ChangePasswordResponse = {
   statusCode: number;
   message: string;
+  errors?: ErrorType[];
+};
+
+export type EmailPasswordResponse = {
+  statusCode: number;
+  message: string;
+  accessToken: string;
   errors?: ErrorType[];
 };
 
@@ -222,9 +229,20 @@ export const updateUser = async (
 export const changeForLoggedin = async (
   id: string,
   data: ChangePasswordProps
-): Promise<ChangePasswordTypes> => {
-  const response = await patchApi<ChangePasswordTypes>({
+): Promise<ChangePasswordResponse> => {
+  const response = await patchApi<ChangePasswordResponse>({
     url: `/users/${id}/reset-password`,
+    data,
+  });
+
+  return response;
+};
+
+export const sendPasswordEmail = async (data: {
+  email: string;
+}): Promise<EmailPasswordResponse> => {
+  const response = await postApi<EmailPasswordResponse>({
+    url: "/auth/reset-password-request",
     data,
   });
 

@@ -1,8 +1,13 @@
+"use client";
+
 import Card from "@/components/Card";
 import Image from "next/image";
 import Button from "@/components/Button";
+import { useRouter } from "next/navigation";
 
 const Confirmation = () => {
+  const navigate = useRouter();
+
   return (
     <div className="mt-10 w-3/4 mx-auto lg:w-1/2 max-w-[700px]">
       <Card>
@@ -21,7 +26,10 @@ const Confirmation = () => {
           Password changed
         </h2>
         <div className="flex justify-center">
-          <Button className="text-white w-[100px] mb-10 bg-[#4081e9] sm:mt-5 rounded-lg p-[10px]">
+          <Button
+            className="text-white w-[100px] mb-10 bg-[#4081e9] sm:mt-5 rounded-lg p-[10px]"
+            onClick={() => navigate.push("/")}
+          >
             Sign In
           </Button>
         </div>

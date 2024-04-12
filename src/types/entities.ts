@@ -211,3 +211,5 @@ export type ChangePasswordProps = {
   newPassword: string;
   confirmPassword?: string;
 };
+
+// export type EmailPasswordTypes
