@@ -1,11 +1,21 @@
 import React from "react";
 
-export const useComponentWillMount = (callback: () => string | null) => {
-  const session = React.useRef<string | null>(null);
-  if (!session.current) {
-    const sessionId = callback();
-    session.current = sessionId;
-  }
+export const useIsVisible = (ref: React.RefObject<any>) => {
+  const [isIntersecting, setIntersecting] = React.useState(false);
 
-  return session.current;
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setIntersecting(entry.isIntersecting);
+    });
+
+    if (ref?.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
+
+  return isIntersecting;
 };

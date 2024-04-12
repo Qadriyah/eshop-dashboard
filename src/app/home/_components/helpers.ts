@@ -18,6 +18,10 @@ export type TopSaleType = {
   total: number;
 };
 
+export type VisibilityType = {
+  isVisible: boolean;
+};
+
 export const calPercentageIncrease = (
   currentSales: SaleType[],
   prevSales: SaleType[]
