@@ -5,13 +5,29 @@ import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { useFormik } from "formik";
 import { emailSchema } from "@/validation/loginSchema";
-import withLayout from "./withLayout";
+import { useMutation } from "@tanstack/react-query";
+import { sendPasswordEmail } from "@/api/actions/customer";
+import { formatErrors, notify } from "@/utils/helpers";
+import Link from "next/link";
 
 const ResetEmail = () => {
   const router = useRouter();
 
-  const handleSubmit = (values: { email: string }) => {
-    console.log(values, ">>>>");
+  const emailMutation = useMutation({
+    mutationKey: ["reset-email"],
+    mutationFn: (data: { email: string }) => sendPasswordEmail(data),
+  });
+
+  const handleSubmit = async (values: { email: string }) => {
+    // const { message, errors, accessToken } = await emailMutation.mutateAsync(
+    //   values
+    // );
+    // if (errors) {
+    //   formik.setErrors(formatErrors(errors));
+    // } else {
+    //   notify(message, "success");
+    //   console.log(accessToken, ">>>>>");
+    // }
     router.push("/forgot-password/create-new-password");
   };
 
@@ -23,13 +39,16 @@ const ResetEmail = () => {
   });
 
   return (
-    <>
-      <div className="pl-5 -mt-2">
+    <div className="flex flex-col justify-center items-center mt-40">
+      <div className="pl-5 sm:w-[500px]">
+        <h2 className="text-2xl font-semibold opacity-80 sm:text-3xl lg:text-4xl">
+          Forgot Password?
+        </h2>
         <p className="text-sm font-semibold opacity-60 sm:text-base md:mt-3 md:mb-4 mb-2 mt-3">
           Enter your email to reset your password
         </p>
       </div>
-      <form className="p-5 -mt-7" onSubmit={formik.handleSubmit}>
+      <form className="p-5 -mt-7 sm:w-[500px]" onSubmit={formik.handleSubmit}>
         <Input
           name="email"
           type="email"
@@ -41,21 +60,22 @@ const ResetEmail = () => {
         <div className="flex gap-3 mt-5">
           <Button
             type="submit"
-            className="p-[10px] bg-[#4081e9] text-white rounded-lg"
+            className="p-[10px] bg-[#4081e9] text-white rounded-lg w-full"
+            loading={emailMutation.isPending}
+            disabled={emailMutation.isPending}
           >
             Sumbit
           </Button>
-          <Button
-            type="submit"
-            className="p-[10px] bg-blue-100 hover:bg-[#4081e9] hover:text-white text-bg-[#4081e9] rounded-lg"
-            onClick={() => router.replace("/")}
-          >
-            Cancel
-          </Button>
         </div>
+        <p className="font-semibold opacity-70 text-center mt-14 mb-20">
+          Back to{" "}
+          <Link href="/" className="text-[#4081e9]">
+            Sign In
+          </Link>
+        </p>
       </form>
-    </>
+    </div>
   );
 };
 
-export default withLayout(ResetEmail);
+export default ResetEmail;

@@ -6,8 +6,8 @@ import Input from "@/components/Input";
 import { useFormik } from "formik";
 import { ChangePasswordProps } from "@/types/entities";
 import { confirmNotLoggedinSchema } from "@/validation/confirmPasswordSchema";
-import withLayout from "../withLayout";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const CreateNewPassword = () => {
   const [matchError, setMatchError] = React.useState<string>("");
@@ -37,14 +37,14 @@ const CreateNewPassword = () => {
   }, [matchError, formik.values.confirmPassword, formik.values.newPassword]);
 
   return (
-    <div>
-      <div className="pl-5 -mt-2">
-        <p className="text-sm font-semibold opacity-60 sm:text-base md:mt-3 md:mb-4 mb-2 mt-3">
+    <div className="flex flex-col justify-center items-center mt-28">
+      <div className="sm:w-[500px] p-5 w-full">
+        <p className="text-2xl font-semibold opacity-80 sm:text-3xl lg:text-4xl">
           Create new password
         </p>
       </div>
       <form
-        className="p-5 flex flex-col gap-4 -mt-6"
+        className="p-5 flex flex-col gap-4 -mt-6 sm:w-[500px] w-full"
         onSubmit={formik.handleSubmit}
       >
         <Input
@@ -74,14 +74,20 @@ const CreateNewPassword = () => {
         <Button
           type="submit"
           // loading={changeForLoggedInMutation.isPending}
-          // disabled={changeForLoggedInMutation.isPending}
-          className="bg-[#4081e9] text-white font-semibold p-3 hover:opacity-80 w-[150px] rounded-md"
+          //   disabled={changeForLoggedInMutation.isPending && matchError}
+          className="bg-[#4081e9] text-white font-semibold p-3 hover:opacity-80 rounded-md w-full"
         >
           Save
         </Button>
       </form>
+      <p className="font-semibold opacity-70 text-center mt-14 mb-20">
+        Back to{" "}
+        <Link href="/" className="text-[#4081e9]">
+          Sign In
+        </Link>
+      </p>
     </div>
   );
 };
 
-export default withLayout(CreateNewPassword);
+export default CreateNewPassword;
