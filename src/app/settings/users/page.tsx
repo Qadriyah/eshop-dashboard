@@ -1,5 +1,10 @@
 "use client";
 
+import React from "react";
+import { Table, TableProps } from "antd";
+import moment from "moment";
+import { IoSearchOutline } from "react-icons/io5";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   deleteCustomer,
   getUsers,
@@ -11,12 +16,7 @@ import PageHeader from "@/components/PageHeader";
 import Suspense from "@/components/Suspense";
 import { UserType } from "@/types/entities";
 import { USER_ROLES } from "@/utils/constants";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Table, TableProps } from "antd";
-import moment from "moment";
-import React from "react";
-import { IoSearchOutline } from "react-icons/io5";
-import DropMenu from "./DropMenu";
+import DropMenu from "../_components/DropMenu";
 import ShouldRender from "@/components/ShouldRender";
 import ConfirmationModal from "@/modals/ConfirmationModal";
 import { notify } from "@/utils/helpers";
@@ -190,6 +190,7 @@ const Users: React.FC = (): JSX.Element => {
       ),
     },
   ];
+
   return (
     <>
       <PageHeader title="Users" />

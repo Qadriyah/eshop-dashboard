@@ -212,4 +212,6 @@ export type ChangePasswordProps = {
   confirmPassword?: string;
 };
 
-// export type EmailPasswordTypes
+export interface ApiResponse {
+  errors?: ErrorType[];
+}

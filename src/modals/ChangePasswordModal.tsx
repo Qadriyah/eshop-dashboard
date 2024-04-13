@@ -7,23 +7,20 @@ import { useFormik } from "formik";
 import Button from "@/components/Button";
 import { confirmPasswordSchema } from "@/validation/confirmPasswordSchema";
 import { useMutation } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import { ChangePasswordProps } from "@/types/entities";
-import { changeForLoggedin } from "@/api/actions/customer";
-import { useAppSelector } from "@/lib/hooks";
-import { notify } from "@/utils/helpers";
+import { formatErrors, notify } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
+import { resetPassword } from "@/api/actions/auth";
 
-const ChangePasswordModal: React.FC<ModalProps> = ({
-  handleClose,
-}): JSX.Element => {
-  const [matchError, setMatchError] = React.useState<string>("");
-  const loggedinUserId = useAppSelector((state) => state.user?.user?.user?.id);
-  const navigate = useRouter();
+const ChangePasswordModal: React.FC<ModalProps> = () => {
+  const router = useRouter();
+  const loggedinUserId = Cookies.get("_session-token");
 
   const changeForLoggedInMutation = useMutation({
     mutationKey: ["change-for-loggedin"],
     mutationFn: (data: ChangePasswordProps) =>
-      changeForLoggedin(loggedinUserId!, data),
+      resetPassword(loggedinUserId!, data),
   });
 
   const handleSubmit = async (values: ChangePasswordProps) => {
@@ -31,12 +28,11 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
       values
     );
     if (errors) {
-      notify(errors[0].message, "error");
-    } else {
-      notify(message, "success");
-      handleClose();
-      navigate.replace("/");
+      formik.setErrors(formatErrors(errors));
+      return;
     }
+    notify(message, "success");
+    router.push("/");
   };
 
   const formik = useFormik({
@@ -49,14 +45,6 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
     validateOnBlur: true,
     validationSchema: confirmPasswordSchema,
   });
-
-  React.useEffect(() => {
-    if (formik.values.newPassword !== formik.values.confirmPassword) {
-      setMatchError("Passwords do not match");
-    } else {
-      setMatchError("");
-    }
-  }, [matchError, formik.values.confirmPassword, formik.values.newPassword]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
@@ -80,6 +68,10 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
         type="password"
         error={formik.touched && formik.errors.newPassword}
       />
+      <p className="-mt-5 p-1 text-sm opacity-45">
+        Password should be at least 8 characters long and should contain a
+        digit, uppercase and lowercase letters
+      </p>
       <Input
         label="Confirm new password"
         placeholder="Confirm new password"
@@ -88,11 +80,7 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
         value={formik.values.confirmPassword}
         onChange={formik.handleChange}
         type="password"
-        error={
-          formik.touched && formik.errors.confirmPassword
-            ? formik.errors.confirmPassword
-            : matchError
-        }
+        error={formik.touched && formik.errors.confirmPassword}
       />
       <Button
         type="submit"
@@ -107,10 +95,3 @@ const ChangePasswordModal: React.FC<ModalProps> = ({
 };
 
 export default withModal<ModalProps>(ChangePasswordModal);
-
-// we have 3 APIs for reset password
-// 1. Is for the logged in user ie :id/reset-password
-// Add a password policy
-// 2. not loggedinin: auth controller reset-password-requst
-// reset-password route
-// Show a success screen

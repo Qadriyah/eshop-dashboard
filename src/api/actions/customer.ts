@@ -8,7 +8,6 @@ import {
   SaleType,
   SearchOptions,
   ProfileType,
-  ChangePasswordProps,
 } from "@/types/entities";
 
 export type CreatePaymentMethod = {
@@ -64,19 +63,6 @@ export type uploadResponse = {
 export type UpdateUserResponse = {
   statusCode: number;
   profile: ProfileType;
-  errors?: ErrorType[];
-};
-
-export type ChangePasswordResponse = {
-  statusCode: number;
-  message: string;
-  errors?: ErrorType[];
-};
-
-export type EmailPasswordResponse = {
-  statusCode: number;
-  message: string;
-  accessToken: string;
   errors?: ErrorType[];
 };
 
@@ -220,29 +206,6 @@ export const updateUser = async (
 ): Promise<UpdateUserResponse> => {
   const response = await patchApi<UpdateUserResponse>({
     url: `/profile/${userId}`,
-    data,
-  });
-
-  return response;
-};
-
-export const changeForLoggedin = async (
-  id: string,
-  data: ChangePasswordProps
-): Promise<ChangePasswordResponse> => {
-  const response = await patchApi<ChangePasswordResponse>({
-    url: `/users/${id}/reset-password`,
-    data,
-  });
-
-  return response;
-};
-
-export const sendPasswordEmail = async (data: {
-  email: string;
-}): Promise<EmailPasswordResponse> => {
-  const response = await postApi<EmailPasswordResponse>({
-    url: "/auth/reset-password-request",
     data,
   });
 
