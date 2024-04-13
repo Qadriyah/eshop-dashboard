@@ -12,6 +12,7 @@ import { getSales } from "@/api/actions/sales";
 import ExpandableRow from "./ExpandableRow";
 import Suspense from "@/components/Suspense";
 import ProductOrdersLoader from "./_loaders/ProductOrdersLoader";
+import { VisibilityType } from "./helpers";
 
 export type LineItem = {
   key: string;
@@ -133,7 +134,7 @@ const formatData = (data: SaleType[]): DataType[] => {
   }));
 };
 
-const ProductOrders = () => {
+const ProductOrders: React.FC<VisibilityType> = ({ isVisible }) => {
   const [dateRange, setDateRange] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
@@ -164,7 +165,11 @@ const ProductOrders = () => {
   return (
     <Suspense fallback={<ProductOrdersLoader />} loading={isLoading}>
       <Card>
-        <div className="h-[458px] flex flex-col gap-3">
+        <div
+          className={`h-[458px] flex flex-col gap-3 transition-opacity ease-in duration-700 ${
+            isVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <div className="flex gap-5">
             <div className="flex-1">
               <div className="text-xl">Product Orders</div>

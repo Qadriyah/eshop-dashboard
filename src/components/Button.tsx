@@ -4,7 +4,7 @@ import Loader from "./Loader";
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   PropsWithChildren & {
     loading?: boolean;
-    className: string;
+    className?: string;
   };
 
 const Button: React.FC<ButtonProps> = ({

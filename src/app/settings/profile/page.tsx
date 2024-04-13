@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import UserDetail from "../UserDetail";
+import UserDetail from "../_components/UserDetail";
 import { CiEdit } from "react-icons/ci";
 import Card from "@/components/Card";
 import { IoCamera } from "react-icons/io5";
@@ -10,13 +10,13 @@ import { useMutation } from "@tanstack/react-query";
 import { uploadUserImage } from "@/api/actions/customer";
 import ShouldRender from "@/components/ShouldRender";
 import Loader from "@/components/Loader";
-import ChangePasswordModal from "../ChangePasswordModal";
+import ChangePasswordModal from "../../../modals/ChangePasswordModal";
 import UpdateProfile from "../../../modals/UpdateProfileModal";
 import PageHeader from "@/components/PageHeader";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateUserAvator } from "@/lib/features/user";
 
-const Profile: React.FC = () => {
+const Profile = () => {
   const dispatch = useAppDispatch();
   const loggedinUserId = Cookies.get("_session-token");
   const [selectedImage, setSelectedImage] = React.useState<string>(
@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       <PageHeader title="User Details" />
       <div className="flex gap-5 flex-col">
         <div className="flex-1">
@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
           />
         </ShouldRender>
       </div>
-    </div>
+    </>
   );
 };
 

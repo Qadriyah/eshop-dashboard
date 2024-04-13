@@ -6,9 +6,9 @@ import PageHeader from "@/components/PageHeader";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "@/api/actions/customer";
-import UserDetail from "../../UserDetail";
+import UserDetail from "../../_components/UserDetail";
 
-const Profile: React.FC = () => {
+const Profile = () => {
   const { userId } = useParams<{ userId: string }>();
   const user = useQuery({
     queryKey: ["user"],

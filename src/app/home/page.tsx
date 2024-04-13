@@ -16,8 +16,10 @@ import OrdersThisMonthLoader from "./_components/_loaders/OrdersThisMonthLoader"
 import ProductOrdersLoader from "./_components/_loaders/ProductOrdersLoader";
 import DailySalesLoader from "./_components/_loaders/DailySalesLoader";
 import TopSellingLoader from "./_components/_loaders/TopSellingLoader";
+import { useIsVisible } from "@/hooks";
 
 const Home = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
   const [currentMonth] = React.useState<string[]>([
     moment().startOf("M").format("YYYY-MM-DD"),
     moment().endOf("M").format("YYYY-MM-DD"),
@@ -26,6 +28,8 @@ const Home = () => {
     moment().subtract(1, "M").startOf("M").format("YYYY-MM-DD"),
     moment().subtract(1, "M").endOf("M").format("YYYY-MM-DD"),
   ]);
+
+  const isVisible = useIsVisible(ref);
 
   const { data: currentSales, isLoading } = useQuery({
     queryKey: ["current-orders"],
@@ -75,8 +79,8 @@ const Home = () => {
         </div>
       </div>
       <div className="flex gap-5 mt-5 flex-col xl:flex-row">
-        <div className="flex-1 overflow-x-scroll">
-          <ProductOrders />
+        <div className="flex-1 overflow-x-scroll" ref={ref}>
+          <ProductOrders isVisible={isVisible} />
         </div>
       </div>
     </div>

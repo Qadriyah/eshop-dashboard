@@ -9,6 +9,7 @@ import { logoutUser } from "@/api/actions/auth";
 import { Space } from "antd";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getUser } from "@/lib/features/user";
+import { PiSignOutBold } from "react-icons/pi";
 
 const UserProfile = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -77,10 +78,11 @@ const UserProfile = (): JSX.Element => {
           </Space>
         </div>
         <div
-          className="w-full cursor-pointer p-3 text-black hover:font-bold hover:text-[#3875d7] hover:bg-[#ededed]"
+          className="w-full cursor-pointer p-3 text-black hover:font-bold hover:text-[#3875d7] hover:bg-[#ededed] flex gap-1 items-center"
           onClick={onLogout}
         >
-          Sign Out
+          <PiSignOutBold size={16} />
+          <p>Sign Out</p>
         </div>
       </div>
     </Dropdown>
