@@ -1,6 +1,6 @@
 import { ApiResponse, ChangePasswordProps, ErrorType } from "@/types/entities";
 import { patchApi, postApi } from "..";
-import { LoginCredentials, NewPassword } from "@/types/requests";
+import { LoginCredentials, NewPasswordType } from "@/types/requests";
 
 export type SessionDataType = {
   email: string;
@@ -80,7 +80,7 @@ export const resetPasswordRequest = async (data: {
 };
 
 export const resetPasswordWithLink = async (
-  data: NewPassword,
+  data: NewPasswordType,
   token: string
 ): Promise<ChangePasswordResponse> => {
   const response = await postApi<ChangePasswordResponse>({

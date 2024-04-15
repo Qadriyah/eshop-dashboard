@@ -3,7 +3,7 @@ export type LoginCredentials = {
   password: string;
 };
 
-export type NewPassword = {
+export type NewPasswordType = {
   password: string;
   confirmPassword: string;
 };
