@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { IoSearchOutline } from "react-icons/io5";
 import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Card from "@/components/Card";
@@ -16,10 +15,11 @@ import { ProductType } from "@/types/entities";
 import { getProducts } from "@/api/actions/product";
 import PageHeader from "@/components/PageHeader";
 import SearchBar from "@/components/SearchBar";
+import { PRODUCT_STATUS } from "@/utils/constants";
 
 const Products: React.FC<{}> = (): JSX.Element => {
   const navigate = useRouter();
-  const [status, setStatus] = React.useState<string>("all");
+  const [status, setStatus] = React.useState<string>("Active");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [products, setProducts] = React.useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = React.useState<ProductType[]>(
@@ -70,7 +70,11 @@ const Products: React.FC<{}> = (): JSX.Element => {
 
   React.useEffect(() => {
     setProducts(data?.products || []);
-    setFilteredProducts(data?.products || []);
+    setFilteredProducts(
+      data?.products?.filter(
+        (product) => product.status === PRODUCT_STATUS.active
+      ) || []
+    );
   }, [data?.products]);
 
   return (
@@ -93,7 +97,6 @@ const Products: React.FC<{}> = (): JSX.Element => {
                 label="Status"
                 variant="outlined"
                 value={status}
-                defaultValue="all"
               >
                 <MenuItem value={"all"}>All</MenuItem>
                 <MenuItem value={"Active"}>Active</MenuItem>

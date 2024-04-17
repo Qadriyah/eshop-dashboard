@@ -220,7 +220,7 @@ const EditProduct = () => {
         <div className="w-full flex flex-col lg:flex-row gap-5">
           <div className="w-full lg:w-2/5 flex flex-col gap-5">
             <ProductIcon
-              icon={data?.product?.icon}
+              icon={product?.icon}
               loading={productIconMutation.isPending}
               handleFileChange={handleFileChange}
             />

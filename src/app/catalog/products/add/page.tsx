@@ -48,7 +48,7 @@ const AddProduct = () => {
       return;
     }
     notify(message, "success");
-    router.push(`/catalog/products/edit/${product.id}`);
+    router.replace(`/catalog/products/edit/${product.id}`);
   };
 
   const formik = useFormik({
