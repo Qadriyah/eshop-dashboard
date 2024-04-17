@@ -7,7 +7,7 @@ This repo holds code for the management dashboard of eShop
 ## Table of contents
 
 - [Tools](#tools)
-- [Setup(mac)](#setup)
+- [Setup](#setup)
 - [To install dependencies run](#to-install-dependencies-run)
 - [Set environment variables](#set-environment-variables)
 - [Running tests](#running-tests)
@@ -25,13 +25,13 @@ This repo holds code for the management dashboard of eShop
 Clone the repository:
 
 ```
-$ git clone https://github.com/Qadriyah/eshop-dashboard.git
+git clone https://github.com/Qadriyah/eshop-dashboard.git
 ```
 
 Then change to project directory:
 
 ```
-$ cd eshop-dashboard
+cd eshop-dashboard
 ```
 
 #### To install dependencies run:
@@ -58,9 +58,11 @@ TODO
 
 #### Without docker
 
-- npm start
+```
+npm run dev
+```
 
-  After starting the local development server, application can be accessed at:
+After starting the local development server, application can be accessed at:
 
 ```
 localhost:3000
