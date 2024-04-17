@@ -8,10 +8,10 @@ import Button from "@/components/Button";
 import { confirmPasswordSchema } from "@/validation/confirmPasswordSchema";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import { ChangePasswordProps } from "@/types/entities";
 import { formatErrors, notify } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
 import { resetPassword } from "@/api/actions/auth";
+import { ChangePasswordRequest } from "@/types/requests";
 
 const ChangePasswordModal: React.FC<ModalProps> = () => {
   const router = useRouter();
@@ -19,11 +19,11 @@ const ChangePasswordModal: React.FC<ModalProps> = () => {
 
   const changeForLoggedInMutation = useMutation({
     mutationKey: ["change-for-loggedin"],
-    mutationFn: (data: ChangePasswordProps) =>
+    mutationFn: (data: ChangePasswordRequest) =>
       resetPassword(loggedinUserId!, data),
   });
 
-  const handleSubmit = async (values: ChangePasswordProps) => {
+  const handleSubmit = async (values: ChangePasswordRequest) => {
     const { errors, message } = await changeForLoggedInMutation.mutateAsync(
       values
     );

@@ -18,10 +18,11 @@ const UpdateProfileModal: React.FC<ModalProps> = ({ handleClose }) => {
   const loggedinUser = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
+  const [error, setError] = React.useState<string>("");
   const [phone, setPhone] = React.useState<string | null>(
     `${loggedinUser?.phone || ""}`
   );
-  const [error, setError] = React.useState<string>("");
+
   const updateMutation = useMutation({
     mutationKey: ["update-user"],
     mutationFn: (data: any) => updateUser(loggedinUser?.user?.id!, data),

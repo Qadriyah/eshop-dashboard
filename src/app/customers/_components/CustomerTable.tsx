@@ -12,7 +12,7 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import {
-  CustomerTypes,
+  GetCustomers,
   deleteCustomer,
   suspendCustomer,
 } from "@/api/actions/customer";
@@ -23,7 +23,7 @@ type CustomerProps = {
   customers: UserType[];
   refetch: (
     options?: RefetchOptions | undefined
-  ) => Promise<QueryObserverResult<CustomerTypes, Error>>;
+  ) => Promise<QueryObserverResult<GetCustomers, Error>>;
 };
 
 const CustomerTable: React.FC<CustomerProps> = ({

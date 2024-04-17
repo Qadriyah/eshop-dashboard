@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import React, { TextareaHTMLAttributes } from "react";
 
 type IProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;

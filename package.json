@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "eslint src --fix",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -42,6 +46,10 @@
     "yup-password": "^0.4.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^15.0.2",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/numeral": "^2.0.5",
@@ -52,9 +60,16 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.2",
+    "eslint-plugin-jest-dom": "^5.2.0",
+    "eslint-plugin-testing-library": "^6.2.2",
+    "husky": "^9.0.11",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "redux-logger": "^3.0.6",
     "tailwindcss": "^3.3.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

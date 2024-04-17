@@ -166,9 +166,9 @@ const SignIn: NextPage = () => {
             alt="logo"
             className="mx-auto"
           />
-          <div className="text-white text-center mt-5 text-3xl font-bold">
+          <p className="text-white text-center mt-5 text-3xl font-bold">
             Delightful Beauty
-          </div>
+          </p>
         </div>
         <Image
           src="/assets/images/auth-screens.png"
