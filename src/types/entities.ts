@@ -206,11 +206,6 @@ export type SearchOptions = {
   to?: string;
   status?: string;
 };
-export type ChangePasswordProps = {
-  oldPassword?: string;
-  newPassword: string;
-  confirmPassword?: string;
-};
 
 export interface ApiResponse {
   errors?: ErrorType[];

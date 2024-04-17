@@ -1,7 +1,7 @@
 import { getApi } from "..";
 import {
+  ApiResponse,
   CustomerSalesReport,
-  ErrorType,
   ProductReport,
   ReturnReport,
   SaleReport,
@@ -9,29 +9,25 @@ import {
 } from "@/types/entities";
 import { GetSales } from "./sales";
 
-export type GetSalesReport = {
+export interface GetSalesReport extends ApiResponse {
   statusCode: number;
   report: SaleReport[];
-  errors?: ErrorType[];
-};
+}
 
-export type GetReturnsReport = {
+export interface GetReturnsReport extends ApiResponse {
   statusCode: number;
   report: ReturnReport[];
-  errors?: ErrorType[];
-};
+}
 
-export type GetCustomerSalesReport = {
+export interface GetCustomerSalesReport extends ApiResponse {
   statusCode: number;
   report: CustomerSalesReport[];
-  errors?: ErrorType[];
-};
+}
 
-export type GetProductsSalesReport = {
+export interface GetProductsSalesReport extends ApiResponse {
   statusCode: number;
   report: ProductReport[];
-  errors?: ErrorType[];
-};
+}
 
 export const getSalesReport = async (
   startDate: string,

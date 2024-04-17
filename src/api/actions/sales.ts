@@ -1,22 +1,15 @@
-import { ErrorType, SaleType, SearchOptions } from "@/types/entities";
+import { ApiResponse, SaleType, SearchOptions } from "@/types/entities";
 import { getApi, patchApi } from "..";
 
-export type GetSales = {
+export interface GetSales extends ApiResponse {
   statusCode: number;
   sales: SaleType[];
-  errors?: ErrorType[];
-};
+}
 
-export type GetSale = {
+export interface GetSale extends ApiResponse {
   statusCode: number;
   sale: SaleType;
-  errors?: ErrorType[];
-};
-
-export type SaleDetailsTypes = {
-  statusCode: number;
-  session: any;
-};
+}
 
 export const getCustomerSales = async (): Promise<GetSales> => {
   const response = await getApi<GetSales>({

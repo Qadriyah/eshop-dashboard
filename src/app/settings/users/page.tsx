@@ -69,6 +69,7 @@ const Users: React.FC = (): JSX.Element => {
     });
     if (errors) {
       notify(errors[0].message, "error");
+      return;
     }
     notify("Admin successfully suspended", "success");
     refetch();

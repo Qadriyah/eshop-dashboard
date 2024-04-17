@@ -1,6 +1,5 @@
 import { ProfileType } from "@/types/entities";
 import { getApi, patchApi, postApi } from "..";
-import { storeObject } from "../localstorage";
 
 export type SessionDataType = {
   email: string;

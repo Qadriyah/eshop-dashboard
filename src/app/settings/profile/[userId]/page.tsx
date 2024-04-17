@@ -7,9 +7,10 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "@/api/actions/customer";
 import UserDetail from "../../_components/UserDetail";
+import { PageParams } from "@/types/pageProps";
 
 const Profile = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId } = useParams<PageParams>();
   const user = useQuery({
     queryKey: ["user"],
     queryFn: () => getUser(userId),

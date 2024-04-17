@@ -1,29 +1,21 @@
 import { deleteApi, getApi, patchApi, postApi } from "..";
-import { ErrorType, ProductType, SearchOptions } from "@/types/entities";
+import { ApiResponse, ProductType, SearchOptions } from "@/types/entities";
 
-export type GetProduct = {
+export interface GetProduct extends ApiResponse {
   statusCode: number;
   product: ProductType;
-};
+}
 
-export type GetProducts = {
+export interface GetProducts extends ApiResponse {
   statusCode: number;
   products: ProductType[];
-};
+}
 
-export type PostProduct = {
-  statusCode: number;
-  product: ProductType;
-  message: string;
-  errors: ErrorType[];
-};
-
-export type AddProduct = {
+export interface CreateProductResponse extends ApiResponse {
   statusCode: number;
   message: string;
   product: ProductType;
-  errors?: ErrorType[];
-};
+}
 
 export const getProducts = async (
   options: SearchOptions
@@ -42,23 +34,32 @@ export const getProduct = async (id: string): Promise<GetProduct> => {
   return response;
 };
 
-export const deleteProduct = async (id: string): Promise<PostProduct> => {
-  const response = await deleteApi<PostProduct>({ url: `/products/${id}` });
+export const deleteProduct = async (
+  id: string
+): Promise<CreateProductResponse> => {
+  const response = await deleteApi<CreateProductResponse>({
+    url: `/products/${id}`,
+  });
   return response;
 };
 
 export const updateProduct = async (
   id: string,
   data: ProductType
-): Promise<PostProduct> => {
-  const response = await patchApi<PostProduct>({
+): Promise<CreateProductResponse> => {
+  const response = await patchApi<CreateProductResponse>({
     url: `/products/${id}`,
     data,
   });
   return response;
 };
 
-export const addProduct = async (data: ProductType): Promise<PostProduct> => {
-  const response = await postApi<PostProduct>({ url: "/products", data });
+export const addProduct = async (
+  data: ProductType
+): Promise<CreateProductResponse> => {
+  const response = await postApi<CreateProductResponse>({
+    url: "/products",
+    data,
+  });
   return response;
 };

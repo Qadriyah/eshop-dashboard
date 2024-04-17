@@ -2,72 +2,64 @@ import Stripe from "stripe";
 import { deleteApi, getApi, patchApi, postApi } from "..";
 import {
   CustomerSource,
-  ErrorType,
   PaymentMethodType,
   UserType,
   SaleType,
   SearchOptions,
   ProfileType,
+  ApiResponse,
 } from "@/types/entities";
 
-export type CreatePaymentMethod = {
+export interface CreatePaymentMethod extends ApiResponse {
   statusCode: number;
   paymentMethod: PaymentMethodType;
   message: string;
-  errors?: ErrorType[];
-};
+}
 
-export type GetPaymentMethods = {
+export interface GetPaymentMethods extends ApiResponse {
   statusCode: number;
   paymentMethods: PaymentMethodType[];
-  errors?: ErrorType[];
-};
+}
 
-export type DeletePaymentMethod = {
+export interface DeletePaymentMethod extends ApiResponse {
   statusCode: number;
   customer: Stripe.Customer;
   message: string;
-  errors?: ErrorType[];
-};
+}
 
-export type CustomerTypes = {
+export interface GetCustomers extends ApiResponse {
   statusCode: number;
   users: UserType[];
-  errors?: ErrorType[];
-};
+}
 
-export type CustomerUpdateResponse = {
+export interface GetCustomer extends ApiResponse {
+  statusCode: number;
+  user: UserType;
+}
+
+export interface UpdateCustomerResponse extends ApiResponse {
   statusCode: number;
   message: string;
   user: UserType;
-  errors?: ErrorType[];
-};
+}
 
-export type TransactionsResponse = {
+export interface TransactionsResponse extends ApiResponse {
   statusCode: number;
   sales: SaleType[];
-};
+}
 
-export type SingleCustomerResponse = {
-  statusCode: number;
-  user: UserType;
-  errors?: ErrorType[];
-};
-
-export type uploadResponse = {
+export interface FileUploadResponse extends ApiResponse {
   statusCode: number;
   filePath: string;
-  errors?: ErrorType[];
-};
+}
 
-export type UpdateUserResponse = {
+export interface UpdateProfileResponse extends ApiResponse {
   statusCode: number;
   profile: ProfileType;
-  errors?: ErrorType[];
-};
+}
 
 export const createPaymentMethod = async (
-  token: any
+  token: string
 ): Promise<CreatePaymentMethod> => {
   const data = await postApi<CreatePaymentMethod>({
     url: `/customers/payment-methods/${token}`,
@@ -113,27 +105,19 @@ export const deletePaymentMethod = async (
 
 export const getUsers = async (
   options: SearchOptions
-): Promise<CustomerTypes> => {
+): Promise<GetCustomers> => {
   const { user, page, limit } = options;
   let url = "/users";
   url += `?page=${page ? page : 1}`;
   if (limit) url += `&limit=${limit}`;
   if (user) url += `&user=${user}`;
 
-  const response = await getApi<CustomerTypes>({ url });
+  const response = await getApi<GetCustomers>({ url });
   return response;
 };
 
-export const getCustomer = async (
-  id: string
-): Promise<{
-  statusCode: number;
-  user: UserType;
-}> => {
-  const response = await getApi<{
-    statusCode: number;
-    user: UserType;
-  }>({ url: `/users/${id}` });
+export const getCustomer = async (id: string): Promise<GetCustomer> => {
+  const response = await getApi<GetCustomer>({ url: `/users/${id}` });
 
   return response;
 };
@@ -141,8 +125,8 @@ export const getCustomer = async (
 export const suspendCustomer = async (
   id: string,
   data: { suspended: boolean }
-): Promise<CustomerUpdateResponse> => {
-  const response = await patchApi<CustomerUpdateResponse>({
+): Promise<UpdateCustomerResponse> => {
+  const response = await patchApi<UpdateCustomerResponse>({
     url: `/users/${id}`,
     data,
   });
@@ -150,8 +134,12 @@ export const suspendCustomer = async (
   return response;
 };
 
-export const deleteCustomer = async (id: string): Promise<CustomerTypes> => {
-  const response = await deleteApi<CustomerTypes>({ url: `/users/${id}` });
+export const deleteCustomer = async (
+  id: string
+): Promise<UpdateCustomerResponse> => {
+  const response = await deleteApi<UpdateCustomerResponse>({
+    url: `/users/${id}`,
+  });
 
   return response;
 };
@@ -179,8 +167,8 @@ export const getCustomerPaymentMethods = async (
   return response;
 };
 
-export const getUser = async (id: string): Promise<SingleCustomerResponse> => {
-  const response = await getApi<SingleCustomerResponse>({
+export const getUser = async (id: string): Promise<GetCustomer> => {
+  const response = await getApi<GetCustomer>({
     url: `/users/${id}`,
   });
 
@@ -190,8 +178,8 @@ export const getUser = async (id: string): Promise<SingleCustomerResponse> => {
 export const uploadUserImage = async (
   userId: string,
   data: any
-): Promise<uploadResponse> => {
-  const response = await postApi<uploadResponse>({
+): Promise<FileUploadResponse> => {
+  const response = await postApi<FileUploadResponse>({
     url: `/files/upload/user/${userId}/avatar`,
     data,
     customHeaders: { "Content-Type": "multipart/form-data" },
@@ -203,8 +191,8 @@ export const uploadUserImage = async (
 export const updateUser = async (
   userId: string,
   data: ProfileType
-): Promise<UpdateUserResponse> => {
-  const response = await patchApi<UpdateUserResponse>({
+): Promise<UpdateProfileResponse> => {
+  const response = await patchApi<UpdateProfileResponse>({
     url: `/profile/${userId}`,
     data,
   });

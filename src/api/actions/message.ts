@@ -1,11 +1,10 @@
-import { ErrorType, MessageType } from "@/types/entities";
-import { getApi, postApi } from "..";
+import { ApiResponse, MessageType } from "@/types/entities";
+import { getApi } from "..";
 
-export type GetMessages = {
+export interface GetMessages extends ApiResponse {
   statusCode: number;
   messages?: MessageType[];
-  errors?: ErrorType[];
-};
+}
 
 export const getMessages = async (): Promise<GetMessages> => {
   const response = await getApi<GetMessages>({ url: "/messages" });

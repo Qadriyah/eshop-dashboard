@@ -1,11 +1,10 @@
-import { ErrorType } from "@/types/entities";
+import { ApiResponse } from "@/types/entities";
 import { deleteApi, postApi } from "..";
 
-export type UploadFile = {
+export interface UploadFile extends ApiResponse {
   statusCode: number;
   filePath: string;
-  errors?: ErrorType[];
-};
+}
 
 export const uploadProductIcon = async (
   id: string,
