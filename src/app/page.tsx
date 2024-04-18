@@ -73,7 +73,7 @@ const SignIn: NextPage = () => {
           onClick={() => router.push("/")}
         >
           <Image
-            src="/images/dlogo.png"
+            src="/assets/images/dlogo.png"
             width={70}
             height={70}
             alt="logo"
@@ -157,7 +157,7 @@ const SignIn: NextPage = () => {
           </form>
         </div>
       </div>
-      <div className="flex-1 hidden md:block bg-[#4081e9] min-h-screen p-10 lg:p-20">
+      <div className="flex-1 hidden md:block bg-[#4081e9] h-screen p-10 lg:p-20">
         <div className="cursor-pointer" onClick={() => router.push("/")}>
           <Image
             src="/assets/images/dlogo.png"
@@ -166,18 +166,18 @@ const SignIn: NextPage = () => {
             alt="logo"
             className="mx-auto"
           />
-          <p className="text-white text-center mt-5 text-3xl font-bold">
+          <p className="text-white text-center mt-5 text-2xl font-bold xl:text-3xl">
             Delightful Beauty
           </p>
         </div>
         <Image
           src="/assets/images/auth-screens.png"
-          width={450}
-          height={450}
+          width={400}
+          height={400}
           alt=""
           className="mx-auto my-20"
         />
-        <p className="text-4xl text-white font-bold mt-8 text-center">
+        <p className="text-2xl text-white font-bold mt-8 text-center xl:text-3xl">
           Fast, Efficient and Reliable
         </p>
       </div>

@@ -18,6 +18,8 @@ This repo holds code for the management dashboard of eShop
 - [Node](https://nodejs.org/docs/latest/api/) - A Javascript runtime environment.
 - [React](https://react.dev/reference/react) - A Javascript library for building user interfaces.
 - [Next](https://nextjs.org/docs) - A React framework for the web.
+- [Redux/Redux Toolkit](https://redux-toolkit.js.org/introduction/getting-started) - A Javascript library for predictable and maintainable global state management
+- [Tanstack Query](https://tanstack.com/query/latest/docs/framework/react/overview) - Powerful asynchronous state management library
 - [NPM](https://www.npmjs.com/) - A package manager
 
 ## Setup
