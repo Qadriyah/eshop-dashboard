@@ -14,9 +14,7 @@ const Input = React.forwardRef<Ref, InputProps>(function Input(
   return (
     <label>
       <span className="opacity-50 text-sm">{label}</span>{" "}
-      <span className={`text-red-500 text-base ${!props.required && "hidden"}`}>
-        *
-      </span>
+      {props.required && <span className={`text-red-500 text-base`}>*</span>}
       <input
         ref={ref}
         {...props}
@@ -26,7 +24,7 @@ const Input = React.forwardRef<Ref, InputProps>(function Input(
             : "w-full p-2 bg-white rounded-none border border-[#d3d3d3] outline-none mt-1"
         } ${error && "border-red-600 text-red-600"}`}
       />
-      {error && <div className="text-red-600 text-sm">{error}</div>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
     </label>
   );
 });

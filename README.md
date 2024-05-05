@@ -50,8 +50,16 @@ Be sure to set the environment variables shown in the `.env.local.example` file
 
 ### Running tests
 
+#### To run the tests:
+
 ```
 npm test
+```
+
+#### To generate the test coverage report:
+
+```
+npm run test:coverage
 ```
 
 ### Starting local development server
