@@ -50,7 +50,9 @@ Be sure to set the environment variables shown in the `.env.local.example` file
 
 ### Running tests
 
-TODO
+```
+npm test
+```
 
 ### Starting local development server
 
