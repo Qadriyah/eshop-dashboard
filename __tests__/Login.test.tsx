@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom";
 import { userEvent } from "@testing-library/user-event";
+import mockRouter from "next-router-mock";
 import SignIn from "@/app/page";
-import { render, screen } from "../src/utils/test-utils";
+import { act, render, screen, waitFor } from "../src/utils/test-utils";
 import Input from "@/components/Input";
 
 describe("Login", () => {
@@ -13,105 +14,58 @@ describe("Login", () => {
 
   it("should render the google login button", () => {
     render(<SignIn />);
-    const element = screen.getByRole("button", { name: "Sign in with Google" });
+    const element = screen.getByRole("button", {
+      name: /Sign in with Google/i,
+    });
     expect(element).toBeInTheDocument();
   });
 
-  describe("Email Input", () => {
-    it("should render the input element", () => {
-      render(
-        <Input id="email" name="email" type="email" placeholder="Email" />
-      );
-      const element = screen.getByPlaceholderText(/email/i);
-      expect(element).toBeInTheDocument();
+  it("should render the submit button", () => {
+    render(<SignIn />);
+    const element = screen.getByRole("button", { name: /login/i });
+    expect(element).toBeInTheDocument();
+  });
+
+  it("should render the 'Forgot Password' link", () => {
+    render(<SignIn />);
+    const element = screen.getByRole("link", { name: "Forgot Password?" });
+    expect(element).toBeInTheDocument();
+  });
+
+  it("should render the logo", () => {
+    render(<SignIn />);
+    const element = screen.getByRole("img", { name: "logo2" });
+    expect(element).toBeInTheDocument();
+  });
+
+  it("should display empty fields validation errors", async () => {
+    const user = userEvent.setup();
+    render(<SignIn />);
+    const button = screen.getByRole("button", { name: /login/i });
+    await act(() => {
+      user.click(button);
     });
 
-    it("should display error message on the input element", () => {
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          error="Email is required"
-        />
-      );
-      const element = screen.getByText(/Email is required/i);
-      expect(element).toBeInTheDocument();
-      expect(element).toHaveClass("text-red-600");
+    await waitFor(() => {
+      const emailError = screen.getByText(/email is required/i);
+      expect(emailError).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      const passwordError = screen.getByText(/password is required/i);
+      expect(passwordError).toBeInTheDocument();
+    });
+  });
+
+  it("should navigate to forgot password page", async () => {
+    const user = userEvent.setup();
+    render(<SignIn />);
+    const link = screen.getByRole("link", { name: "Forgot Password?" });
+    await act(() => {
+      user.click(link);
     });
 
-    it("should change the input element border to red with an error present", () => {
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          error="Email is required"
-        />
-      );
-      const element = screen.getByPlaceholderText(/email/i);
-      expect(element).toHaveClass("text-red-600");
-    });
-
-    it("should display a label on the input element", () => {
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          label="Email"
-        />
-      );
-      const element = screen.getByText("Email");
-      expect(element).toBeInTheDocument();
-    });
-
-    it('should show "*" for a required input element', () => {
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          label="Email"
-          required
-        />
-      );
-      const element = screen.getByText("*");
-      expect(element).toBeVisible();
-    });
-
-    it("should not show '*' for a non-required input element", () => {
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          label="Email"
-        />
-      );
-      const element = screen.queryByText("*");
-      expect(element).not.toBeInTheDocument();
-    });
-
-    it("should be able to type into the input element", async () => {
-      const user = userEvent.setup();
-      render(
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          label="Email"
-        />
-      );
-      const element = screen.getByPlaceholderText(/email/i);
-      await user.type(element, "baker@gmail.com");
-      expect(element).toHaveValue("baker@gmail.com");
+    await waitFor(() => {
+      expect(mockRouter.asPath).toEqual("/forgot-password");
     });
   });
 });

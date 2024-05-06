@@ -76,7 +76,7 @@ const SignIn: NextPage = () => {
             src="/assets/images/dlogo.png"
             width={70}
             height={70}
-            alt="logo"
+            alt="logo1"
             className="mx-auto"
           />
         </div>
@@ -151,7 +151,7 @@ const SignIn: NextPage = () => {
                 disabled={loginMutation.isPending}
                 className="w-full outline-none text-md p-2 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9]"
               >
-                Sigin In
+                Login
               </Button>
             </Space>
           </form>
@@ -163,7 +163,7 @@ const SignIn: NextPage = () => {
             src="/assets/images/dlogo.png"
             width={70}
             height={40}
-            alt="logo"
+            alt="logo2"
             className="mx-auto"
           />
           <p className="text-white text-center mt-5 text-2xl font-bold xl:text-3xl">
