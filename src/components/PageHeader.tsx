@@ -25,7 +25,9 @@ const PageHeader: React.FC<HeaderProps> = ({ title, params, children }) => {
               onClick={() => router.back()}
             />
           )}
-          <h1 className="text-2xl font-medium">{title}</h1>
+          <h1 className="text-2xl font-medium" data-cy="page-title">
+            {title}
+          </h1>
         </div>
       </div>
       {children}

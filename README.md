@@ -50,7 +50,7 @@ Be sure to set the environment variables shown in the `.env.local.example` file
 
 ### Running tests
 
-#### To run the tests:
+#### To run unit and integration tests:
 
 ```
 npm test
@@ -60,6 +60,12 @@ npm test
 
 ```
 npm run test:coverage
+```
+
+#### To run e2e tests
+
+```
+npm run cy:open
 ```
 
 ### Starting local development server

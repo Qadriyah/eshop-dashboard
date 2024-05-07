@@ -147,6 +147,7 @@ const SignIn: NextPage = () => {
               </div>
               <Button
                 type="submit"
+                data-cy="submit"
                 loading={loginMutation.isPending}
                 disabled={loginMutation.isPending}
                 className="w-full outline-none text-md p-2 border-none rounded-md text-white hover:opacity-80 bg-[#4081e9]"
